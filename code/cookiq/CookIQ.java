@@ -13,6 +13,7 @@
  *
  */
 
+package cookiq;
 import cookiq.ui.LoginUI;
 
 public class CookIQ {
