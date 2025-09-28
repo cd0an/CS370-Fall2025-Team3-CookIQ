@@ -10,7 +10,7 @@
  * with a username and password.
  */
 
-package cookiq.models.user;
+package cookiq.models.users;
 
 public class User { // declares class named user . can be accessed from other classes in program 
     private String username; // username field
