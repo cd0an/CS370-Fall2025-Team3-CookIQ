@@ -9,4 +9,6 @@ Assigned Tasks:
     Miguel -> Begin login system design (User accounts, basic persistence + plan)
 
 Meeting via Discord (September 28th): 
-    - 
+    - Ensure everyone completed their part of the project to move on to next week's work
+    - Mitchell will finish his part by Tuesday or Wednesday 
+    - Next meeting is October 5th 
