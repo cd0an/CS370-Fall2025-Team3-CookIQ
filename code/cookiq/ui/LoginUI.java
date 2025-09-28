@@ -6,8 +6,8 @@
  */
 package cookiq.ui;
 
-import cookiq.services.UserService;
 import cookiq.models.User;
+import cookiq.services.UserService;
 import java.util.Scanner;
 /**
  * LoginUI is a simple console interface
