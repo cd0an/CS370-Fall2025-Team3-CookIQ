@@ -9,6 +9,7 @@
  * The User class represents a single user account
  * with a username and password.
  */
+
 public class User { // declares class named user . can be accessed from other classes in program 
     private String username; // username field
     private String password; // password field

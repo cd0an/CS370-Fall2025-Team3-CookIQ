@@ -4,7 +4,8 @@
  * Manages user-related actions such as login, account creation,
  * and updating preferences.
  */
-//import models.User;
+
+import models.User;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
