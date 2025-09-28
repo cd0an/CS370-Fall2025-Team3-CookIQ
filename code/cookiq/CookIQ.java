@@ -13,4 +13,11 @@
  *
  */
 
+import cookiq.ui.LoginUI;
 
+public class CookIQ {
+    public static void main(String[] args) {
+        LoginUI loginUI = new LoginUI();
+        loginUI.start();
+    }
+}
