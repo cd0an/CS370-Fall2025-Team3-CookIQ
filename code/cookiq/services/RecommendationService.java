@@ -6,8 +6,8 @@
  */
 package cookiq.services;
 
+import cookiq.models.Preferences;
 import cookiq.models.Recipe;
-import cookiq.models.UserPreferences;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class RecommendationService {
         addTestRecipes();
     }
     
-    public List<Recipe> getRecommendations(UserPreferences preferences) {
+    public List<Recipe> getRecommendations(Preferences preferences) {
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipeDatabase) {
             if (matchesPreferences(recipe, preferences)) {
@@ -29,7 +29,7 @@ public class RecommendationService {
         return matches;
     }
     
-    private boolean matchesPreferences(Recipe recipe, UserPreferences prefs) {
+    private boolean matchesPreferences(Recipe recipe, Preferences prefs) {
         if (!recipe.getDietaryCategory().equals(prefs.getDietaryPreference())) return false;
         if (!recipe.getCuisine().equals(prefs.getPreferredCuisine())) return false;
         if (recipe.getCookTime() > prefs.getMaxCookTime()) return false;
