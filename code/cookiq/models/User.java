@@ -18,7 +18,7 @@ public class User { // declares class named user . can be accessed from other cl
 
     // Constructor → makes a new User object
     public User(String username, String password) {
-        this.username = username; // assihgns the value of the argumnet username to the objects's username field
+        this.username = username; // assigns the value of the argumnet username to the objects's username field
         this.password = password;
     }
 
