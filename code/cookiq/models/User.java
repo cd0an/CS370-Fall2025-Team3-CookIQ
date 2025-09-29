@@ -5,10 +5,6 @@
  * and history of liked/disliked recipes.
  */
 
-/**
- * The User class represents a single user account
- * with a username and password.
- */
 
 package cookiq.models;
 

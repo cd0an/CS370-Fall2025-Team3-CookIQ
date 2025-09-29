@@ -1,9 +1,10 @@
 /**
- * UserService.java
- *
- * Manages user-related actions such as login, account creation,
- * and updating preferences.
+ * UserService handles all account operations:
+ * - Register new users
+ * - Login existing users
+ * - Save/load users from a file
  */
+
 package cookiq.services;
 
 import cookiq.models.User;
@@ -11,12 +12,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * UserService handles all account operations:
- * - Register new users
- * - Login existing users
- * - Save/load users from a file
- */
 public class UserService {
     private static final String USER_FILE = "data/users.txt"; // File to store accounts
     private List<User> users; // List of all loaded users

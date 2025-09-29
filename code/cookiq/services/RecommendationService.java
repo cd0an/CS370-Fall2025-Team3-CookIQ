@@ -4,6 +4,7 @@
  * Implements logic to rank recipes based on user preferences
  * and provide the best recommendations.
  */
+
 package cookiq.services;
 
 import cookiq.models.Preferences;

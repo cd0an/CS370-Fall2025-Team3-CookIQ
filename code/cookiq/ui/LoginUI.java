@@ -4,15 +4,13 @@
  * Handles the login screen for CookIQ.
  * Collects username and password and passes them to UserService.
  */
+
 package cookiq.ui;
 
 import cookiq.models.User;
 import cookiq.services.UserService;
 import java.util.Scanner;
-/**
- * LoginUI is a simple console interface
- * for registering and logging in users.
- */
+
 public class LoginUI {
     private UserService userService;
     private Scanner scanner;
