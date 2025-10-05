@@ -34,7 +34,7 @@ public class UserService {
         }
 
         // Create new user and add to list
-        User newUser = new User(username, password);
+        User newUser = new User(username, password, password);
         users.add(newUser);
         saveUsers(); // Save updated list to file
         return true;
@@ -78,7 +78,7 @@ public class UserService {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    loaded.add(new User(parts[0], parts[1]));
+                    loaded.add(new User(parts[0], parts[1], line));
                 }
             }
         } catch (IOException e) {
