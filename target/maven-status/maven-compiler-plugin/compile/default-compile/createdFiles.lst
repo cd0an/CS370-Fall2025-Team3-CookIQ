@@ -1,0 +1,7 @@
+cookiq/models/Preferences.class
+cookiq/services/UserService.class
+cookiq/services/RecommendationService.class
+cookiq/ui/LoginUI.class
+cookiq/CookIQ.class
+cookiq/models/Recipe.class
+cookiq/models/User.class
