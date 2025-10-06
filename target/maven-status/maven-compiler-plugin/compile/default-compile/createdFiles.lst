@@ -1,12 +1,11 @@
-cookiq/db/QuickCheck.class
-cookiq/ui/LoginUI.class
 cookiq/models/Preferences.class
-cookiq/db/MongoDBConnection.class
 cookiq/db/FinalCSVImport.class
-cookiq/CookIQ.class
-cookiq/models/Recipe.class
 cookiq/db/TestQuery.class
 cookiq/db/TestMongoConnection.class
-cookiq/models/User.class
 cookiq/services/UserService.class
 cookiq/services/RecommendationService.class
+cookiq/db/QuickCheck.class
+cookiq/ui/LoginUI.class
+cookiq/db/MongoDBConnection.class
+cookiq/models/Recipe.class
+cookiq/models/User.class
