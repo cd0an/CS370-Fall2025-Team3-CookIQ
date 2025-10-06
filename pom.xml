@@ -23,7 +23,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>CookIQ</mainClass> <!-- Main class stays the same -->
+                    <mainClass>cookiq.CookIQ</mainClass> <!-- Main class stays the same -->
                 </configuration>
             </plugin>
         </plugins>
