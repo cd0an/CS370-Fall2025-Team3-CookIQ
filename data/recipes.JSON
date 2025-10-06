@@ -1,0 +1,376 @@
+[
+  {
+    "title": "Caprese Stuffed Avocados",
+    "ingredients": [
+      "2 large avocados",
+      "1 cup cherry tomatoes, halved",
+      "8 oz fresh mozzarella balls",
+      "1/4 cup fresh basil leaves",
+      "2 tbsp balsamic glaze",
+      "1 tbsp olive oil",
+      "Salt and pepper to taste"
+    ],
+    "directions": [
+      "Cut avocados in half and remove pits",
+      "Scoop out slight amount of flesh to create larger cavity",
+      "Chop removed avocado and mix with tomatoes, mozzarella, basil",
+      "Stuff mixture back into avocado halves",
+      "Drizzle with balsamic glaze and olive oil",
+      "Season with salt and pepper",
+      "Serve immediately"
+    ],
+    "NER": [
+      "avocados",
+      "cherry tomatoes",
+      "fresh mozzarella balls",
+      "fresh basil leaves",
+      "balsamic glaze",
+      "olive oil",
+      "salt",
+      "pepper"
+    ],
+    "dietary_restrictions": "Vegetarian",
+    "health_goals": "Low-calorie",
+    "preferred_cuisines": "Italian",
+    "max_cook_time": "> 15 min",
+    "budget_per_meal": "$10 - $20"
+  },
+  {
+    "title": "Vegetarian Lentil Curry",
+    "ingredients": [
+      "1 cup brown lentils",
+      "1 tbsp coconut oil",
+      "1 onion, diced",
+      "3 cloves garlic, minced",
+      "1 tbsp fresh ginger, grated",
+      "2 tbsp curry powder",
+      "1 can (14 oz) coconut milk",
+      "2 cups vegetable broth",
+      "1 cup spinach",
+      "Salt to taste"
+    ],
+    "directions": [
+      "Rinse lentils thoroughly",
+      "Heat coconut oil in large pot over medium heat",
+      "Sauté onion until translucent, about 5 minutes",
+      "Add garlic and ginger, cook for 1 minute",
+      "Stir in curry powder and cook until fragrant",
+      "Add lentils, coconut milk, and vegetable broth",
+      "Bring to boil, then reduce heat and simmer for 25 minutes",
+      "Stir in spinach and cook until wilted",
+      "Season with salt and serve over rice"
+    ],
+    "NER": [
+      "brown lentils",
+      "coconut oil",
+      "onion",
+      "garlic",
+      "fresh ginger",
+      "curry powder",
+      "coconut milk",
+      "vegetable broth",
+      "spinach",
+      "salt"
+    ],
+    "dietary_restrictions": "Vegetarian",
+    "health_goals": "High-Protein",
+    "preferred_cuisines": "Asian",
+    "max_cook_time": "> 30 min",
+    "budget_per_meal": "$5 - $10"
+  },
+  {
+    "title": "Mushroom and Spinach Quesadillas",
+    "ingredients": [
+      "4 large flour tortillas",
+      "2 cups mushrooms, sliced",
+      "2 cups fresh spinach",
+      "1 cup shredded Monterey Jack cheese",
+      "1/2 onion, sliced",
+      "1 tbsp olive oil",
+      "1 tsp cumin",
+      "1/2 tsp chili powder",
+      "Sour cream for serving"
+    ],
+    "directions": [
+      "Heat olive oil in skillet over medium heat",
+      "Sauté onions and mushrooms until softened",
+      "Add spinach and cook until wilted",
+      "Stir in cumin and chili powder",
+      "Place tortillas on clean surface",
+      "Spread vegetable mixture on half of each tortilla",
+      "Sprinkle cheese over vegetables",
+      "Fold tortillas over and press gently",
+      "Cook in skillet until golden brown on both sides",
+      "Serve with sour cream"
+    ],
+    "NER": [
+      "flour tortillas",
+      "mushrooms",
+      "fresh spinach",
+      "Monterey Jack cheese",
+      "onion",
+      "olive oil",
+      "cumin",
+      "chili powder",
+      "sour cream"
+    ],
+    "dietary_restrictions": "Vegetarian",
+    "health_goals": "Low-calorie",
+    "preferred_cuisines": "Mexican",
+    "max_cook_time": "> 15 min",
+    "budget_per_meal": "$5 - $10"
+  },
+  {
+    "title": "Keto Bacon Cheeseburger Casserole",
+    "ingredients": [
+      "1 lb ground beef",
+      "6 slices bacon, cooked and crumbled",
+      "4 eggs",
+      "1/2 cup heavy cream",
+      "1 cup cheddar cheese, shredded",
+      "1/2 cup mayonnaise",
+      "1 tsp garlic powder",
+      "1/2 onion, diced",
+      "Salt and pepper to taste"
+    ],
+    "directions": [
+      "Preheat oven to 350°F (175°C)",
+      "Brown ground beef with onion in skillet",
+      "Drain excess fat and transfer to baking dish",
+      "In bowl, whisk eggs, heavy cream, and mayonnaise",
+      "Stir in cheese, garlic powder, salt, and pepper",
+      "Pour egg mixture over ground beef",
+      "Top with crumbled bacon",
+      "Bake for 25-30 minutes until set",
+      "Let cool for 5 minutes before serving"
+    ],
+    "NER": [
+      "ground beef",
+      "bacon",
+      "eggs",
+      "heavy cream",
+      "cheddar cheese",
+      "mayonnaise",
+      "garlic powder",
+      "onion",
+      "salt",
+      "pepper"
+    ],
+    "dietary_restrictions": "Keto",
+    "health_goals": "High-Protein",
+    "preferred_cuisines": "American",
+    "max_cook_time": "> 30 min",
+    "budget_per_meal": "$10 - $20"
+  },
+  {
+    "title": "Keto Garlic Butter Salmon",
+    "ingredients": [
+      "4 salmon fillets (6 oz each)",
+      "4 tbsp butter",
+      "4 cloves garlic, minced",
+      "1 lemon, juiced",
+      "2 tbsp fresh parsley, chopped",
+      "1 tbsp olive oil",
+      "Salt and pepper to taste",
+      "Asparagus spears for serving"
+    ],
+    "directions": [
+      "Pat salmon fillets dry and season with salt and pepper",
+      "Heat olive oil in large skillet over medium-high heat",
+      "Cook salmon skin-side up for 4-5 minutes",
+      "Flip and cook for another 3-4 minutes",
+      "Remove salmon from skillet",
+      "Reduce heat to medium and melt butter",
+      "Add garlic and cook until fragrant",
+      "Stir in lemon juice and parsley",
+      "Return salmon to skillet and spoon sauce over",
+      "Serve with steamed asparagus"
+    ],
+    "NER": [
+      "salmon fillets",
+      "butter",
+      "garlic",
+      "lemon",
+      "fresh parsley",
+      "olive oil",
+      "salt",
+      "pepper",
+      "asparagus spears"
+    ],
+    "dietary_restrictions": "Keto",
+    "health_goals": "High-calorie",
+    "preferred_cuisines": "American",
+    "max_cook_time": "> 15 min",
+    "budget_per_meal": "$20 - $30"
+  },
+  {
+    "title": "Keto Cauliflower Mac and Cheese",
+    "ingredients": [
+      "1 large head cauliflower, cut into florets",
+      "2 cups sharp cheddar cheese, shredded",
+      "1/2 cup heavy cream",
+      "4 oz cream cheese",
+      "2 tbsp butter",
+      "1/2 tsp garlic powder",
+      "1/2 tsp paprika",
+      "Salt and pepper to taste"
+    ],
+    "directions": [
+      "Preheat oven to 375°F (190°C)",
+      "Steam cauliflower florets until tender-crisp",
+      "In saucepan, melt butter and cream cheese over low heat",
+      "Whisk in heavy cream until smooth",
+      "Stir in 1 1/2 cups cheddar cheese until melted",
+      "Add garlic powder, paprika, salt, and pepper",
+      "Combine cheese sauce with cauliflower in baking dish",
+      "Top with remaining cheddar cheese",
+      "Bake for 15-20 minutes until bubbly",
+      "Broil for 2-3 minutes for golden top"
+    ],
+    "NER": [
+      "cauliflower",
+      "sharp cheddar cheese",
+      "heavy cream",
+      "cream cheese",
+      "butter",
+      "garlic powder",
+      "paprika",
+      "salt",
+      "pepper"
+    ],
+    "dietary_restrictions": "Keto",
+    "health_goals": "High-calorie",
+    "preferred_cuisines": "American",
+    "max_cook_time": "> 30 min",
+    "budget_per_meal": "$10 - $20"
+  },
+  {
+    "title": "Gluten-Free Chicken Stir Fry",
+    "ingredients": [
+      "1 lb chicken breast, sliced",
+      "2 cups mixed vegetables (bell peppers, broccoli, carrots)",
+      "3 tbsp gluten-free soy sauce",
+      "2 tbsp honey",
+      "1 tbsp sesame oil",
+      "2 cloves garlic, minced",
+      "1 tsp ginger, grated",
+      "1 tbsp cornstarch",
+      "2 tbsp water",
+      "Cooked rice for serving"
+    ],
+    "directions": [
+      "Slice chicken into thin strips",
+      "Mix soy sauce, honey, sesame oil, garlic, and ginger",
+      "Heat oil in wok or large skillet over high heat",
+      "Stir-fry chicken until cooked through, about 5-6 minutes",
+      "Add vegetables and cook until tender-crisp",
+      "Pour sauce over chicken and vegetables",
+      "Mix cornstarch with water and add to thicken sauce",
+      "Simmer for 2 minutes until sauce thickens",
+      "Serve over cooked rice"
+    ],
+    "NER": [
+      "chicken breast",
+      "mixed vegetables",
+      "gluten-free soy sauce",
+      "honey",
+      "sesame oil",
+      "garlic",
+      "ginger",
+      "cornstarch",
+      "water",
+      "rice"
+    ],
+    "dietary_restrictions": "Gluten-Free",
+    "health_goals": "High-Protein",
+    "preferred_cuisines": "Asian",
+    "max_cook_time": "> 15 min",
+    "budget_per_meal": "$10 - $20"
+  },
+  {
+    "title": "Gluten-Free Quinoa Salad",
+    "ingredients": [
+      "1 cup quinoa, rinsed",
+      "2 cups water",
+      "1 cucumber, diced",
+      "1 cup cherry tomatoes, halved",
+      "1/4 cup red onion, finely chopped",
+      "1/4 cup feta cheese, crumbled",
+      "2 tbsp olive oil",
+      "1 lemon, juiced",
+      "1/4 cup fresh parsley, chopped",
+      "Salt and pepper to taste"
+    ],
+    "directions": [
+      "Rinse quinoa thoroughly under cold water",
+      "Bring water to boil in saucepan",
+      "Add quinoa, reduce heat, cover and simmer for 15 minutes",
+      "Remove from heat and let stand for 5 minutes",
+      "Fluff with fork and let cool completely",
+      "In large bowl, combine cooled quinoa with vegetables",
+      "Whisk together olive oil, lemon juice, salt and pepper",
+      "Pour dressing over salad and toss to combine",
+      "Stir in feta cheese and parsley",
+      "Chill for 30 minutes before serving"
+    ],
+    "NER": [
+      "quinoa",
+      "water",
+      "cucumber",
+      "cherry tomatoes",
+      "red onion",
+      "feta cheese",
+      "olive oil",
+      "lemon",
+      "fresh parsley",
+      "salt",
+      "pepper"
+    ],
+    "dietary_restrictions": "Gluten-Free",
+    "health_goals": "Low-calorie",
+    "preferred_cuisines": "Mediterranean",
+    "max_cook_time": "> 30 min",
+    "budget_per_meal": "$5 - $10"
+  },
+  {
+    "title": "Gluten-Free Almond Flour Pancakes",
+    "ingredients": [
+      "2 cups almond flour",
+      "4 eggs",
+      "1/4 cup almond milk",
+      "2 tbsp maple syrup",
+      "1 tsp baking powder",
+      "1 tsp vanilla extract",
+      "1/2 tsp cinnamon",
+      "Butter for cooking",
+      "Fresh berries for serving"
+    ],
+    "directions": [
+      "In large bowl, whisk together almond flour and baking powder",
+      "In separate bowl, beat eggs with almond milk, maple syrup, and vanilla",
+      "Combine wet and dry ingredients, mix until smooth",
+      "Let batter rest for 5 minutes",
+      "Heat butter in non-stick skillet over medium heat",
+      "Pour 1/4 cup batter for each pancake",
+      "Cook until bubbles form on surface, about 2-3 minutes",
+      "Flip and cook until golden brown",
+      "Serve with fresh berries and additional maple syrup"
+    ],
+    "NER": [
+      "almond flour",
+      "eggs",
+      "almond milk",
+      "maple syrup",
+      "baking powder",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "fresh berries"
+    ],
+    "dietary_restrictions": "Gluten-Free",
+    "health_goals": "High-calorie",
+    "preferred_cuisines": "American",
+    "max_cook_time": "> 15 min",
+    "budget_per_meal": "$5 - $10"
+  }
+]
