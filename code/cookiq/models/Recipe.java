@@ -5,7 +5,7 @@
  * ingredients, instructions, and nutrition facts.
  */
 
-package cookiq.models;
+package models;
 
 public class Recipe {
     private String name;

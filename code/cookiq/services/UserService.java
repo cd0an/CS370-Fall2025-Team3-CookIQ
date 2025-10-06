@@ -5,9 +5,9 @@
  * - Save/load users from a file
  */
 
-package cookiq.services;
+package services;
 
-import cookiq.models.User;
+import models.User;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

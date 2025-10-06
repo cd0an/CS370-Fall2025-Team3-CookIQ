@@ -5,10 +5,10 @@
  * and provide the best recommendations.
  */
 
-package cookiq.services;
+package services;
 
-import cookiq.models.Preferences;
-import cookiq.models.Recipe;
+import models.Preferences;
+import models.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
