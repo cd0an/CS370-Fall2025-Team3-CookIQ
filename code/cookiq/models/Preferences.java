@@ -5,7 +5,7 @@
  * cooking preferences, budget, and available ingredients.
  */
 
-package models;
+package cookiq.models;
 
 public class Preferences {  
     private String dietaryPreference;

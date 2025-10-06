@@ -16,8 +16,19 @@
     </properties>
 
     <build>
-        <sourceDirectory>code/cookiq</sourceDirectory> <!-- Where the java files are -->
+        <sourceDirectory>code</sourceDirectory> 
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>CookIQ</mainClass> <!-- Main class stays the same -->
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
+
 
     <dependencies>
         <!-- MongoDB Driver -->

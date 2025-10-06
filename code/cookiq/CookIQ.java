@@ -13,8 +13,9 @@
  *
  */
 
+package cookiq;
 
-import ui.LoginUI;
+import cookiq.ui.LoginUI;
 
 public class CookIQ {
     public static void main(String[] args) {

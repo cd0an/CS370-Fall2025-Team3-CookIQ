@@ -1,7 +1,6 @@
+package cookiq.db;
 
 import com.mongodb.client.MongoDatabase;
-
-import db.MongoDBConnection;
 
 public class TestMongoConnection {
     public static void main(String[] args) {

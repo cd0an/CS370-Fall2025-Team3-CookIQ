@@ -5,11 +5,12 @@
  * Collects username and password and passes them to UserService.
  */
 
-package ui;
+package cookiq.ui;
 
-import models.User;
-import services.UserService;
 import java.util.Scanner;
+
+import cookiq.models.User;
+import cookiq.services.UserService;
 
 public class LoginUI {
     private UserService userService;

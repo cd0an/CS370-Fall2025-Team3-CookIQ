@@ -5,12 +5,13 @@
  * and provide the best recommendations.
  */
 
-package services;
+package cookiq.services;
 
-import models.Preferences;
-import models.Recipe;
 import java.util.ArrayList;
 import java.util.List;
+
+import cookiq.models.Preferences;
+import cookiq.models.Recipe;
 
 public class RecommendationService {
     private List<Recipe> recipeDatabase;

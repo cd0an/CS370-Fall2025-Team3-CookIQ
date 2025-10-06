@@ -1,10 +1,10 @@
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/CookIQ.java
-/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/FinalCSVImport.java
-/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/QuickCheck.java
-/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/TestMongoConnection.java
-/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/TestQuery.java
+/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/FinalCSVImport.java
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/MongoDBConnection.java
+/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/QuickCheck.java
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/RecipeRepository.java
+/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/TestMongoConnection.java
+/Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/db/TestQuery.java
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/models/Ingredient.java
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/models/Preferences.java
 /Users/cindydoan/Desktop/CS370-Fall2025-Team3-CookIQ/code/cookiq/models/Recipe.java

@@ -1,10 +1,12 @@
-import db.MongoDBConnection;
+package cookiq.db;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import org.bson.Document;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestQuery {
     public static void main(String[] args) {

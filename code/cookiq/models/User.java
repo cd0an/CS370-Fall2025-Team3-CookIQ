@@ -6,7 +6,7 @@
  */
 
 
-package models;
+package cookiq.models;
 
 import java.util.ArrayList;
 import java.util.List;

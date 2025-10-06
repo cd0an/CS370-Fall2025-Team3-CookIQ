@@ -1,10 +1,11 @@
-package db;
+package cookiq.db;
+
+import java.io.InputStream;
+import java.util.Properties;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class MongoDBConnection {
     private static MongoClient mongoClient;
