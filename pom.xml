@@ -16,7 +16,7 @@
     </properties>
 
     <build>
-        <sourceDirectory>code</sourceDirectory> 
+        <sourceDirectory>code</sourceDirectory> <!-- code is 'src'-->
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
