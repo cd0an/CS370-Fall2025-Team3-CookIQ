@@ -11,15 +11,25 @@ public class MongoDBConnection {
     private static MongoClient mongoClient;
     private static MongoDatabase database;
     
-    // Update these with your MongoDB details
-    private static final String CONNECTION_STRING = "mongodb+srv://cookIQ:dPVPMTOyr7Hbd5Gt@cluster0.dyw3vjw.mongodb.net/?retryWrites=true&w=majority";
-    private static final String DATABASE_NAME = "CookIQ_db";
-    
     public static MongoDatabase getDatabase() {
-        if (database == null) {
-            mongoClient = MongoClients.create(CONNECTION_STRING);
-            database = mongoClient.getDatabase(DATABASE_NAME);
-            System.out.println("Connected to MongoDB!");
+       if (database == null) {
+            try {
+                // Load connection info from config.properties
+                Properties prop = new Properties();
+                InputStream input = MongoDBConnection.class
+                        .getClassLoader()
+                        .getResourceAsStream("config.properties");
+                prop.load(input);
+
+                String uri = prop.getProperty("mongodb.uri");         // MongoDB URI
+                String dbName = prop.getProperty("mongodb.database"); // Database name
+
+                mongoClient = MongoClients.create(uri);
+                database = mongoClient.getDatabase(dbName);
+                System.out.println("Connected to MongoDB!");
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to connect to MongoDB", e);
+            }
         }
         return database;
     }
