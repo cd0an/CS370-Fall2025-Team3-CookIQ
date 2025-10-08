@@ -7,5 +7,6 @@ cookiq/services/RecommendationService.class
 cookiq/db/QuickCheck.class
 cookiq/ui/LoginUI.class
 cookiq/db/MongoDBConnection.class
+cookiq/CookIQ.class
 cookiq/models/Recipe.class
 cookiq/models/User.class

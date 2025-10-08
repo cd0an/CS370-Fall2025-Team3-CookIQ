@@ -10,24 +10,26 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
-        <sourceDirectory>code</sourceDirectory> <!-- code is 'src'-->
+        <sourceDirectory>code</sourceDirectory> <!-- your existing Java source folder -->
+        <resources>
+            <resource>
+                <directory>resources</directory> <!-- your config.properties folder -->
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
-                <configuration>
-                    <mainClass>cookiq.CookIQ</mainClass> <!-- Main class stays the same -->
-                </configuration>
             </plugin>
         </plugins>
     </build>
+
 
 
     <dependencies>
