@@ -7,10 +7,25 @@
 
 package cookiq.ui;
 
-import javax.swing.*;
-import java.awt.*;
-import cookiq.services.UserService;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import cookiq.models.User;
+import cookiq.services.UserService;
 
 public class LoginUI extends JFrame {
 
@@ -31,7 +46,7 @@ public class LoginUI extends JFrame {
 
         // === Title ===
         JLabel titleLabel = new JLabel("Sign-In", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
         titleLabel.setForeground(new Color(80, 70, 60));
         add(titleLabel, BorderLayout.NORTH);
 
@@ -45,32 +60,32 @@ public class LoginUI extends JFrame {
 
         // Username label + field
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        usernameLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(usernameLabel, gbc);
 
         usernameField = new JTextField(20);
-        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        usernameField.setFont(new Font("SansSerif", Font.PLAIN, 16));
         gbc.gridx = 1;
         formPanel.add(usernameField, gbc);
 
         // Password label + field
         JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(passwordLabel, gbc);
 
         passwordField = new JPasswordField(20);
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 16));
         gbc.gridx = 1;
         formPanel.add(passwordField, gbc);
 
         // Login button
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        loginButton.setBackground(new Color(89, 125, 93)); // green
+        loginButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        loginButton.setBackground(new Color(0x6E, 0x92, 0x77)); // Green
         loginButton.setForeground(Color.WHITE);
         loginButton.setFocusPainted(false);
         gbc.gridx = 0;
@@ -82,7 +97,7 @@ public class LoginUI extends JFrame {
 
         // === Register link ===
         JLabel registerLabel = new JLabel("No account yet? Register here.", SwingConstants.CENTER);
-        registerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        registerLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         registerLabel.setForeground(new Color(70, 100, 150));
         add(registerLabel, BorderLayout.SOUTH);
 
