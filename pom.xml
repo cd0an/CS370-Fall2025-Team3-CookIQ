@@ -30,8 +30,6 @@
         </plugins>
     </build>
 
-
-
     <dependencies>
         <!-- MongoDB Driver -->
         <dependency>
