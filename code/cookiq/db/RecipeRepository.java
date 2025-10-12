@@ -1,5 +1,5 @@
 /**
  * RecipeRepository.java
  *
- * Reads recipes from the dataset (e.g., CSV) and converts them into Recipe objects.
+ * Reads the loaded recipes from the MongoDB dataset and converts them into Recipe objects.
  */
