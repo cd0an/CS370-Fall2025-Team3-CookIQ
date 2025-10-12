@@ -7,15 +7,9 @@
 
 package cookiq.services;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import cookiq.models.User;
 
 public class UserService {
@@ -29,6 +23,7 @@ public class UserService {
 
     /**
      * Registers a new user if the username doesn't already exist.
+     * 
      * @return true if successful, false if username taken
      */
     public boolean registerUser(String username, String password) {
@@ -39,8 +34,8 @@ public class UserService {
             }
         }
 
-        // Create new user and add to list
-        User newUser = new User(username, password, password);
+        // Create new user (empty preferences by default)
+        User newUser = new User(username, password, "");
         users.add(newUser);
         saveUsers(); // Save updated list to file
         return true;
@@ -48,6 +43,7 @@ public class UserService {
 
     /**
      * Logs in a user if username + password match.
+     * 
      * @return the User object if successful, otherwise null
      */
     public User loginUser(String username, String password) {
@@ -59,38 +55,43 @@ public class UserService {
         return null; // Invalid login
     }
 
-    // Save all users to file
+    /**
+     * Saves all users to the data file.
+     */
     private void saveUsers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE))) {
             for (User u : users) {
                 writer.write(u.getUsername() + "," + u.getPassword());
-                writer.newLine(); // move to next line
+                writer.newLine();
             }
         } catch (IOException e) {
             System.err.println("Error saving users: " + e.getMessage());
         }
     }
 
-    // Load users from file at startup
+    /**
+     * Loads users from the data file at startup.
+     */
     private List<User> loadUsers() {
         List<User> loaded = new ArrayList<>();
         File file = new File(USER_FILE);
 
         // If file doesn’t exist, return empty list
-        if (!file.exists()) return loaded;
+        if (!file.exists())
+            return loaded;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    loaded.add(new User(parts[0], parts[1], line));
+                    loaded.add(new User(parts[0], parts[1], ""));
                 }
             }
         } catch (IOException e) {
             System.err.println("Error loading users: " + e.getMessage());
         }
+
         return loaded;
     }
 }
-

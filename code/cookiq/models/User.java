@@ -5,13 +5,12 @@
  * and history of liked/disliked recipes.
  */
 
-
 package cookiq.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class User { // declares class named user . can be accessed from other classes in program 
+public class User { // declares class named user . can be accessed from other classes in program
     private String username; // username field
     private String password; // password field
     private String preferences; // preferences field
@@ -48,15 +47,16 @@ public class User { // declares class named user . can be accessed from other cl
         return disliked;
     }
 
-    //setter methods → allow safe modification of fields
+    // setter methods → allow safe modification of fields
     public void setPassword(String password) {
         this.password = password;
     }
+
     public void setPreferences(String preferences) {
         this.preferences = preferences;
     }
 
-     // Add or remove liked/disliked items
+    // Add or remove liked/disliked items
     public void addLiked(String item) {
         if (!liked.contains(item)) {
             liked.add(item);
@@ -89,5 +89,3 @@ public class User { // declares class named user . can be accessed from other cl
                 '}';
     }
 }
-
-

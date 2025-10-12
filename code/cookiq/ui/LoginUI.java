@@ -7,70 +7,114 @@
 
 package cookiq.ui;
 
-import java.util.Scanner;
-
-import cookiq.models.User;
+import javax.swing.*;
+import java.awt.*;
 import cookiq.services.UserService;
+import cookiq.models.User;
 
-public class LoginUI {
+public class LoginUI extends JFrame {
+
+    private JTextField usernameField;
+    private JPasswordField passwordField;
     private UserService userService;
-    private Scanner scanner;
 
     public LoginUI() {
-        userService = new UserService(); // load users
-        scanner = new Scanner(System.in);
+        userService = new UserService(); // connects to your users.txt
+
+        // Frame setup
+        setTitle("CookIQ - Sign In");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        getContentPane().setBackground(new Color(248, 244, 240));
+        setLayout(new BorderLayout());
+
+        // === Title ===
+        JLabel titleLabel = new JLabel("Sign-In", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(new Color(80, 70, 60));
+        add(titleLabel, BorderLayout.NORTH);
+
+        // === Center panel (form) ===
+        JPanel formPanel = new JPanel();
+        formPanel.setBackground(new Color(248, 244, 240));
+        formPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Username label + field
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(usernameLabel, gbc);
+
+        usernameField = new JTextField(20);
+        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 1;
+        formPanel.add(usernameField, gbc);
+
+        // Password label + field
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(passwordLabel, gbc);
+
+        passwordField = new JPasswordField(20);
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+
+        // Login button
+        JButton loginButton = new JButton("Login");
+        loginButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        loginButton.setBackground(new Color(89, 125, 93)); // green
+        loginButton.setForeground(Color.WHITE);
+        loginButton.setFocusPainted(false);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        formPanel.add(loginButton, gbc);
+
+        add(formPanel, BorderLayout.CENTER);
+
+        // === Register link ===
+        JLabel registerLabel = new JLabel("No account yet? Register here.", SwingConstants.CENTER);
+        registerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        registerLabel.setForeground(new Color(70, 100, 150));
+        add(registerLabel, BorderLayout.SOUTH);
+
+        // === Action for login button ===
+        loginButton.addActionListener(e -> handleLogin());
     }
 
-    // Start menu
-    public void start() {
-        System.out.println("=== Welcome to CookIq ===");
-        while (true) {
-            System.out.println("\n1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Exit");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-
-            if (choice.equals("1")) {
-                handleRegister();
-            } else if (choice.equals("2")) {
-                handleLogin();
-            } else if (choice.equals("3")) {
-                break;
-            } else {
-                System.out.println("Invalid choice, try again.");
-            }
-        }
-    }
-
-    // Handle user registration
-    private void handleRegister() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        if (userService.registerUser(username, password)) {
-            System.out.println(" Registration successful!");
-        } else {
-            System.out.println(" Username already taken.");
-        }
-    }
-
-    // Handle user login
     private void handleLogin() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Missing Information",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         User user = userService.loginUser(username, password);
+
         if (user != null) {
-            System.out.println(" Login successful! Welcome, " + user.getUsername());
-            // Later: open PreferencesUI here
+            JOptionPane.showMessageDialog(this, "Welcome, " + user.getUsername() + "!", "Login Successful",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // later: open your MainFrame or HomeUI
+            // new MainFrame(user.getUsername()).setVisible(true);
+            // dispose();
         } else {
-            System.out.println(" Invalid username or password.");
+            JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Failed",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-}
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new LoginUI().setVisible(true));
+    }
+}
