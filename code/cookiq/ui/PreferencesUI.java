@@ -2,10 +2,256 @@
  * PreferencesUI.java
  *
  * Displays questions for users to select dietary restrictions, health goals,
- * preferred cuisines, cooking methods, budget, and available ingredients.
+ * preferred cuisines, cooking time, budget, and available ingredients.
  */
 
+package cookiq.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
+import cookiq.models.Preferences;
+
+public class PreferencesUI extends JPanel {
+
+    private Preferences preferences;
+
+    public PreferencesUI() {
+        preferences = new Preferences();
+        setLayout(new BorderLayout());
+        setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
+
+        Color textColor = new Color(0x47, 0x3C, 0x38); // #473c38
+
+        // ====================== Title ======================
+        JLabel titleLabel = new JLabel("Set Your Preferences");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+        add(titleLabel, BorderLayout.NORTH);
+
+        // ====================== White Panel for Preferences ======================
+        JPanel whitePanel = new JPanel(); 
+        whitePanel.setLayout(new BoxLayout(whitePanel, BoxLayout.Y_AXIS));
+        whitePanel.setBackground(Color.WHITE);
+        whitePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        whitePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        Font optionFont = new Font("SansSerif", Font.PLAIN, 16);
+        Font borderFont = new Font("SansSerif", Font.BOLD, 16);
+
+        // ============ Dietary Restrictions ============ 
+        JPanel dietPanel = new JPanel(new GridLayout(0, 1));
+        dietPanel.setBackground(Color.WHITE);
+        dietPanel.setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Dietary Restrictions (select all that apply):",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Checkboxes 
+        JCheckBox vegetarianCB = new JCheckBox("Vegetarian"); 
+        JCheckBox ketoCB = new JCheckBox("Keto"); 
+        JCheckBox glutenCB = new JCheckBox("Gluten-free"); 
+        JCheckBox[] dietBoxes = {vegetarianCB, ketoCB, glutenCB};
+        for (JCheckBox box : dietBoxes) {
+            box.setFont(optionFont);
+            dietPanel.add(box);
+        }
+        whitePanel.add(dietPanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // ============ Health Goals ============
+        JPanel healthPanel = new JPanel(new GridLayout(0, 1));
+        healthPanel.setBackground(Color.WHITE);
+        healthPanel.setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Health Goals (select all that apply):",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Checkboxes 
+        JCheckBox lowCalCB = new JCheckBox("Low-calorie"); 
+        JCheckBox highCalCB = new JCheckBox("High-calorie"); 
+        JCheckBox highProteinCB = new JCheckBox("High-protein"); 
+        JCheckBox[] healthBoxes = {lowCalCB, highCalCB, highProteinCB};
+        for (JCheckBox box : healthBoxes) {
+            box.setFont(optionFont);
+            healthPanel.add(box);
+        }
+        whitePanel.add(healthPanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // ============ Preferred Cuisines  ============
+        JPanel cuisinesPanel = new JPanel(new GridLayout(0, 1));
+        cuisinesPanel.setBackground(Color.WHITE);
+        cuisinesPanel.setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Preferred Cuisines (select all that apply):",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Checkboxes 
+        JCheckBox italianCB = new JCheckBox("Italian"); 
+        JCheckBox mexicanCB = new JCheckBox("Mexican"); 
+        JCheckBox asianCB = new JCheckBox("Asian"); 
+        JCheckBox americanCB = new JCheckBox("American"); 
+        JCheckBox medCB = new JCheckBox("Mediterranean"); 
+        JCheckBox[] cuisineBoxes = {italianCB, mexicanCB, asianCB, americanCB, medCB};
+        for (JCheckBox box : cuisineBoxes) {
+            box.setFont(optionFont);
+            cuisinesPanel.add(box);
+        }
+        whitePanel.add(cuisinesPanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // ============ Cook Time ============
+        JPanel cookTimePanel = new JPanel(new GridLayout(0, 1));
+        cookTimePanel.setBackground(Color.WHITE);
+        cookTimePanel.setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Maximum Cook Time (select one option):",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Cook Time Radio Button 
+        ButtonGroup timeGroup = new ButtonGroup();
+        JRadioButton time15 = new JRadioButton(">15 min");
+        JRadioButton time30 = new JRadioButton(">30 min");
+        JRadioButton time60 = new JRadioButton(">60 min");
+        JRadioButton[] timeButtons = {time15, time30, time60};
+        for (JRadioButton btn : timeButtons) {
+            btn.setFont(optionFont);
+            btn.setBackground(Color.WHITE);
+            timeGroup.add(btn);
+            cookTimePanel.add(btn);
+        }
+        whitePanel.add(cookTimePanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // ============ Budget Per Meal ============
+        JPanel budgetPanel = new JPanel(new GridLayout(0, 1));
+        budgetPanel.setBackground(Color.WHITE);
+        budgetPanel .setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Budget Per Meal (select one option):",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Budget Per Meal Radio Button 
+        ButtonGroup budgetGroup = new ButtonGroup();
+        JRadioButton budget10 = new JRadioButton(">$10");
+        JRadioButton budget30 = new JRadioButton(">$30");
+        JRadioButton budget50 = new JRadioButton(">$50");
+        JRadioButton[] budgetButtons = {budget10, budget30, budget50};
+        for (JRadioButton btn : budgetButtons) {
+            btn.setFont(optionFont);
+            btn.setBackground(Color.WHITE);
+            budgetGroup.add(btn);
+            budgetPanel.add(btn);
+        }
+        whitePanel.add(budgetPanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // ============ Available Ingredients ============
+        JPanel ingredientPanel = new JPanel(new GridLayout(0, 1));
+        ingredientPanel.setBackground(Color.WHITE);
+        ingredientPanel.setBorder(BorderFactory.createTitledBorder(
+            new LineBorder(new Color(0xA3, 0xC4, 0xA1), 1),
+            "Input your available ingredients:",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            borderFont
+        ));
+
+        // Ingredients Input Textbox 
+        JTextField ingredientField = new JTextField(); 
+        ingredientField.setPreferredSize(new Dimension(300,25));
+        ingredientPanel.add(ingredientField);
+        whitePanel.add(ingredientPanel);
+        whitePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // ============ Add White Panel ============
+        whitePanel.setPreferredSize(new Dimension(700, 700));
+        add(whitePanel, BorderLayout.CENTER);
+
+        // ============ Generate Recipes Button ============
+        JButton generateBtn = new JButton("Generate Recipes");
+        generateBtn.setBackground(new Color(0x6E, 0x92, 0x77)); // #6e9277 
+        generateBtn.setForeground(Color.WHITE);
+        generateBtn.setPreferredSize(new Dimension(800, 30));
+        generateBtn.setFont(new Font("SansSerif", Font.BOLD, 15));
+        generateBtn.setAlignmentX(CENTER_ALIGNMENT);
+
+        generateBtn.setFocusPainted(true); 
+        generateBtn.setBorderPainted(false);
+        generateBtn.setContentAreaFilled(true); 
+        generateBtn.setOpaque(true); 
+
+        // Add hover effect: darker and bigger
+        generateBtn.addMouseListener(new MouseAdapter() {
+            Color originalColor = generateBtn.getBackground();
+            Dimension originalSize = generateBtn.getPreferredSize();
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                generateBtn.setBackground(new Color(0x5A, 0x7B, 0x63)); 
+                generateBtn.setPreferredSize(new Dimension(originalSize.width + 10, originalSize.height));
+                generateBtn.revalidate();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                generateBtn.setBackground(originalColor);
+                generateBtn.setPreferredSize(originalSize);
+                generateBtn.revalidate();
+            }
+
+        });
+
+        generateBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(null, "Preferences saved!")
+        );
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
+        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS)); // Vertical layout
+        btnPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Gap above button 
+        btnPanel.add(generateBtn);
+        btnPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Gap below button
+        add(btnPanel, BorderLayout.SOUTH);
+    }
+}
 
 
 
