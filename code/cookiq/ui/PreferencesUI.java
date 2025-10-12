@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -35,6 +37,14 @@ import cookiq.models.Preferences;
 public class PreferencesUI extends JPanel {
 
     private Preferences preferences;
+
+    // ====================== Input Components ======================
+    private JCheckBox vegetarianCB, ketoCB, glutenCB;
+    private JCheckBox lowCalCB, highCalCB, highProteinCB;
+    private JCheckBox italianCB, mexicanCB, asianCB, americanCB, medCB;
+    private JRadioButton time15, time30, time60;
+    private JRadioButton budget10, budget30, budget50;
+    private JTextField ingredientField;
 
     public PreferencesUI() {
         preferences = new Preferences();
@@ -72,9 +82,9 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Checkboxes 
-        JCheckBox vegetarianCB = new JCheckBox("Vegetarian"); 
-        JCheckBox ketoCB = new JCheckBox("Keto"); 
-        JCheckBox glutenCB = new JCheckBox("Gluten-free"); 
+        vegetarianCB = new JCheckBox("Vegetarian"); 
+        ketoCB = new JCheckBox("Keto"); 
+        glutenCB = new JCheckBox("Gluten-free"); 
         JCheckBox[] dietBoxes = {vegetarianCB, ketoCB, glutenCB};
         for (JCheckBox box : dietBoxes) {
             box.setFont(optionFont);
@@ -95,9 +105,9 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Checkboxes 
-        JCheckBox lowCalCB = new JCheckBox("Low-calorie"); 
-        JCheckBox highCalCB = new JCheckBox("High-calorie"); 
-        JCheckBox highProteinCB = new JCheckBox("High-protein"); 
+        lowCalCB = new JCheckBox("Low-calorie"); 
+        highCalCB = new JCheckBox("High-calorie"); 
+        highProteinCB = new JCheckBox("High-protein"); 
         JCheckBox[] healthBoxes = {lowCalCB, highCalCB, highProteinCB};
         for (JCheckBox box : healthBoxes) {
             box.setFont(optionFont);
@@ -118,11 +128,11 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Checkboxes 
-        JCheckBox italianCB = new JCheckBox("Italian"); 
-        JCheckBox mexicanCB = new JCheckBox("Mexican"); 
-        JCheckBox asianCB = new JCheckBox("Asian"); 
-        JCheckBox americanCB = new JCheckBox("American"); 
-        JCheckBox medCB = new JCheckBox("Mediterranean"); 
+        italianCB = new JCheckBox("Italian"); 
+        mexicanCB = new JCheckBox("Mexican"); 
+        asianCB = new JCheckBox("Asian"); 
+        americanCB = new JCheckBox("American"); 
+        medCB = new JCheckBox("Mediterranean"); 
         JCheckBox[] cuisineBoxes = {italianCB, mexicanCB, asianCB, americanCB, medCB};
         for (JCheckBox box : cuisineBoxes) {
             box.setFont(optionFont);
@@ -144,9 +154,9 @@ public class PreferencesUI extends JPanel {
 
         // Cook Time Radio Button 
         ButtonGroup timeGroup = new ButtonGroup();
-        JRadioButton time15 = new JRadioButton(">15 min");
-        JRadioButton time30 = new JRadioButton(">30 min");
-        JRadioButton time60 = new JRadioButton(">60 min");
+        time15 = new JRadioButton(">15 min");
+        time30 = new JRadioButton(">30 min");
+        time60 = new JRadioButton(">60 min");
         JRadioButton[] timeButtons = {time15, time30, time60};
         for (JRadioButton btn : timeButtons) {
             btn.setFont(optionFont);
@@ -170,9 +180,9 @@ public class PreferencesUI extends JPanel {
 
         // Budget Per Meal Radio Button 
         ButtonGroup budgetGroup = new ButtonGroup();
-        JRadioButton budget10 = new JRadioButton(">$10");
-        JRadioButton budget30 = new JRadioButton(">$30");
-        JRadioButton budget50 = new JRadioButton(">$50");
+        budget10 = new JRadioButton(">$10");
+        budget30 = new JRadioButton(">$30");
+        budget50 = new JRadioButton(">$50");
         JRadioButton[] budgetButtons = {budget10, budget30, budget50};
         for (JRadioButton btn : budgetButtons) {
             btn.setFont(optionFont);
@@ -195,8 +205,31 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Ingredients Input Textbox 
-        JTextField ingredientField = new JTextField(); 
-        ingredientField.setPreferredSize(new Dimension(300,25));
+        ingredientField = new JTextField(); 
+        ingredientField.setPreferredSize(new Dimension(200,30));
+        ingredientField.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Set black border
+
+        String placeholder = "Type here (e.g., eggs)";
+        ingredientField.setText(placeholder);
+        ingredientField.setForeground(Color.GRAY);
+
+        ingredientField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (ingredientField.getText().equals(placeholder)) {
+                    ingredientField.setText("");
+                    ingredientField.setForeground(Color.BLACK);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (ingredientField.getText().isEmpty()) {
+                    ingredientField.setText(placeholder);
+                    ingredientField.setForeground(Color.GRAY); 
+                }
+            }
+        }); 
+
         ingredientPanel.add(ingredientField);
         whitePanel.add(ingredientPanel);
         whitePanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -239,8 +272,36 @@ public class PreferencesUI extends JPanel {
 
         });
 
-        generateBtn.addActionListener(e ->
-            JOptionPane.showMessageDialog(null, "Preferences saved!")
+        // Connects Preference UI input to Preference object from Preference.java
+        generateBtn.addActionListener(e -> {
+            // Update preferences object
+            preferences.setVegetarian(vegetarianCB.isSelected());
+            preferences.setKeto(ketoCB.isSelected());
+            preferences.setGlutenFree(glutenCB.isSelected());
+
+            preferences.setLowCalorie(lowCalCB.isSelected());
+            preferences.setHighCalorie(highCalCB.isSelected());
+            preferences.setHighProtein(highProteinCB.isSelected());
+
+            // Cook Time
+            if (time15.isSelected()) preferences.setMaxCookTime(15);
+            else if (time30.isSelected()) preferences.setMaxCookTime(30);
+            else if(time60.isSelected()) preferences.setMaxCookTime(60);
+
+            // Budget 
+            if (budget10.isSelected()) preferences.setMaxBudget(10);
+            else if (budget30.isSelected()) preferences.setMaxBudget(30);
+            else if (budget50.isSelected()) preferences.setMaxBudget(50);
+
+            // Ingredients 
+            String text = ingredientField.getText();
+            if (!text.equals(placeholder) && !text.isEmpty()) {
+                preferences.addAvailableIngredient(text);
+            }
+
+            // Confirmation message
+            JOptionPane.showMessageDialog(null, "Preferences saved!");
+        }
         );
 
         JPanel btnPanel = new JPanel();
