@@ -40,6 +40,10 @@ public class MainFrame extends JFrame {
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
         setVisible(true);
+
+        // Create and add SwipeUI panel 
+        SwipeUI swipeUI = new SwipeUI();
+        mainPanel.add(swipeUI, "Swipe");
     }
 
     // ======================== Navbar Action Listener ========================
@@ -55,7 +59,7 @@ public class MainFrame extends JFrame {
             } else if (source == navbar.getLikedBtn()) {
                 // cardLayout.show(mainPanel, "LikedRecipes");
             } else if (source == navbar.getMealMatchBtn()) {
-                // cardLayout.show(mainPanel, "MealMatch");
+                cardLayout.show(mainPanel, "Swipe");
             } else if (source == navbar.getLoginBtn()) {
                 // Handle Login 
             }
