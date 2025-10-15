@@ -254,7 +254,7 @@ public class PreferencesUI extends JPanel {
         generateBtn.setContentAreaFilled(true); 
         generateBtn.setOpaque(true); 
 
-        // Add hover effect: darker and bigger
+        // Add hover effect for generate recipe button 
         generateBtn.addMouseListener(new MouseAdapter() {
             Color originalColor = generateBtn.getBackground();
             Dimension originalSize = generateBtn.getPreferredSize();
@@ -299,7 +299,10 @@ public class PreferencesUI extends JPanel {
             // Ingredients 
             String text = ingredientField.getText();
             if (!text.equals(placeholder) && !text.isEmpty()) {
-                preferences.addAvailableIngredient(text);
+                String[] ingredients = text.split(",");
+                for (String ing : ingredients) {
+                    preferences.addAvailableIngredient(ing.trim());
+                }
             }
 
             // ============ Save to MongoDB ============
@@ -318,16 +321,71 @@ public class PreferencesUI extends JPanel {
 
             // Confirmation message
             JOptionPane.showMessageDialog(null, "Preferences saved!");
-        }
-        );
+        });
 
+        // ============ Reset Button ============
+        JButton resetBtn = new JButton("Reset");
+        resetBtn.setBackground(new Color(0x7FAE85));
+        resetBtn.setForeground(Color.WHITE);
+        resetBtn.setPreferredSize(new Dimension(120, 30));
+        resetBtn.setFont(new Font("SansSerif", Font.BOLD, 15));
+        resetBtn.setFocusPainted(true);
+        resetBtn.setBorderPainted(false);
+        resetBtn.setContentAreaFilled(true);
+        resetBtn.setOpaque(true);
+
+        // Add hover effect for reset button
+        resetBtn.addMouseListener(new MouseAdapter() {
+            Color originalColor = resetBtn.getBackground();
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                resetBtn.setBackground(new Color(0xC9302C));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                resetBtn.setBackground(originalColor);
+            }
+        }); 
+
+        // Action for Reset Button: clears all inputs
+        resetBtn.addActionListener( e -> {
+            // Uncheck all checkboxes
+            vegetarianCB.setSelected(false);
+            ketoCB.setSelected(false);
+            glutenCB.setSelected(false);
+            lowCalCB.setSelected(false);
+            highCalCB.setSelected(false);
+            highProteinCB.setSelected(false);
+            italianCB.setSelected(false);
+            mexicanCB.setSelected(false);
+            asianCB.setSelected(false);
+            americanCB.setSelected(false);
+            medCB.setSelected(false);
+
+            // Deselected radio buttons
+            time15.setSelected(false);
+            time30.setSelected(false);
+            time60.setSelected(false);
+            budget10.setSelected(false);
+            budget30.setSelected(false);
+            budget50.setSelected(false);
+
+            // Clear ingredient field
+            ingredientField.setText("Type here (e.g., eggs)");
+            ingredientField.setForeground(Color.GRAY);
+
+            JOptionPane.showMessageDialog(null, "Preferences reset!");
+        });
+
+        // ============ Button Panel ============
         JPanel btnPanel = new JPanel();
         btnPanel.setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
-        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS)); // Vertical layout
-        btnPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Gap above button 
+        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS)); 
+        btnPanel.add(Box.createHorizontalGlue());
         btnPanel.add(generateBtn);
-        btnPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Gap below button
-        add(btnPanel, BorderLayout.SOUTH);
+        btnPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        btnPanel.add(resetBtn);
+        btnPanel.add(Box.createHorizontalGlue());
     }
 }
 
