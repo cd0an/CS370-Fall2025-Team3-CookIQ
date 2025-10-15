@@ -47,7 +47,7 @@ public class SwipeUI extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
 
-        // ====================== Fetch User Preferences ======================
+        // ====================== Fetch User Preferences from MongoDB ======================
 
 
 
