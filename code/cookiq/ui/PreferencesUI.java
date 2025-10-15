@@ -32,6 +32,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import org.bson.Document;
+
+import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
 
 public class PreferencesUI extends JPanel {
@@ -298,6 +301,20 @@ public class PreferencesUI extends JPanel {
             if (!text.equals(placeholder) && !text.isEmpty()) {
                 preferences.addAvailableIngredient(text);
             }
+
+            // ============ Save to MongoDB ============
+            Document doc = new Document() 
+                .append("vegetarian", preferences.isVegetarian())
+                .append("keto", preferences.isKeto())
+                .append("glutenFree", preferences.isGlutenFree())
+                .append("lowCalorie", preferences.isLowCalorie())
+                .append("highCalorie", preferences.isHighCalorie())
+                .append("highProtein", preferences.isHighProtein())
+                .append("maxCookTime", preferences.getMaxCookTime())
+                .append("maxBudget", preferences.getMaxBudget())
+                .append("ingredients", preferences.getAvailableIngredients());
+
+            RecipeRepository.insertDocument("user_preferences", doc);
 
             // Confirmation message
             JOptionPane.showMessageDialog(null, "Preferences saved!");
