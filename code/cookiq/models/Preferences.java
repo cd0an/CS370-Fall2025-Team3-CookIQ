@@ -87,4 +87,31 @@ public class Preferences {
     public void addAvailableIngredient(String ingredient) { 
         availableIngredients.add(ingredient.toLowerCase()); 
     }
+
+    // ===================== Reset Function to Clear All Preferences that User Chosen =====================
+    public void clearAll() {
+        // Dietary restrictions 
+        vegetarian = false;
+        keto = false;
+        glutenFree = false;
+
+        // Health goals
+        lowCalorie = false;
+        highCalorie = false;
+        highProtein = false;
+
+        // Cuisines 
+        italian = false;
+        mexican = false;
+        asian = false;
+        american = false;
+        mediterranean = false;
+
+        // Cooking preferences 
+        maxCookTime = 0;
+        maxBudget = 0;
+
+        // Ingredients 
+        availableIngredients.clear();
+    }
 }

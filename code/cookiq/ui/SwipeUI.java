@@ -5,7 +5,12 @@
  * Sends user feedback to FeedbackService to improve future recommendations.
  */
 
+
 package cookiq.ui;
+
+import cookiq.models.Preferences;
+import cookiq.db.RecipeRepository;
+import org.bson.Document;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -29,6 +34,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import cookiq.db.RecipeRepository;
+
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
@@ -40,12 +47,10 @@ public class SwipeUI extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
 
-        // === Dummy Recipe Data ===
-        recipes = new ArrayList<>();
-        recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie"});
-        recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free"});
-        recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie"});
-        recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich"});
+        // ====================== Fetch User Preferences ======================
+
+
+
         currentIndex = 0;
 
         // ====================== Recipe Card Panel ======================

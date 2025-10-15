@@ -31,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import java.awt.FlowLayout;
 
 import org.bson.Document;
 
@@ -245,7 +246,7 @@ public class PreferencesUI extends JPanel {
         JButton generateBtn = new JButton("Generate Recipes");
         generateBtn.setBackground(new Color(0x6E, 0x92, 0x77)); // #6e9277 
         generateBtn.setForeground(Color.WHITE);
-        generateBtn.setPreferredSize(new Dimension(800, 30));
+        generateBtn.setPreferredSize(new Dimension(180, 40));
         generateBtn.setFont(new Font("SansSerif", Font.BOLD, 15));
         generateBtn.setAlignmentX(CENTER_ALIGNMENT);
 
@@ -325,14 +326,15 @@ public class PreferencesUI extends JPanel {
 
         // ============ Reset Button ============
         JButton resetBtn = new JButton("Reset");
-        resetBtn.setBackground(new Color(0x7FAE85));
+        resetBtn.setBackground(new Color(0xD9, 0x7A, 0x7A));
         resetBtn.setForeground(Color.WHITE);
-        resetBtn.setPreferredSize(new Dimension(120, 30));
+        resetBtn.setPreferredSize(new Dimension(120, 40));
         resetBtn.setFont(new Font("SansSerif", Font.BOLD, 15));
-        resetBtn.setFocusPainted(true);
+
+        resetBtn.setFocusPainted(true); 
         resetBtn.setBorderPainted(false);
-        resetBtn.setContentAreaFilled(true);
-        resetBtn.setOpaque(true);
+        resetBtn.setContentAreaFilled(true); 
+        resetBtn.setOpaque(true); 
 
         // Add hover effect for reset button
         resetBtn.addMouseListener(new MouseAdapter() {
@@ -349,6 +351,9 @@ public class PreferencesUI extends JPanel {
 
         // Action for Reset Button: clears all inputs
         resetBtn.addActionListener( e -> {
+            // Clear the Preferences object
+            preferences.clearAll();
+
             // Uncheck all checkboxes
             vegetarianCB.setSelected(false);
             ketoCB.setSelected(false);
@@ -370,6 +375,10 @@ public class PreferencesUI extends JPanel {
             budget30.setSelected(false);
             budget50.setSelected(false);
 
+            // Reset radio buttons
+            timeGroup.clearSelection();
+            budgetGroup.clearSelection();
+
             // Clear ingredient field
             ingredientField.setText("Type here (e.g., eggs)");
             ingredientField.setForeground(Color.GRAY);
@@ -380,12 +389,15 @@ public class PreferencesUI extends JPanel {
         // ============ Button Panel ============
         JPanel btnPanel = new JPanel();
         btnPanel.setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
-        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS)); 
-        btnPanel.add(Box.createHorizontalGlue());
-        btnPanel.add(generateBtn);
-        btnPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+
+        btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+
         btnPanel.add(resetBtn);
-        btnPanel.add(Box.createHorizontalGlue());
+        btnPanel.add(generateBtn);
+
+        btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        add(btnPanel, BorderLayout.SOUTH);
     }
 }
 
