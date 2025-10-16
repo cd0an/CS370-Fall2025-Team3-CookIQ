@@ -39,6 +39,7 @@ public class SwipeUI extends JPanel {
     private List<String[]> likedRecipes = new ArrayList<>();
     private int currentIndex; 
     private Preferences userPreferences; // Store user preferences 
+    private JLabel mealMatchTitle;
 
     // Constructor 
     public SwipeUI() {
@@ -197,8 +198,25 @@ public class SwipeUI extends JPanel {
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(new Color(0xF2, 0xEF, 0xEB));
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        // Container for title + white recipe card
+        JPanel titleCardContainer = new JPanel();
+        titleCardContainer.setLayout(new BoxLayout(titleCardContainer, BoxLayout.Y_AXIS));
+        titleCardContainer.setBackground(new Color(0xF2, 0xEF, 0xEB));
+        titleCardContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Meal Match Title
+        JLabel mealMatchTitle = new JLabel("Meal Match", SwingConstants.CENTER);
+        mealMatchTitle.setFont(new Font("SansSerif", Font.BOLD, 40));
+        mealMatchTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mealMatchTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        mealMatchTitle.setForeground(new Color(0x473c38));
+
+        titleCardContainer.add(mealMatchTitle);
+        titleCardContainer.add(recipeCard);
+
         centerPanel.add(Box.createVerticalGlue());
-        centerPanel.add(recipeCard);
+        centerPanel.add(titleCardContainer);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 8))); 
         centerPanel.add(actionPanel);
         centerPanel.add(Box.createVerticalGlue());
@@ -233,13 +251,22 @@ public class SwipeUI extends JPanel {
         revalidate();
         repaint();
 
-        // Keep the white recipe panel
-        recipeCard.removeAll();
+        // ====================== Title Above Panel ======================
+        JLabel endTitle = new JLabel("Meal Match", SwingConstants.CENTER);
+        endTitle.setFont(new Font("SansSerif", Font.BOLD, 40));
+        endTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        endTitle.setForeground(new Color(0x473c38));
+        endTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
         // Message at the top 
-        JLabel message = new JLabel("You've reached the end of your recipes!", SwingConstants.CENTER);
+        JLabel message = new JLabel("You've reached the end of your recipes! Please select your next options.", SwingConstants.CENTER);
         message.setFont(new Font("SansSerif", Font.BOLD, 18));
+        message.setForeground(new Color(0xD9, 0x7A, 0x7A));
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
+        message.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+        //  ====================== White Panel ======================
+        recipeCard.removeAll();
 
         // Buttons
         JButton viewLiked = new JButton("View Liked Recipes");
@@ -265,12 +292,10 @@ public class SwipeUI extends JPanel {
         // Add components to the white panel 
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
         recipeCard.add(Box.createVerticalGlue());
-        recipeCard.add(message);
-        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
         recipeCard.add(viewLiked);
-        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 18)));
         recipeCard.add(newSuggestions);
-        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 18)));
         recipeCard.add(resetPrefs);
         recipeCard.add(Box.createVerticalGlue());
 
@@ -278,7 +303,11 @@ public class SwipeUI extends JPanel {
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(new Color(0xF2, 0xEF, 0xEB));
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
         centerPanel.add(Box.createVerticalGlue());
+        centerPanel.add(endTitle);
+        centerPanel.add(message);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         centerPanel.add(recipeCard);
         centerPanel.add(Box.createVerticalGlue());
 
