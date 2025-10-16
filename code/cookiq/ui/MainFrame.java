@@ -11,12 +11,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import cookiq.models.Preferences;
+
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
     private JPanel mainPanel; // Main content panel that show different screens 
     private CardLayout cardLayout; // Main layout manager to switch between screens 
 
     private PreferencesUI preferencesUI;
+    private SwipeUI swipeUI;
 
     // Constructor 
     public MainFrame() {
@@ -33,17 +36,23 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout(); // Allos switching between panels 
         mainPanel = new JPanel(cardLayout);
 
-        // Create and add the Preferences panel
-        preferencesUI = new PreferencesUI();
+        preferencesUI = new PreferencesUI(this);
+        swipeUI = new SwipeUI();
+
         mainPanel.add(preferencesUI, "Preferences");
+        mainPanel.add(swipeUI, "Swipe");
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
-        setVisible(true);
+        cardLayout.show(mainPanel, "Preferences"); // Show Preferences screen first 
 
-        // Create and add SwipeUI panel 
-        SwipeUI swipeUI = new SwipeUI();
-        mainPanel.add(swipeUI, "Swipe");
+        setVisible(true);
+    }
+
+    // ======================== Method to switch to SwipeUI ========================
+    public void showSwipeUI(Preferences prefs) {
+        swipeUI.setUserPreferences(prefs);
+        cardLayout.show(mainPanel, "Swipe");
     }
 
     // ======================== Navbar Action Listener ========================

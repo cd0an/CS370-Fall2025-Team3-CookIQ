@@ -10,6 +10,7 @@ package cookiq.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.FocusAdapter;
@@ -31,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.FlowLayout;
 
 import org.bson.Document;
 
@@ -39,7 +39,7 @@ import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
 
 public class PreferencesUI extends JPanel {
-
+    private MainFrame mainFrame; 
     private Preferences preferences;
 
     // ====================== Input Components ======================
@@ -50,8 +50,10 @@ public class PreferencesUI extends JPanel {
     private JRadioButton budget10, budget30, budget50;
     private JTextField ingredientField;
 
-    public PreferencesUI() {
+    public PreferencesUI(MainFrame frame) {
+        this.mainFrame = frame;
         preferences = new Preferences();
+
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
 
@@ -320,8 +322,8 @@ public class PreferencesUI extends JPanel {
 
             RecipeRepository.insertDocument("user_preferences", doc);
 
-            // Confirmation message
-            JOptionPane.showMessageDialog(null, "Preferences saved!");
+            // Tell MainFrame to switch to SwipeUI
+            mainFrame.showSwipeUI(preferences);
         });
 
         // ============ Reset Button ============

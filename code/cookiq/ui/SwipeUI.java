@@ -5,12 +5,7 @@
  * Sends user feedback to FeedbackService to improve future recommendations.
  */
 
-
 package cookiq.ui;
-
-import cookiq.models.Preferences;
-import cookiq.db.RecipeRepository;
-import org.bson.Document;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -34,26 +29,50 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import cookiq.db.RecipeRepository;
+import cookiq.models.Preferences;
 
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
     private JPanel recipeCard;
     private List<String[]> recipes;
+    private List<String[]> likedRecipes;
     private int currentIndex; 
+    private Preferences userPreferences; // Store user preferences 
 
+    // Constructor 
     public SwipeUI() {
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
 
-        // ====================== Fetch User Preferences from MongoDB ======================
+        // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
+        recipes = new ArrayList<>();
 
-
+        recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie"});
+        recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free"});
+        recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie"});
+        recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich"});
+        recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free"});
+        recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein"});
+      
+            // To be Replaced 
+            /*
+            * List <Document> recipeDocs = RecipeRepository.getRecipesByPreferences(userPreferences);
+            * for (Document doc : recipeDocs) {
+            *      String name = doc.getString("name");
+            *      String tags = doc.getString("tags");
+            *      recipes.add(new String[]{name, tags});
+            * }
+            */
 
         currentIndex = 0;
 
-        // ====================== Recipe Card Panel ======================
+        initSwipeUI();
+    }
+
+    // Function to handle the UI
+    private void initSwipeUI() {
+                // ====================== Recipe Card Panel ======================
         recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
         recipeCard.setBackground(Color.WHITE);
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
@@ -111,6 +130,29 @@ public class SwipeUI extends JPanel {
         dislikeBtn.setForeground(Color.WHITE);
         dislikeBtn.setOpaque(true);
         dislikeBtn.setBorderPainted(false);
+        dislikeBtn.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        dislikeBtn.setFocusPainted(false);
+        dislikeBtn.setPreferredSize(new Dimension(140, 45));
+
+        // Hover effect for Dislike Button
+        dislikeBtn.addMouseListener(new MouseAdapter() {
+            Color originalColor = dislikeBtn.getBackground();
+            Dimension originalSize = dislikeBtn.getPreferredSize();
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                dislikeBtn.setBackground(new Color(0xC94F4F));
+                dislikeBtn.setPreferredSize(new Dimension(originalSize.width + 10, originalSize.height + 5));
+                dislikeBtn.revalidate();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                dislikeBtn.setBackground(originalColor);
+                dislikeBtn.setPreferredSize(originalSize);
+                dislikeBtn.revalidate();
+            }
+        });
 
         // Like button 
         likeBtn = new JButton("LIKE");
@@ -118,15 +160,32 @@ public class SwipeUI extends JPanel {
         likeBtn.setForeground(Color.WHITE);
         likeBtn.setOpaque(true);
         likeBtn.setBorderPainted(false);
+        likeBtn.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        likeBtn.setFocusPainted(false);
+        likeBtn.setPreferredSize(new Dimension(140, 45));
 
-        for (JButton btn : new JButton[] {dislikeBtn, likeBtn}) {
-            btn.setFont(new Font("SansSerif", Font.PLAIN, 16));
-            btn.setFocusPainted(false);
-            btn.setPreferredSize(new Dimension(130, 45));
-        }
+        // Hover effect for Like Button
+        likeBtn.addMouseListener(new MouseAdapter() {
+            Color originalColor = likeBtn.getBackground();
+            Dimension originalSize = likeBtn.getPreferredSize();
 
-        dislikeBtn.addActionListener(e -> nextRecipe());
-        likeBtn.addActionListener(e -> nextRecipe());
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                likeBtn.setBackground(new Color(0x7FAE85));
+                likeBtn.setPreferredSize(new Dimension(originalSize.width + 10, originalSize.height + 5));
+                likeBtn.revalidate();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                likeBtn.setBackground(originalColor);
+                likeBtn.setPreferredSize(originalSize);
+                likeBtn.revalidate();
+            }
+        });
+
+        dislikeBtn.addActionListener(e -> nextRecipe(false));
+        likeBtn.addActionListener(e -> nextRecipe(true));
 
         actionPanel.add(Box.createHorizontalGlue());
         actionPanel.add(dislikeBtn);
@@ -147,16 +206,30 @@ public class SwipeUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    // ====================== Next Recipe ======================
+    private void nextRecipe(boolean liked) {
+        if (liked) {
+            likedRecipes.add(recipes.get(currentIndex));
+        }
+
+        currentIndex++;
+        if (currentIndex >= recipes.size()) {
+            showEndOfQueueUI();
+        } else {
+            updateRecipe();
+        }
+    }
+
     // Function to update recipe 
     private void updateRecipe() {
         titleLabel.setText(recipes.get(currentIndex)[0]);
         tagsLabel.setText(recipes.get(currentIndex)[1]);
     }
 
-    // Function to go to next recipe when the like or dislike button is clicked 
-    private void nextRecipe() {
-        currentIndex = (currentIndex + 1) % recipes.size();
-        updateRecipe(); 
+    // ====================== End of Queue UI ======================
+    // Function to show end of queue  
+    private void showEndOfQueueUI() {
+        
     }
 
     // ====================== Custom Rounded Panel ======================
@@ -181,6 +254,11 @@ public class SwipeUI extends JPanel {
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
         }
+    }
+
+    public void setUserPreferences(Preferences prefs) {
+        this.userPreferences = prefs;
+        System.out.println("User preferences received: " + prefs);
     }
 }
 
