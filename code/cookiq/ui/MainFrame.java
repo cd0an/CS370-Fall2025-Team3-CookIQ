@@ -17,7 +17,6 @@ public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
     private JPanel mainPanel; // Main content panel that show different screens 
     private CardLayout cardLayout; // Main layout manager to switch between screens 
-
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
 

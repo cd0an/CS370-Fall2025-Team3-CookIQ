@@ -36,7 +36,7 @@ public class SwipeUI extends JPanel {
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
     private JPanel recipeCard;
     private List<String[]> recipes;
-    private List<String[]> likedRecipes;
+    private List<String[]> likedRecipes = new ArrayList<>();
     private int currentIndex; 
     private Preferences userPreferences; // Store user preferences 
 
@@ -171,7 +171,7 @@ public class SwipeUI extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                likeBtn.setBackground(new Color(0x7FAE85));
+                likeBtn.setBackground(new Color(0x5A, 0x7B, 0x63));
                 likeBtn.setPreferredSize(new Dimension(originalSize.width + 10, originalSize.height + 5));
                 likeBtn.revalidate();
             }
@@ -229,7 +229,62 @@ public class SwipeUI extends JPanel {
     // ====================== End of Queue UI ======================
     // Function to show end of queue  
     private void showEndOfQueueUI() {
-        
+        removeAll();
+        revalidate();
+        repaint();
+
+        // Keep the white recipe panel
+        recipeCard.removeAll();
+
+        // Message at the top 
+        JLabel message = new JLabel("You've reached the end of your recipes!", SwingConstants.CENTER);
+        message.setFont(new Font("SansSerif", Font.BOLD, 18));
+        message.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Buttons
+        JButton viewLiked = new JButton("View Liked Recipes");
+        JButton newSuggestions = new JButton("Request New Suggestions");
+        JButton resetPrefs = new JButton("Reset Preferences");
+
+        // Styling 
+        JButton[] buttons = {viewLiked, newSuggestions, resetPrefs};
+        for (JButton btn : buttons) {
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btn.setBackground(new Color(0x6E, 0x92, 0x77)); 
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
+            btn.setOpaque(true);
+            btn.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+            btn.setFont(new Font("SansSerif", Font.BOLD, 16));
+        }
+
+        viewLiked.addActionListener(e -> System.out.println("Open liked recipes panel"));
+        newSuggestions.addActionListener(e -> System.out.println("Fetch new suggestions"));
+        resetPrefs.addActionListener(e -> System.out.println("Go back to preferences"));
+
+        // Add components to the white panel 
+        recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
+        recipeCard.add(Box.createVerticalGlue());
+        recipeCard.add(message);
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
+        recipeCard.add(viewLiked);
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
+        recipeCard.add(newSuggestions);
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 12)));
+        recipeCard.add(resetPrefs);
+        recipeCard.add(Box.createVerticalGlue());
+
+        // Add the panel to the main center panel
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(new Color(0xF2, 0xEF, 0xEB));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.add(Box.createVerticalGlue());
+        centerPanel.add(recipeCard);
+        centerPanel.add(Box.createVerticalGlue());
+
+        add(centerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     // ====================== Custom Rounded Panel ======================
