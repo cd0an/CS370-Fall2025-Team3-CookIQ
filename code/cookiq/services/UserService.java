@@ -13,55 +13,39 @@ import java.util.List;
 import cookiq.models.User;
 
 public class UserService {
-    private static final String USER_FILE = "data/users.txt"; // File to store accounts
-    private List<User> users; // List of all loaded users
+    private static final String USER_FILE = "../data/users.txt";
+    private List<User> users;
 
-    // Constructor → load existing users from file
     public UserService() {
         users = loadUsers();
     }
 
-    /**
-     * Registers a new user if the username doesn't already exist.
-     * 
-     * @return true if successful, false if username taken
-     */
+    /** Registers a new user if username doesn't already exist */
     public boolean registerUser(String username, String password) {
-        // Check if username already exists
         for (User u : users) {
-            if (u.getUsername().equals(username)) {
-                return false; // User already exists
-            }
+            if (u.getUsername().equals(username)) return false; // username already taken
         }
 
-        // Create new user (empty preferences by default)
-        User newUser = new User(username, password, "");
-        users.add(newUser);
-        saveUsers(); // Save updated list to file
+        users.add(new User(username, password, ""));
+        saveUsers();
         return true;
     }
 
-    /**
-     * Logs in a user if username + password match.
-     * 
-     * @return the User object if successful, otherwise null
-     */
+    /** Logs in a user if username + password match */
     public User loginUser(String username, String password) {
         for (User u : users) {
             if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u; // Found a match
+                return u;
             }
         }
-        return null; // Invalid login
+        return null; // no match found
     }
 
-    /**
-     * Saves all users to the data file.
-     */
+    /** Save users to text file */
     private void saveUsers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE))) {
             for (User u : users) {
-                writer.write(u.getUsername() + "," + u.getPassword());
+                writer.write(u.getUsername() + "," + u.getPassword() + "," + u.getPreferences());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -69,23 +53,21 @@ public class UserService {
         }
     }
 
-    /**
-     * Loads users from the data file at startup.
-     */
+    /** Load users from text file */
     private List<User> loadUsers() {
         List<User> loaded = new ArrayList<>();
         File file = new File(USER_FILE);
-
-        // If file doesn’t exist, return empty list
-        if (!file.exists())
-            return loaded;
+        if (!file.exists()) return loaded;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    loaded.add(new User(parts[0], parts[1], ""));
+                if (parts.length >= 2) {
+                    String username = parts[0];
+                    String password = parts[1];
+                    String preferences = parts.length > 2 ? parts[2] : "";
+                    loaded.add(new User(username, password, preferences));
                 }
             }
         } catch (IOException e) {
