@@ -17,7 +17,7 @@ public class RecommendationService {
     
     public RecommendationService() {
         this.recipeDatabase = new ArrayList<>();
-        addTestRecipes();
+        // addTestRecipes();❗Commented this out 
     }
     
     public List<Recipe> getRecommendations(Preferences preferences) {
@@ -132,14 +132,15 @@ public class RecommendationService {
         return false;
     }
     
-    private void addTestRecipes() {
-        // Add recipes with complete data including cost and calories
-        recipeDatabase.add(new Recipe("Caprese Stuffed Avocados", "italian", "vegetarian", 10, 12.50, 320));
-        recipeDatabase.add(new Recipe("Keto Bacon Cheeseburger Casserole", "american", "keto", 35, 18.75, 650));
-        recipeDatabase.add(new Recipe("Gluten-Free Chicken Stir Fry", "asian", "gluten-free", 20, 15.25, 420));
-        recipeDatabase.add(new Recipe("Vegetarian Lentil Curry", "asian", "vegetarian", 35, 8.99, 380));
-        recipeDatabase.add(new Recipe("Keto Garlic Butter Salmon", "american", "keto", 15, 22.50, 580));
-        recipeDatabase.add(new Recipe("Gluten-Free Quinoa Salad", "mediterranean", "gluten-free", 25, 9.75, 280));
-        recipeDatabase.add(new Recipe("Mushroom and Spinach Quesadillas", "mexican", "vegetarian", 12, 7.50, 350));
-    }
+    //❗Add this back in if it's important❗
+    // private void addTestRecipes() {
+    //     // Add recipes with complete data including cost and calories
+    //     recipeDatabase.add(new Recipe("Caprese Stuffed Avocados", "italian", "vegetarian", 10, 12.50, 320));
+    //     recipeDatabase.add(new Recipe("Keto Bacon Cheeseburger Casserole", "american", "keto", 35, 18.75, 650));
+    //     recipeDatabase.add(new Recipe("Gluten-Free Chicken Stir Fry", "asian", "gluten-free", 20, 15.25, 420));
+    //     recipeDatabase.add(new Recipe("Vegetarian Lentil Curry", "asian", "vegetarian", 35, 8.99, 380));
+    //     recipeDatabase.add(new Recipe("Keto Garlic Butter Salmon", "american", "keto", 15, 22.50, 580));
+    //     recipeDatabase.add(new Recipe("Gluten-Free Quinoa Salad", "mediterranean", "gluten-free", 25, 9.75, 280));
+    //     recipeDatabase.add(new Recipe("Mushroom and Spinach Quesadillas", "mexican", "vegetarian", 12, 7.50, 350));
+    // }
 }

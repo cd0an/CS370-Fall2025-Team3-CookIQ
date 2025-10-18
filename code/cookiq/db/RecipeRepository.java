@@ -9,6 +9,11 @@ package cookiq.db;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.FindIterable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.bson.Document;
 
 public class RecipeRepository
@@ -32,26 +37,30 @@ public class RecipeRepository
         return collection.find();
     }
 
-    //Find documents given a filter
-    public static FindIterable<Document> findGivenFilter(String collectionName, Document filter)
-    {
+    //Query based on preferences
+    public static List<Document> findByFilter(String collectionName, String... filters) {
         MongoCollection<Document> collection = db.getCollection(collectionName);
-        return collection.find(filter);
-    }
+        Document filterDoc = new Document();
 
-    //Delete documents
-    public static void delete(String collectionName, Document filter)
-    {
-        MongoCollection<Document> collection = db.getCollection(collectionName);
-        collection.deleteMany(filter);
-        System.out.println("Deleted documents given filter: " + filter.toJson());
-    }
+        for (String f : filters) {
+            String[] parts = f.split("=", 2);
+            if (parts.length == 2) {
+                String key = parts[0];
+                String value = parts[1];
 
-    //Modify documents
-    public static void modify(String collectionName, Document filter, Document modification)
-    {
-        MongoCollection<Document> collection = db.getCollection(collectionName);
-        collection.updateMany(filter, new Document("$set", modification));
-        System.out.println("Updated documents matching: " + filter.toJson());
+                // If comma-separated, treat as $in
+                if (value.contains(",")) {
+                    filterDoc.append(key, new Document("$in", Arrays.asList(value.split(","))));
+                } else {
+                    // Regex for partial/case-insensitive match (works for array fields too)
+                    filterDoc.append(key, Pattern.compile(Pattern.quote(value), Pattern.CASE_INSENSITIVE));
+                }
+            }
+        }
+
+        // Collect all matching documents into a list
+        List<Document> results = new ArrayList<>();
+        collection.find(filterDoc).into(results);
+        return results;
     }
 }
