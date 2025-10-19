@@ -57,7 +57,6 @@ public class Recipe {
                 ", cost=" + cost +
                 '}';
     }
-
     
     // Getters
     public String getName() { return name; }
@@ -70,66 +69,46 @@ public class Recipe {
     public List<String> getDirections() {return directions;}
     public List<String> getNER() {return NER;}
 
-    public static Recipe parseDocument(Document doc) {
-        Recipe recipe = new Recipe();
+    public static Recipe parseRecipe(Document doc) {
+        // Extract and sanitize fields
+        String id = doc.getObjectId("_id").toHexString();
+        String name = doc.getString("title");
+        String cuisine = doc.getString("preferred_cuisines");
+        String dietaryCategory = doc.getString("dietary_restrictions");
+        List<String> ingredients = (List<String>) doc.get("ingredients");
+        List<String> directions = (List<String>) doc.get("directions");
+        List<String> NER = (List<String>) doc.get("NER");
 
-        // Strings
-        recipe.name = doc.getString("title");
-        recipe.ingredients = doc.getList("ingredients", String.class);
-        recipe.directions = doc.getList("directions", String.class);
-        recipe.NER = doc.getList("NER", String.class);
-        recipe.dietaryCategory = doc.getString("dietary_restrictions");
-        recipe.cuisine = doc.getString("preferred_cuisines");
-
-        // Numeric fields
-        recipe.calories = parseIntField(doc, "calories");
-        recipe.cookTime = parseIntField(doc, "cookTime");
-        recipe.cost = parseDoubleField(doc, "cost");
-
-        return recipe;
-    }
-
-    // Helper: safely parse integer fields
-    private static int parseIntField(Document doc, String fieldName) {
-        if (!doc.containsKey(fieldName)) return 0;
-
-        Object value = doc.get(fieldName);
-        if (value instanceof Integer) {
-            return (Integer) value;
-        } else if (value instanceof String) {
-            String digits = ((String) value).replaceAll("[^0-9]", "");
-            if (!digits.isEmpty()) {
-                try {
-                    return Integer.parseInt(digits);
-                } catch (NumberFormatException e) {
-                    return 0;
-                }
+        // Parse cook time (e.g., "> 30 min" → 30)
+        int cookTime = 0;
+        String timeString = doc.getString("max_cook_time");
+        if (timeString != null) {
+            timeString = timeString.replaceAll("[^0-9]", ""); // keep only digits
+            if (!timeString.isEmpty()) {
+                cookTime = Integer.parseInt(timeString);
             }
         }
-        return 0;
-    }
 
-    // Helper: safely parse double fields
-    private static double parseDoubleField(Document doc, String fieldName) {
-        if (!doc.containsKey(fieldName)) return 0.0;
-
-        Object value = doc.get(fieldName);
-        if (value instanceof Double) {
-            return (Double) value;
-        } else if (value instanceof Integer) {
-            return ((Integer) value).doubleValue();
-        } else if (value instanceof String) {
-            String digits = ((String) value).replaceAll("[^0-9.]", "");
-            if (!digits.isEmpty()) {
-                try {
-                    return Double.parseDouble(digits);
-                } catch (NumberFormatException e) {
-                    return 0.0;
-                }
+        // Parse cost (e.g., "$10 - $20" → average 15.0)
+        double cost = 0.0;
+        String costString = doc.getString("budget_per_meal");
+        if (costString != null) {
+            String[] nums = costString.replaceAll("[$]", "").split("-");
+            if (nums.length == 2) {
+                cost = (Double.parseDouble(nums[0].trim()) + Double.parseDouble(nums[1].trim())) / 2.0;
+            } else {
+                cost = Double.parseDouble(nums[0].trim());
             }
         }
-        return 0.0;
+
+        // Calories might not be stored yet, default to 0
+        int calories = 0;
+
+        // Create and return Recipe object
+        return new Recipe(id, name, cuisine, dietaryCategory, cookTime, cost, calories, ingredients, directions, NER);
     }
+
+
 
     // Helper to parse array strings like "[a, b, c]"
     private static List<String> parseArray(String arrayString) {

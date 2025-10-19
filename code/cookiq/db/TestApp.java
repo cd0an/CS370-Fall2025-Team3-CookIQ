@@ -5,6 +5,7 @@ import cookiq.db.RecipeRepository;
 import cookiq.db.MongoDBConnection;
 import cookiq.models.Recipe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
@@ -18,9 +19,22 @@ public class TestApp {
         List<Document> recipes = RecipeRepository.findByFilter("recipes", "NER=bacon", "dietary_restrictions=Keto");
         System.out.println("Found " + recipes.size() + " recipes:");
         System.out.println();
-        for (Document recipe : recipes) {
-            Recipe rcp = Recipe.parseDocument(recipe);
-            rcp.toString();
+        List<Recipe> parsedRecipes = new ArrayList<>();
+        for(Document recipe : recipes) {
+            parsedRecipes.add(Recipe.parseRecipe(recipe));
+        }
+
+        for(Recipe recipe : parsedRecipes)
+        {
+            System.out.println("[Name]\n" + recipe.getName());
+            System.out.println("[Ingredients]\n" + recipe.getIngredients());
+            System.out.println("[Directions]\n" + recipe.getDirections());
+            System.out.println("[NER]\n" + recipe.getNER());
+            System.out.println("[Dietary Category]\n" + recipe.getNER());
+            System.out.println("[Health Goals]\n" + recipe.getCalories());
+            System.out.println("[Cuisine]\n" + recipe.getCuisine());
+            System.out.println("[Cook Time]\n" + recipe.getCookTime());
+            System.out.println("[Budget]\n" + recipe.getCost());
             System.out.println();
         }
     }
