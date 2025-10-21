@@ -7,140 +7,181 @@
 
 package cookiq.services;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecommendationService {
     private List<Recipe> recipeDatabase;
     
     public RecommendationService() {
         this.recipeDatabase = new ArrayList<>();
-        // addTestRecipes();❗Commented this out 
     }
     
+    /**
+     * Get recipe recommendations sorted by match score
+     * Recipes are ranked based on how well they match user preferences
+     */
     public List<Recipe> getRecommendations(Preferences preferences) {
-        List<Recipe> matches = new ArrayList<>();
+        List<ScoredRecipe> scoredRecipes = new ArrayList<>();
         
         for (Recipe recipe : recipeDatabase) {
-            if (matchesAllPreferences(recipe, preferences)) {
-                matches.add(recipe);
+            int score = calculateMatchScore(recipe, preferences);
+            scoredRecipes.add(new ScoredRecipe(recipe, score));
+        }
+        
+        // Sort recipes by score in descending order (best matches first)
+        scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed());
+        
+        List<Recipe> recommendations = new ArrayList<>();
+        for (ScoredRecipe scored : scoredRecipes) {
+            recommendations.add(scored.getRecipe());
+        }
+        
+        return recommendations;
+    }
+    
+    /**
+     * Calculate how well a recipe matches user preferences
+     * Higher scores indicate better matches
+     */
+    private int calculateMatchScore(Recipe recipe, Preferences prefs) {
+        int score = 0;
+        
+        // Dietary restrictions are highest priority - must match if selected
+        String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
+        
+        // Award points for matching dietary restrictions
+        if (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) {
+            score += 25;
+        }
+        if (prefs.isKeto() && dietaryCategory.contains("keto")) {
+            score += 25;
+        }
+        if (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free")) {
+            score += 25;
+        }
+        
+        // Heavy penalty if recipe doesn't match selected dietary restrictions
+        boolean hasDietaryPreference = prefs.isVegetarian() || prefs.isKeto() || prefs.isGlutenFree();
+        boolean matchesDietary = (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) ||
+                                (prefs.isKeto() && dietaryCategory.contains("keto")) ||
+                                (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free"));
+        
+        if (hasDietaryPreference && !matchesDietary) {
+            score -= 40;
+        }
+        
+        // Cuisine preferences - medium priority
+        String cuisine = recipe.getCuisine().toLowerCase();
+        
+        if (prefs.isItalian() && cuisine.contains("italian")) {
+            score += 15;
+        }
+        if (prefs.isMexican() && cuisine.contains("mexican")) {
+            score += 15;
+        }
+        if (prefs.isAsian() && (cuisine.contains("asian") || cuisine.contains("chinese"))) {
+            score += 15;
+        }
+        if (prefs.isAmerican() && cuisine.contains("american")) {
+            score += 15;
+        }
+        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) {
+            score += 15;
+        }
+        
+        // Health goals - medium priority
+        int calories = recipe.getCalories();
+        
+        if (prefs.isLowCalorie() && calories <= 400) {
+            score += 12;
+        }
+        if (prefs.isHighCalorie() && calories >= 600) {
+            score += 12;
+        }
+        if (prefs.isHighProtein() && calories >= 500) {
+            score += 12;
+        }
+        
+        // Cooking time - recipes within time limit get full points
+        if (prefs.getMaxCookTime() > 0) {
+            if (recipe.getCookTime() <= prefs.getMaxCookTime()) {
+                score += 8;
+            } else {
+                // Gradual penalty for exceeding time limit
+                int timeOver = recipe.getCookTime() - prefs.getMaxCookTime();
+                int timePenalty = Math.min(timeOver / 5, 12);
+                score -= timePenalty;
+            }
+        }
+        
+        // Budget - recipes within budget get full points, cheaper recipes are equal
+        if (prefs.getMaxBudget() > 0) {
+            if (recipe.getCost() <= prefs.getMaxBudget()) {
+                score += 6;
+            } else {
+                // Penalty for exceeding budget
+                double costOver = recipe.getCost() - prefs.getMaxBudget();
+                int costPenalty = Math.min((int)(costOver / 2), 8);
+                score -= costPenalty;
+            }
+        }
+        
+        // Ingredient matching - small bonus for using available ingredients
+        if (!prefs.getAvailableIngredients().isEmpty()) {
+            int ingredientMatches = countIngredientMatches(recipe, prefs.getAvailableIngredients());
+            score += ingredientMatches * 2;
+        }
+        
+        return Math.max(score, 0);
+    }
+    
+    /**
+     * Count how many recipe ingredients match user's available ingredients
+     */
+    private int countIngredientMatches(Recipe recipe, List<String> availableIngredients) {
+        int matches = 0;
+        List<String> recipeIngredients = recipe.getNER();
+        
+        if (recipeIngredients != null) {
+            for (String ingredient : recipeIngredients) {
+                String cleanIngredient = ingredient.toLowerCase().trim();
+                for (String available : availableIngredients) {
+                    if (cleanIngredient.contains(available)) {
+                        matches++;
+                        break;
+                    }
+                }
             }
         }
         
         return matches;
     }
     
-    private boolean matchesAllPreferences(Recipe recipe, Preferences prefs) {
-        // Check dietary restrictions
-        if (!matchesDietaryRestrictions(recipe, prefs)) {
-            return false;
+    /**
+     * Helper class to associate recipes with their match scores
+     */
+    private static class ScoredRecipe {
+        private Recipe recipe;
+        private int score;
+        
+        public ScoredRecipe(Recipe recipe, int score) {
+            this.recipe = recipe;
+            this.score = score;
         }
         
-        // Check health goals
-        if (!matchesHealthGoals(recipe, prefs)) {
-            return false;
-        }
-        
-        // Check cuisine preferences
-        if (!matchesCuisinePreferences(recipe, prefs)) {
-            return false;
-        }
-        
-        // Check cooking time
-        if (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) {
-            return false;
-        }
-        
-        // Check budget
-        if (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) {
-            return false;
-        }
-        
-        return true;
+        public Recipe getRecipe() { return recipe; }
+        public int getScore() { return score; }
     }
     
-    private boolean matchesDietaryRestrictions(Recipe recipe, Preferences prefs) {
-        String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
-        
-        // If vegetarian is selected, recipe must be vegetarian
-        if (prefs.isVegetarian() && !dietaryCategory.contains("vegetarian")) {
-            return false;
-        }
-        
-        // If keto is selected, recipe must be keto
-        if (prefs.isKeto() && !dietaryCategory.contains("keto")) {
-            return false;
-        }
-        
-        // If gluten-free is selected, recipe must be gluten-free
-        if (prefs.isGlutenFree() && !dietaryCategory.contains("gluten-free")) {
-            return false;
-        }
-        
-        return true;
+    /**
+     * Set the recipe database from external source
+     */
+    public void setRecipeDatabase(List<Recipe> recipes) {
+        this.recipeDatabase = new ArrayList<>(recipes);
     }
-    
-    private boolean matchesHealthGoals(Recipe recipe, Preferences prefs) {
-        int calories = recipe.getCalories();
-        
-        // Check low-calorie preference
-        if (prefs.isLowCalorie() && calories > 400) {
-            return false;
-        }
-        
-        // Check high-calorie preference
-        if (prefs.isHighCalorie() && calories < 600) {
-            return false;
-        }
-        
-        // Check high-protein preference (simplified - assume high protein if calories > 500)
-        if (prefs.isHighProtein() && calories < 500) {
-            return false;
-        }
-        
-        return true;
-    }
-    
-    private boolean matchesCuisinePreferences(Recipe recipe, Preferences prefs) {
-        String cuisine = recipe.getCuisine().toLowerCase();
-        
-        // If no cuisine preference is selected, match all cuisines
-        if (!prefs.isItalian() && !prefs.isMexican() && !prefs.isAsian() && 
-            !prefs.isAmerican() && !prefs.isMediterranean()) {
-            return true;
-        }
-        
-        // Check specific cuisine preferences
-        if (prefs.isItalian() && cuisine.contains("italian")) {
-            return true;
-        }
-        if (prefs.isMexican() && cuisine.contains("mexican")) {
-            return true;
-        }
-        if (prefs.isAsian() && (cuisine.contains("asian") || cuisine.contains("chinese"))) {
-            return true;
-        }
-        if (prefs.isAmerican() && cuisine.contains("american")) {
-            return true;
-        }
-        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    //❗Add this back in if it's important❗
-    // private void addTestRecipes() {
-    //     // Add recipes with complete data including cost and calories
-    //     recipeDatabase.add(new Recipe("Caprese Stuffed Avocados", "italian", "vegetarian", 10, 12.50, 320));
-    //     recipeDatabase.add(new Recipe("Keto Bacon Cheeseburger Casserole", "american", "keto", 35, 18.75, 650));
-    //     recipeDatabase.add(new Recipe("Gluten-Free Chicken Stir Fry", "asian", "gluten-free", 20, 15.25, 420));
-    //     recipeDatabase.add(new Recipe("Vegetarian Lentil Curry", "asian", "vegetarian", 35, 8.99, 380));
-    //     recipeDatabase.add(new Recipe("Keto Garlic Butter Salmon", "american", "keto", 15, 22.50, 580));
-    //     recipeDatabase.add(new Recipe("Gluten-Free Quinoa Salad", "mediterranean", "gluten-free", 25, 9.75, 280));
-    //     recipeDatabase.add(new Recipe("Mushroom and Spinach Quesadillas", "mexican", "vegetarian", 12, 7.50, 350));
-    // }
 }
