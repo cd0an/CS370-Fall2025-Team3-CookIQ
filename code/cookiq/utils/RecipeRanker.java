@@ -4,7 +4,7 @@
  * Contains helper methods to score and rank recipes based on
  * how well they match user preferences.
  */
-package cookiq.services;
+package cookiq.utils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
