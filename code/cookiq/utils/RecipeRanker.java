@@ -13,7 +13,7 @@ import java.util.List;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 
-public class RecommendationService {
+public class RecipeRanker {
     private List<Recipe> recipeDatabase;
     
     public RecommendationService() {
