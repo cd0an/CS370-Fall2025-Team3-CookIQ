@@ -16,7 +16,7 @@ import cookiq.models.Recipe;
 public class RecipeRanker {
     private List<Recipe> recipeDatabase;
     
-    public RecommendationService() {
+    public RecipeRanker() {
         this.recipeDatabase = new ArrayList<>();
     }
     
