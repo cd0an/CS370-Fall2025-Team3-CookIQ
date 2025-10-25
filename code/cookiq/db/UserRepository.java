@@ -3,41 +3,54 @@
 
 package cookiq.db;
 
-import org.bson.Document;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import java.util.List;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import static com.mongodb.client.model.Filters.eq;
+import java.util.ArrayList;
+
+import cookiq.security.PasswordUtils;
 
 public class UserRepository {
     private final MongoCollection<Document> users;
 
-    // Automatically uses the shared MongoDBConnection class
     public UserRepository() {
-        this.users = MongoDBConnection.getDatabase().getCollection("users");
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        this.users = db.getCollection("users");
     }
 
-    /** Finds a user by username */
-    public Document findUserByUsername(String username) {
-        return users.find(Filters.eq("username", username)).first();
+    /**
+     * Registers a new user if the username does not already exist.
+     * Returns true if successful, false if username already exists.
+     */
+    public boolean registerUser(String username, String password) {
+        // Check if username already exists
+        Document existingUser = users.find(eq("username", username)).first();
+        if (existingUser != null) {
+            System.out.println("Username already exists: " + username);
+            return false;
+        }
+
+        // Hash the password before storing
+        String passwordHash = PasswordUtils.sha256(password);
+
+        // Create the new user document
+        Document newUser = new Document("username", username)
+                .append("passwordHash", passwordHash)
+                .append("preferences", new Document()) // empty preferences object
+                .append("likedRecipes", new ArrayList<>())
+                .append("dislikedRecipes", new ArrayList<>());
+
+        // Insert into MongoDB
+        users.insertOne(newUser);
+        System.out.println("User registered successfully: " + username);
+        return true;
     }
 
-    /** Creates a new user */
-    public void createUser(Document userDoc) {
-        users.insertOne(userDoc);
-        System.out.println("User added: " + userDoc.getString("username"));
-    }
-
-    /** Updates user preferences */
-    public void updateUserPreferences(String username, String preferences) {
-        users.updateOne(
-                Filters.eq("username", username),
-                new Document("$set", new Document("preferences", preferences)));
-    }
-
-    /** Updates liked recipes */
-    public void updateLikedRecipes(String username, List<String> liked) {
-        users.updateOne(
-                Filters.eq("username", username),
-                new Document("$set", new Document("liked", liked)));
+    /**
+     * Retrieves a user document by username.
+     */
+    public Document getUser(String username) {
+        return users.find(eq("username", username)).first();
     }
 }
