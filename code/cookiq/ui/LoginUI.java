@@ -62,9 +62,13 @@ public class LoginUI extends JFrame {
         title.setForeground(TEXT_DARK);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitle = new JLabel("Welcome to CookIQ! Please enter your details.");
+        JTextArea subtitle = new JTextArea("Welcome to CookIQ! Please enter your details.");
         subtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
         subtitle.setForeground(TEXT_DARK);
+        subtitle.setLineWrap(true); //wrap lines
+        subtitle.setWrapStyleWord(true); //wrap at word boundaries
+        subtitle.setEditable(false); //make it read-only
+        subtitle.setOpaque(false); //transparent background
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel userLabel = new JLabel("Username:");
@@ -87,7 +91,7 @@ public class LoginUI extends JFrame {
         JButton loginBtn = createRoundedButton("Login", ACCENT);
         loginBtn.addActionListener(e -> handleLogin());
         loginPanel.add(loginBtn);
-
+        
         // Updated link style
         JLabel signUpLabel = new JLabel("No account yet? Register here.");
         signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));

@@ -108,8 +108,6 @@ public class Recipe {
         return new Recipe(id, name, cuisine, dietaryCategory, cookTime, cost, calories, ingredients, directions, NER);
     }
 
-
-
     // Helper to parse array strings like "[a, b, c]"
     private static List<String> parseArray(String arrayString) {
         arrayString = arrayString.replaceAll("^\\[|]$", ""); // remove brackets
@@ -120,5 +118,4 @@ public class Recipe {
         }
         return list;
     }
-
 }
