@@ -46,6 +46,9 @@ public class SwipeUI extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
 
+        recipeCard = new JPanel();
+        recipeCard.setOpaque(false);
+
         // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
         recipes = new ArrayList<>();
 
@@ -66,14 +69,20 @@ public class SwipeUI extends JPanel {
             * }
             */
 
-        currentIndex = 0;
-
-        initSwipeUI();
+        // If user has not set their preferences, display the following UI
+        if (userPreferences == null) {
+            showSetPreferencesUI();
+            return;
+        } else {
+            currentIndex = 0;
+            initSwipeUI();
+        }
     }
 
-    // Function to handle the UI
+
+    // ====================== Function to Display Swipe UI ====================== 
     private void initSwipeUI() {
-                // ====================== Recipe Card Panel ======================
+        // ====================== Recipe Card Panel ======================
         recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
         recipeCard.setBackground(Color.WHITE);
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
@@ -224,6 +233,7 @@ public class SwipeUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+
     // ====================== Next Recipe ======================
     private void nextRecipe(boolean liked) {
         if (liked) {
@@ -243,6 +253,7 @@ public class SwipeUI extends JPanel {
         titleLabel.setText(recipes.get(currentIndex)[0]);
         tagsLabel.setText(recipes.get(currentIndex)[1]);
     }
+
 
     // ====================== End of Queue UI ======================
     // Function to show end of queue  
@@ -315,6 +326,70 @@ public class SwipeUI extends JPanel {
         revalidate();
         repaint();
     }
+
+
+    // ====================== Set Preferences UI ======================
+    private void showSetPreferencesUI() {
+        removeAll();
+        revalidate();
+        repaint();
+
+        // ====================== Title Above UI ======================
+        JLabel Ptitle = new JLabel("Meal Match", SwingConstants.CENTER);
+        Ptitle.setFont(new Font("SansSerif", Font.BOLD, 40));
+        Ptitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Ptitle.setForeground(new Color(0x473c38));
+        Ptitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+
+        // Message at the top 
+        JLabel message = new JLabel("Attention: Please set your preferences first.", SwingConstants.CENTER);
+        message.setFont(new Font("SansSerif", Font.BOLD, 18));
+        message.setForeground(new Color(0xD9, 0x7A, 0x7A));
+        message.setAlignmentX(Component.CENTER_ALIGNMENT);
+        message.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+        //  ====================== White Panel ======================
+        JPanel prefsCard = new RoundedPanel(25, Color.WHITE);
+        prefsCard.setLayout(new BoxLayout(prefsCard, BoxLayout.Y_AXIS));
+        prefsCard.setPreferredSize(new Dimension(450, 450));
+        prefsCard.setMaximumSize(new Dimension(450, 450));
+        prefsCard.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        prefsCard.setBackground(Color.WHITE);
+
+        JButton setPrefsBtn = new JButton("Set Preferences");
+        setPrefsBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setPrefsBtn.setBackground(new Color(0x6E, 0x92, 0x77));
+        setPrefsBtn.setForeground(Color.WHITE);
+        setPrefsBtn.setFocusPainted(false);
+        setPrefsBtn.setOpaque(true);
+        setPrefsBtn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        setPrefsBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
+
+        setPrefsBtn.addActionListener(e -> {
+            System.out.println("Navigating to Preferences..."); 
+        });
+
+        prefsCard.add(Box.createVerticalGlue());
+        prefsCard.add(setPrefsBtn);
+        prefsCard.add(Box.createVerticalGlue());
+
+        //  ====================== Center Panel ======================
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(new Color(0xF2, 0xEF, 0xEB));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        centerPanel.add(Box.createVerticalGlue());
+        centerPanel.add(Ptitle);
+        centerPanel.add(message);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        centerPanel.add(prefsCard);
+        centerPanel.add(Box.createVerticalGlue());
+
+        add(centerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
 
     // ====================== Custom Rounded Panel ======================
     private static class RoundedPanel extends JPanel {
