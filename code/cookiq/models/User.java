@@ -60,7 +60,7 @@ public class User { // declares class named user . can be accessed from other cl
     public void addLiked(String item) {
         if (!liked.contains(item)) {
             liked.add(item);
-            disliked.remove(item); // make sure it's not both liked and disliked
+            disliked.remove(item); // Make sure it's not both liked and disliked
         }
     }
 

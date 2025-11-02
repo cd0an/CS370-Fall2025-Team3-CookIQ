@@ -280,8 +280,12 @@ public class SwipeUI extends JPanel {
 
     // ====================== Next Recipe ======================
     private void nextRecipe(boolean liked) {
-        if (liked) {
-            likedRecipes.add(recipes.get(currentIndex));
+        if (mainFrame != null) {
+            if (liked) {
+                mainFrame.addLikedRecipe(recipes.get(currentIndex));
+            } else {
+                mainFrame.addDislikedRecipe(recipes.get(currentIndex));
+            }
         }
 
         currentIndex++;
@@ -346,7 +350,11 @@ public class SwipeUI extends JPanel {
         addHoverEffect(resetPrefs, new Color(0x5A7B63));
 
         // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
-        viewLiked.addActionListener(e -> System.out.println("Open liked recipes panel"));
+        viewLiked.addActionListener(e -> {
+            if (mainFrame != null) {
+                mainFrame.showLikedRecipesUI();
+            }
+        });
 
         // When user clicks the 'New Suggestions' button, it calls the RecommendationService to retrieve new recipes 
         newSuggestions.addActionListener(e -> System.out.println("Fetch new suggestions"));

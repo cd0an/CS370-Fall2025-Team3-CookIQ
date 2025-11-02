@@ -10,9 +10,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.util.List;
+import java.util.ArrayList;
 
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.models.User;
 
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
@@ -22,7 +25,10 @@ public class MainFrame extends JFrame {
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
     private RecipeDetailsUI recipeDetailsUI;
-    private LikedRecipesUI likedRecipesUI;
+    private LikedRecipeUI likedRecipeUI;
+
+    private User currentUser; // Currently logged-in 
+    private List<String[]> likedRecipesList = new ArrayList<>();
 
     // Constructor 
     public MainFrame() {
@@ -42,11 +48,11 @@ public class MainFrame extends JFrame {
         // Initialize Panels 
         preferencesUI = new PreferencesUI(this);
         swipeUI = new SwipeUI(this);
-        likedRecipesUI = new LikedRecipesUI(this);
+        likedRecipeUI = new LikedRecipeUI(this);
 
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
-        mainPanel.add(likedRecipesUI, "LikedRecipes");
+        mainPanel.add(likedRecipeUI, "LikedRecipes");
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
@@ -80,6 +86,30 @@ public class MainFrame extends JFrame {
     // ======================== Method to switch to LikedRecipesUI ========================
     public void showLikedRecipesUI() {
         cardLayout.show(mainPanel, "LikedRecipes");
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void addLikedRecipe(String[] recipe) {
+        likedRecipesList.add(recipe);
+        likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
+
+        // Update User Object
+        if (currentUser != null) {
+            currentUser.addLiked(recipe[0]); // Store recipe by title 
+        }
+    }
+
+    public void addDislikedRecipe(String[] recipe) {
+        if (currentUser != null) {
+            currentUser.addDisliked(recipe[0]);
+        }
     }
 
     // ======================== Navbar Action Listener ========================
