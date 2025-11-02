@@ -5,25 +5,37 @@
  * Collects username and password and passes them to UserService.
  */
 
-/**
- * LoginUI.java 
- *
- * Handles the login screen for CookIQ.
- * Collects username and password and passes them to UserService.
- */
-/**
- * LoginUI.java
- *
- * Finalized Login Page UI for CookIQ.
- * Adds inline status/error label, input validation, and smoother UX.
- */
-
 package cookiq.ui;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
 import org.bson.Document;
+
 import cookiq.db.UserRepository;
 import cookiq.security.PasswordUtils;
 

@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
     private SwipeUI swipeUI;
     private RecipeDetailsUI recipeDetailsUI;
     private LikedRecipeUI likedRecipeUI;
+    private HomeDashboardUI homeDashboardUI;
 
     private User currentUser; // Currently logged-in 
     private List<String[]> likedRecipesList = new ArrayList<>();

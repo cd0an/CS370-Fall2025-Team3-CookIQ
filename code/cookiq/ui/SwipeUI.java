@@ -463,7 +463,9 @@ public class SwipeUI extends JPanel {
     }
 
 
-    // ====================== Helper Method for Hover Effect ======================
+    // ====================== Helper Functions ======================
+
+    /// Hover Effect 
     private void addHoverEffect(JButton button, Color hoverColor) {
         Color originalColor = button.getBackground();
         Dimension originalSize = button.getPreferredSize();
@@ -486,7 +488,7 @@ public class SwipeUI extends JPanel {
     }
 
     
-    // ====================== Custom Rounded Panel ======================
+    // Custom Rounded Panel 
     private static class RoundedPanel extends JPanel {
         private final int cornerRadius;
         private final Color borderColor;
