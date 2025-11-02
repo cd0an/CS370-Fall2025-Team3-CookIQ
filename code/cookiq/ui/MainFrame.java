@@ -6,12 +6,12 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.util.List;
-import java.util.ArrayList;
 
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
@@ -50,7 +50,9 @@ public class MainFrame extends JFrame {
         preferencesUI = new PreferencesUI(this);
         swipeUI = new SwipeUI(this);
         likedRecipeUI = new LikedRecipeUI(this);
+        homeDashboardUI = new HomeDashboardUI(this);
 
+        mainPanel.add(homeDashboardUI, "Home");
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
         mainPanel.add(likedRecipeUI, "LikedRecipes");
@@ -120,7 +122,7 @@ public class MainFrame extends JFrame {
             JButton source = (JButton) e.getSource();
             
             if (source == navbar.getHomeBtn()) {
-                // cardLayout.show(mainPanel, "Home");
+                cardLayout.show(mainPanel, "Home");
             } else if (source == navbar.getPreferencesBtn()) {
                 cardLayout.show(mainPanel, "Preferences");
             } else if (source == navbar.getLikedBtn()) {
