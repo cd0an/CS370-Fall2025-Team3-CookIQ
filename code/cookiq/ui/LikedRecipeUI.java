@@ -11,13 +11,13 @@ import java.util.ArrayList;
 public class LikedRecipeUI extends JPanel {
     private JPanel likedRecipesPanel; // Container for all liked recipe cards
     private JScrollPane scrollPane; // Scrolls when there are many recipes 
-    private List<String[]> likedRecipes; // Each recipe: {title, tags, cuisine, cookTime, cost}
+    private List<String[]> likedRecipe; // Each recipe: {title, tags, cuisine, cookTime, cost}
     private MainFrame mainFrame; // Reference to MainFrame for navigation
 
     // Constructor
     public LikedRecipeUI(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        likedRecipes = new ArrayList<>();
+        likedRecipe = new ArrayList<>();
 
         // Main layout setup
         setLayout(new BorderLayout()); 
