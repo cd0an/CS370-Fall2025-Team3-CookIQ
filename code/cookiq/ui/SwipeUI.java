@@ -40,16 +40,17 @@ public class SwipeUI extends JPanel {
     private int currentIndex; 
     private Preferences userPreferences; // Store user preferences 
     private JLabel mealMatchTitle;
+    private MainFrame mainFrame; // Reference to parent frame 
 
     // Constructor 
-    public SwipeUI() {
+    public SwipeUI(MainFrame frame) {
+        this.mainFrame = frame;
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
-
         recipeCard = new JPanel();
         recipeCard.setOpaque(false);
 
-        showSetPreferencesUI(); 
+        showSetPreferencesUI(); // Default UI if no preferences set by user 
     }
 
     // ====================== Set User Preferences ======================
@@ -297,9 +298,23 @@ public class SwipeUI extends JPanel {
             btn.setFont(new Font("SansSerif", Font.BOLD, 16));
         }
 
+        // Call hover effect to each of the three buttons
+        addHoverEffect(viewLiked, new Color(0x5A7B63));
+        addHoverEffect(newSuggestions, new Color(0x5A7B63));
+        addHoverEffect(resetPrefs, new Color(0x5A7B63));
+
+        // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
         viewLiked.addActionListener(e -> System.out.println("Open liked recipes panel"));
+
+        // When user clicks the 'New Suggestions' button, it calls the RecommendationService to retrieve new recipes 
         newSuggestions.addActionListener(e -> System.out.println("Fetch new suggestions"));
-        resetPrefs.addActionListener(e -> System.out.println("Go back to preferences"));
+
+        // When user clicks the 'Reset Preferences' button, it navigates to the Preferences UI 
+        resetPrefs.addActionListener(e -> {
+            if (mainFrame != null) {
+                mainFrame.showPreferencesUI();
+            }
+        });
 
         // Add components to the white panel 
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
@@ -366,8 +381,14 @@ public class SwipeUI extends JPanel {
         setPrefsBtn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         setPrefsBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
 
+        // Call hover effect to the 'Set Preferences' button
+        addHoverEffect(setPrefsBtn, new Color(0x5A7B63));
+
+        // If user clicks the 'Set Preferences' button, it navigates to the PreferencesUI 
         setPrefsBtn.addActionListener(e -> {
-            System.out.println("Navigating to Preferences..."); 
+            if (mainFrame != null) {
+                mainFrame.showPreferencesUI();
+            }
         });
 
         prefsCard.add(Box.createVerticalGlue());
@@ -392,6 +413,29 @@ public class SwipeUI extends JPanel {
     }
 
 
+    // ====================== Helper Method for Hover Effect ======================
+    private void addHoverEffect(JButton button, Color hoverColor) {
+        Color originalColor = button.getBackground();
+        Dimension originalSize = button.getPreferredSize();
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(hoverColor);
+                button.setPreferredSize(new Dimension(originalSize.width + 10, originalSize.height + 5));
+                button.revalidate();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(originalColor);
+                button.setPreferredSize(originalSize);
+                button.revalidate();
+            }
+        });
+    }
+
+    
     // ====================== Custom Rounded Panel ======================
     private static class RoundedPanel extends JPanel {
         private final int cornerRadius;

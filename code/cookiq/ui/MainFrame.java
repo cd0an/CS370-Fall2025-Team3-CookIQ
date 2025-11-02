@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         preferencesUI = new PreferencesUI(this);
-        swipeUI = new SwipeUI();
+        swipeUI = new SwipeUI(this);
 
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
@@ -53,6 +53,12 @@ public class MainFrame extends JFrame {
         swipeUI.setUserPreferences(prefs);
         cardLayout.show(mainPanel, "Swipe");
     }
+
+    // ======================== Method to switch to ShowPreferencesUI ========================
+    public void showPreferencesUI() {
+        cardLayout.show(mainPanel, "Preferences");
+    }
+
 
     // ======================== Navbar Action Listener ========================
     private class NavListener implements ActionListener {

@@ -280,6 +280,23 @@ public class PreferencesUI extends JPanel {
 
         // Connects Preference UI input to Preference object from Preference.java
         generateBtn.addActionListener(e -> {
+            // Check if at least one option is selected
+            boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
+            boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
+            boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
+                                || americanCB.isSelected() || medCB.isSelected();
+            boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
+            boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
+            boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
+                                    !ingredientField.getText().equals("Type here (e.g., eggs)");
+
+            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+                // Nothing selected, show warning
+                JOptionPane.showMessageDialog(this, "Please select your preferences first!", 
+                                            "Warning", JOptionPane.WARNING_MESSAGE);
+                return; // Stop further execution
+            }
+
             // Update preferences object
             preferences.setVegetarian(vegetarianCB.isSelected());
             preferences.setKeto(ketoCB.isSelected());
@@ -353,6 +370,23 @@ public class PreferencesUI extends JPanel {
 
         // Action for Reset Button: clears all inputs
         resetBtn.addActionListener( e -> {
+            // Check if anything is selected
+            boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
+            boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
+            boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
+                                || americanCB.isSelected() || medCB.isSelected();
+            boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
+            boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
+            boolean anyIngredient = !ingredientField.getText().trim().isEmpty() &&
+                                    !ingredientField.getText().equals("Type here (e.g., eggs)");
+
+            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+                // Nothing to reset
+                JOptionPane.showMessageDialog(this, "No preferences to reset.", 
+                                            "Info", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
             // Clear the Preferences object
             preferences.clearAll();
 
