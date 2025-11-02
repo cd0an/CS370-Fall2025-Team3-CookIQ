@@ -49,33 +49,34 @@ public class SwipeUI extends JPanel {
         recipeCard = new JPanel();
         recipeCard.setOpaque(false);
 
-        // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
-        recipes = new ArrayList<>();
+        showSetPreferencesUI(); 
+    }
 
-        recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie"});
-        recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free"});
-        recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie"});
-        recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich"});
-        recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free"});
-        recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein"});
-      
-            // To be Replaced 
-            /*
-            * List <Document> recipeDocs = RecipeRepository.getRecipesByPreferences(userPreferences);
-            * for (Document doc : recipeDocs) {
-            *      String name = doc.getString("name");
-            *      String tags = doc.getString("tags");
-            *      recipes.add(new String[]{name, tags});
-            * }
-            */
+    // ====================== Set User Preferences ======================
+    public void setUserPreferences(Preferences prefs) {
+        this.userPreferences = prefs;
+        System.out.println("User preferences recevied: " + prefs);
+
+        removeAll();
+        revalidate();
+        repaint();
 
         // If user has not set their preferences, display the following UI
         if (userPreferences == null) {
             showSetPreferencesUI();
-            return;
         } else {
+            // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
+            recipes = new ArrayList<>();
+
+            recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie"});
+            recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free"});
+            recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie"});
+            recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich"});
+            recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free"});
+            recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein"});
+
             currentIndex = 0;
-            initSwipeUI();
+            initSwipeUI(); // Build the swipe interface 
         }
     }
 
@@ -413,11 +414,6 @@ public class SwipeUI extends JPanel {
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
         }
-    }
-
-    public void setUserPreferences(Preferences prefs) {
-        this.userPreferences = prefs;
-        System.out.println("User preferences received: " + prefs);
     }
 }
 
