@@ -46,6 +46,7 @@ public class SwipeUI extends JPanel {
     // Constructor 
     public SwipeUI(MainFrame frame) {
         this.mainFrame = frame;
+        
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
         recipeCard = new JPanel();

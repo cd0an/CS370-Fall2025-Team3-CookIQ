@@ -59,7 +59,7 @@ public class MainFrame extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
-        cardLayout.show(mainPanel, "Preferences"); // Show Preferences screen first 
+        cardLayout.show(mainPanel, "Home"); // Show Preferences screen first 
 
         setVisible(true);
     }

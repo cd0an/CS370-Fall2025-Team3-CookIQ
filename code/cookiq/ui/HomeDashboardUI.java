@@ -15,8 +15,9 @@ public class HomeDashboardUI extends JPanel {
     private JPanel cardPanel;
     private MainFrame mainFrame; // Reference to parent frame 
 
-    public HomeDashboardUI(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    // Constructor 
+    public HomeDashboardUI(MainFrame frame) {
+        this.mainFrame = frame;
 
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // Light Orange
@@ -76,10 +77,11 @@ public class HomeDashboardUI extends JPanel {
         // When user clicks the 'Meal Match' button, it navigates to the Swipe UI 
         mealMatchBtn.addActionListener(e -> {
             if (mainFrame != null) {
-                Preferences prefs = new Preferences(); // no arguments
-                mainFrame.showSwipeUI(prefs);
+                // If you have a Preferences object, pass it. Otherwise, pass null or default prefs for now
+                mainFrame.showSwipeUI(null);
             }
         });
+
 
         // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
         likedBtn.addActionListener(e -> {
