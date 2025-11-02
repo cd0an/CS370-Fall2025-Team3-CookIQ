@@ -22,6 +22,7 @@ public class MainFrame extends JFrame {
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
     private RecipeDetailsUI recipeDetailsUI;
+    private LikedRecipesUI likedRecipesUI;
 
     // Constructor 
     public MainFrame() {
@@ -41,9 +42,11 @@ public class MainFrame extends JFrame {
         // Initialize Panels 
         preferencesUI = new PreferencesUI(this);
         swipeUI = new SwipeUI(this);
+        likedRecipesUI = new LikedRecipesUI(this);
 
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
+        mainPanel.add(likedRecipesUI, "LikedRecipes");
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
@@ -74,6 +77,11 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "RecipeDetails");
     }
 
+    // ======================== Method to switch to LikedRecipesUI ========================
+    public void showLikedRecipesUI() {
+        cardLayout.show(mainPanel, "LikedRecipes");
+    }
+
     // ======================== Navbar Action Listener ========================
     private class NavListener implements ActionListener {
         @Override
@@ -85,7 +93,7 @@ public class MainFrame extends JFrame {
             } else if (source == navbar.getPreferencesBtn()) {
                 cardLayout.show(mainPanel, "Preferences");
             } else if (source == navbar.getLikedBtn()) {
-                // cardLayout.show(mainPanel, "LikedRecipes");
+                cardLayout.show(mainPanel, "LikedRecipes");
             } else if (source == navbar.getMealMatchBtn()) {
                 cardLayout.show(mainPanel, "Swipe");
             } else if (source == navbar.getLoginBtn()) {

@@ -20,7 +20,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -91,9 +90,9 @@ public class SwipeUI extends JPanel {
         recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
         recipeCard.setBackground(Color.WHITE);
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
-        recipeCard.setPreferredSize(new Dimension(480, 480));
-        recipeCard.setMaximumSize(new Dimension(480, 480));
-        recipeCard.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        recipeCard.setPreferredSize(new Dimension(480, 500));
+        recipeCard.setMaximumSize(new Dimension(480, 500));
+        recipeCard.setBorder(BorderFactory.createEmptyBorder(40, 30, 30, 30));
 
         // Preview Imaage 
         JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
@@ -111,7 +110,7 @@ public class SwipeUI extends JPanel {
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeCard.add(titleLabel);
-        recipeCard.add(Box.createVerticalStrut(10));
+        recipeCard.add(Box.createVerticalStrut(15));
 
         // Cuisine, Cook Timme, Cost
         JLabel infoLabel = new JLabel(
@@ -121,14 +120,14 @@ public class SwipeUI extends JPanel {
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeCard.add(infoLabel);
-        recipeCard.add(Box.createVerticalStrut(10));
+        recipeCard.add(Box.createVerticalStrut(12));
 
         // Recipe Tags 
         tagsLabel = new JLabel(recipes.get(currentIndex)[1], SwingConstants.CENTER);
         tagsLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         tagsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeCard.add(tagsLabel);
-        recipeCard.add(Box.createRigidArea(new Dimension(0, 15)));
+        recipeCard.add(Box.createVerticalStrut(20));
 
         // View Recipe Button 
         viewRecipeBtn = new JButton("View Full Recipe");
