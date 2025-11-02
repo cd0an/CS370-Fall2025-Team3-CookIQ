@@ -20,6 +20,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -70,12 +71,13 @@ public class SwipeUI extends JPanel {
             // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
             recipes = new ArrayList<>();
 
-            recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie"});
-            recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free"});
-            recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie"});
-            recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich"});
-            recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free"});
-            recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein"});
+            // Format: {title, tags/diet, cuisine, cookTime, cost}
+            recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie", "Mediterranean", "25 min", "$12.50"});
+            recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free", "Mexican", "30 min", "$15.00"});
+            recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie", "American", "10 min", "$8.00"});
+            recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich", "Chinese", "20 min", "$14.00"});
+            recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free", "Chinese", "25 min", "$13.50"});
+            recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein", "Mediterranean", "15 min", "$11.00"});
 
             currentIndex = 0;
             initSwipeUI(); // Build the swipe interface 
@@ -93,16 +95,40 @@ public class SwipeUI extends JPanel {
         recipeCard.setMaximumSize(new Dimension(480, 480));
         recipeCard.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
+        // Preview Imaage 
+        JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+        imageLabel.setOpaque(true);
+        imageLabel.setBackground(Color.LIGHT_GRAY);
+        imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setPreferredSize(new Dimension(420, 250));
+        imageLabel.setMaximumSize(new Dimension(420, 250));
+        recipeCard.add(imageLabel);
+        recipeCard.add(Box.createVerticalStrut(15));
+
         // Recipe Title 
         titleLabel = new JLabel(recipes.get(currentIndex)[0], SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        recipeCard.add(titleLabel);
+        recipeCard.add(Box.createVerticalStrut(10));
 
-        // Recipe Tags
+        // Cuisine, Cook Timme, Cost
+        JLabel infoLabel = new JLabel(
+            recipes.get(currentIndex)[2] + " | " + recipes.get(currentIndex)[3] + " | " + recipes.get(currentIndex)[4],
+            SwingConstants.CENTER
+        );
+        infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        recipeCard.add(infoLabel);
+        recipeCard.add(Box.createVerticalStrut(10));
+
+        // Recipe Tags 
         tagsLabel = new JLabel(recipes.get(currentIndex)[1], SwingConstants.CENTER);
         tagsLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         tagsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        tagsLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        recipeCard.add(tagsLabel);
+        recipeCard.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // View Recipe Button 
         viewRecipeBtn = new JButton("View Full Recipe");
@@ -126,29 +152,26 @@ public class SwipeUI extends JPanel {
 
         // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
         viewRecipeBtn.addActionListener(e -> {
-            // Create a Recipe object from your data
             Recipe selectedRecipe = new Recipe(
-                "1",                        // id
-                "Spaghetti Carbonara",      // name
-                recipes.get(currentIndex)[1], // cuisine or tags
-                "Vegetarian",               // diet type
-                30,                         // cook time
-                12.5,                       // cost
-                420,                        // calories
-                List.of("Spaghetti", "Eggs", "Parmesan Cheese", "Pepper"), // ingredients
-                List.of("Boil pasta", "Mix eggs and cheese", "Combine with pasta", "Season with pepper"), // directions
-                null                        // image
+                    "1",                                 // id
+                    recipes.get(currentIndex)[0],        // name
+                    recipes.get(currentIndex)[2],        // cuisine
+                    recipes.get(currentIndex)[1],        // diet/tags
+                    Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
+                    Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
+                    420,                                 // calories dummy
+                    List.of("Ingredient 1", "Ingredient 2"),
+                    List.of("Step 1", "Step 2"),
+                    null                                 // image
             );
             // Tell MainFrame to show RecipeDetailsUI
             mainFrame.showRecipeDetailsUI(selectedRecipe);
         });
 
-        recipeCard.add(Box.createVerticalGlue());
-        recipeCard.add(titleLabel);
-        recipeCard.add(tagsLabel);
-        recipeCard.add(Box.createRigidArea(new Dimension(0, 15)));
         recipeCard.add(viewRecipeBtn);
         recipeCard.add(Box.createVerticalGlue());
+
+        add(recipeCard); // Add card to SwipeUI panel
 
         // ====================== Like / Dislike Buttons ======================
         JPanel actionPanel = new JPanel();
