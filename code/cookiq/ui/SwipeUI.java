@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import cookiq.models.Preferences;
+import cookiq.models.Recipe;
 
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
@@ -121,6 +122,25 @@ public class SwipeUI extends JPanel {
             public void mouseExited(MouseEvent e) {
                 viewRecipeBtn.setBackground(new Color(0x6E, 0x92, 0x77));
             }
+        });
+
+        // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
+        viewRecipeBtn.addActionListener(e -> {
+            // Create a Recipe object from your data
+            Recipe selectedRecipe = new Recipe(
+                "1",                        // id
+                "Spaghetti Carbonara",      // name
+                recipes.get(currentIndex)[1], // cuisine or tags
+                "Vegetarian",               // diet type
+                30,                         // cook time
+                12.5,                       // cost
+                420,                        // calories
+                List.of("Spaghetti", "Eggs", "Parmesan Cheese", "Pepper"), // ingredients
+                List.of("Boil pasta", "Mix eggs and cheese", "Combine with pasta", "Season with pepper"), // directions
+                null                        // image
+            );
+            // Tell MainFrame to show RecipeDetailsUI
+            mainFrame.showRecipeDetailsUI(selectedRecipe);
         });
 
         recipeCard.add(Box.createVerticalGlue());

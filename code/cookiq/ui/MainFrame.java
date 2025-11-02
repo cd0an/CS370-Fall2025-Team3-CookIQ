@@ -12,13 +12,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import cookiq.models.Preferences;
+import cookiq.models.Recipe;
 
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
     private JPanel mainPanel; // Main content panel that show different screens 
     private CardLayout cardLayout; // Main layout manager to switch between screens 
+
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
+    private RecipeDetailsUI recipeDetailsUI;
 
     // Constructor 
     public MainFrame() {
@@ -35,6 +38,7 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout(); // Allos switching between panels 
         mainPanel = new JPanel(cardLayout);
 
+        // Initialize Panels 
         preferencesUI = new PreferencesUI(this);
         swipeUI = new SwipeUI(this);
 
@@ -59,6 +63,16 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "Preferences");
     }
 
+    // ======================== Method to switch to RecipeDetailsUI ========================
+    public void showRecipeDetailsUI(Recipe recipe) {
+        if (recipeDetailsUI == null) {
+            recipeDetailsUI = new RecipeDetailsUI(this, recipe);
+            mainPanel.add(recipeDetailsUI, "RecipeDetails");
+        } else {
+             recipeDetailsUI = new RecipeDetailsUI(this, recipe);
+        }
+        cardLayout.show(mainPanel, "RecipeDetails");
+    }
 
     // ======================== Navbar Action Listener ========================
     private class NavListener implements ActionListener {
