@@ -105,13 +105,13 @@ public class MainFrame extends JFrame {
 
         // Update User Object
         if (currentUser != null) {
-            currentUser.addLiked(recipe[0]); // Store recipe by title 
+            currentUser.addLikedRecipe(recipe[0]); // Store recipe by title 
         }
     }
 
     public void addDislikedRecipe(String[] recipe) {
         if (currentUser != null) {
-            currentUser.addDisliked(recipe[0]);
+            currentUser.addDislikedRecipe(recipe[0]);
         }
     }
 
