@@ -1,11 +1,12 @@
-package cookiq.services;
-
-import cookiq.models.User;
-
 /**
  * Manages the current session (logged-in user or guest).
  * Singleton pattern ensures one global session across the app.
  */
+
+package cookiq.services;
+
+import cookiq.models.User;
+
 public class UserSession {
     private static UserSession instance;
     private User currentUser;

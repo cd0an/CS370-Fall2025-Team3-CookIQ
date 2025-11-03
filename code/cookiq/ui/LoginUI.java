@@ -5,6 +5,13 @@
  * Collects username and password and passes them to UserService.
  */
 
+/**
+ * LoginUI.java
+ *
+ * Handles the login screen for CookIQ.
+ * Collects username and password and passes them to UserService.
+ */
+
 package cookiq.ui;
 
 import java.awt.*;
@@ -58,7 +65,6 @@ public class LoginUI extends JPanel {
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         userLabel.setForeground(TEXT_DARK);
         userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         usernameField = createStyledField("Enter your username");
 
         // === Password Field ===
@@ -66,7 +72,6 @@ public class LoginUI extends JPanel {
         passLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         passLabel.setForeground(TEXT_DARK);
         passLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         passwordField = createStyledPasswordField("Enter your password");
 
         // === Login Buttons ===
@@ -84,17 +89,13 @@ public class LoginUI extends JPanel {
             JOptionPane.showMessageDialog(LoginUI.this,
                     "Guest mode activated!\nYou can browse recipes but data won't be saved.",
                     "Guest Mode", JOptionPane.INFORMATION_MESSAGE);
-
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
-            if (frame != null) {
-                frame.dispose();
-            }
             new MainFrame().setVisible(true);
+            SwingUtilities.getWindowAncestor(LoginUI.this).setVisible(false);
         });
         loginPanel.add(guestBtn);
 
         // === Sign Up Label ===
-        JLabel signUpLabel = new JLabel("<html><u>Already have account? Login here.</u></html>");
+        JLabel signUpLabel = new JLabel("<html><u>Don't have an account? Sign up here.</u></html>");
         signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         signUpLabel.setForeground(TEXT_DARK);
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -247,7 +248,7 @@ public class LoginUI extends JPanel {
             setStatus("Welcome, " + username + "!", true);
 
             cookiq.models.User currentUser =
-                    new cookiq.models.User(username, password, "");
+                    new cookiq.models.User(username, "", ""); // avoid storing plain password
             UserSession.getInstance().login(currentUser);
 
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
@@ -265,3 +266,4 @@ public class LoginUI extends JPanel {
         statusLabel.setForeground(success ? new Color(50, 120, 70) : new Color(160, 40, 40));
     }
 }
+

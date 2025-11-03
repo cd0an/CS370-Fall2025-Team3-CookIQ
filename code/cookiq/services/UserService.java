@@ -4,6 +4,7 @@
  * - Login existing users
  * - Save/load users from a file
  */
+
 package cookiq.services;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class UserService {
         userRepository = new UserRepository();
     }
 
-    // Register user
+    // ==================== User Registration ====================
     public boolean registerUser(String username, String password) {
         return userRepository.registerUser(username, password);
     }
 
-    // Login user (verifies hashed password)
+    // ==================== User Login ====================
     public boolean loginUser(String username, String password) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -34,13 +35,10 @@ public class UserService {
         return PasswordUtils.slowEquals(storedHash, enteredHash);
     }
 
-    // Add liked recipe for a user
-    public void addLikedRecipe(String username, String recipeName) {
+    // ==================== Liked Recipes ====================
+    public boolean addLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
-        if (user == null) {
-            System.out.println("User not found: " + username);
-            return;
-        }
+        if (user == null) return false;
 
         List<String> likedRecipes = user.getList("likedRecipes", String.class);
         if (likedRecipes == null) likedRecipes = new ArrayList<>();
@@ -49,28 +47,56 @@ public class UserService {
             likedRecipes.add(recipeName);
             user.put("likedRecipes", likedRecipes);
             userRepository.updateUser(username, user);
-            System.out.println("Added '" + recipeName + "' to " + username + "'s liked recipes.");
+            return true;
         }
+        return false;
     }
 
-    // Retrieve liked recipes for a user
     public List<String> getLikedRecipes(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new ArrayList<>();
-        return user.getList("likedRecipes", String.class);
+        List<String> likedRecipes = user.getList("likedRecipes", String.class);
+        return likedRecipes != null ? likedRecipes : new ArrayList<>();
     }
 
-    // Remove liked recipe
-    public void removeLikedRecipe(String username, String recipeName) {
+    public boolean removeLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
-        if (user == null) return;
+        if (user == null) return false;
 
         List<String> likedRecipes = user.getList("likedRecipes", String.class);
-        if (likedRecipes != null && likedRecipes.remove(recipeName)) {
+        if (likedRecipes == null) likedRecipes = new ArrayList<>();
+
+        if (likedRecipes.remove(recipeName)) {
             user.put("likedRecipes", likedRecipes);
             userRepository.updateUser(username, user);
-            System.out.println("Removed '" + recipeName + "' from " + username + "'s liked recipes.");
+            return true;
         }
+        return false;
+    }
+
+    // ==================== Disliked Recipes ====================
+    public boolean addDislikedRecipe(String username, String recipeName) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return false;
+
+        List<String> dislikedRecipes = user.getList("dislikedRecipes", String.class);
+        if (dislikedRecipes == null) dislikedRecipes = new ArrayList<>();
+
+        if (!dislikedRecipes.contains(recipeName)) {
+            dislikedRecipes.add(recipeName);
+            user.put("dislikedRecipes", dislikedRecipes);
+            userRepository.updateUser(username, user);
+            return true;
+        }
+        return false;
+    }
+
+    public List<String> getDislikedRecipes(String username) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return new ArrayList<>();
+        List<String> dislikedRecipes = user.getList("dislikedRecipes", String.class);
+        return dislikedRecipes != null ? dislikedRecipes : new ArrayList<>();
     }
 }
+
 

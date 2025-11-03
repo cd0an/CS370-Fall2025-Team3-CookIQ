@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import cookiq.db.UserRepository;
+import cookiq.security.PasswordUtils;
 
 public class SignUpUI extends JPanel {
     private JTextField usernameField;
@@ -19,26 +20,20 @@ public class SignUpUI extends JPanel {
         Color CARD = Color.WHITE;
         Color ACCENT = new Color(90, 130, 100);
         Color TEXT_DARK = new Color(60, 50, 40);
+        Color TEXT_LIGHT = new Color(120, 120, 120);
 
-        // === Root panel (this) ===
         setBackground(BG);
         setLayout(new GridBagLayout());
 
-        // ===== MAIN CARD =====
+        // ===== Main Card =====
         JPanel card = new JPanel();
         card.setBackground(CARD);
-
-        // Made the border padding larger & softer
         card.setBorder(new CompoundBorder(
                 new LineBorder(new Color(220, 210, 200), 1, true),
-                new EmptyBorder(60, 70, 60, 70) // increased padding for more space inside
+                new EmptyBorder(40, 50, 40, 50)
         ));
-
-        // Using BoxLayout for vertical stacking
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-
-        // Increased preferred size to make the card visually larger
-        card.setPreferredSize(new Dimension(450, 550)); // was 380x430 before
+        card.setPreferredSize(new Dimension(450, 520));
 
         // === Title ===
         JLabel title = new JLabel("Register", SwingConstants.CENTER);
@@ -46,104 +41,150 @@ public class SignUpUI extends JPanel {
         title.setForeground(TEXT_DARK);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitle = new JLabel("Please sign up to continue.", SwingConstants.CENTER);
+        JLabel subtitle = new JLabel("Create your account to start cooking!", SwingConstants.CENTER);
         subtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        subtitle.setForeground(TEXT_DARK);
+        subtitle.setForeground(TEXT_LIGHT);
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // === Form ===
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(CARD);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JLabel userLabel = new JLabel("Username:");
-        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // === Username Field ===
+        JLabel userLabel = new JLabel("Username");
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         userLabel.setForeground(TEXT_DARK);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        formPanel.add(userLabel, gbc);
+        userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        usernameField = new JTextField();
-        styleField(usernameField);
-        gbc.gridy = 1;
-        formPanel.add(usernameField, gbc);
+        usernameField = createStyledField("Enter your username");
 
-        JLabel passLabel = new JLabel("Password:");
-        passLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // === Password Field ===
+        JLabel passLabel = new JLabel("Password");
+        passLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         passLabel.setForeground(TEXT_DARK);
-        gbc.gridy = 2;
-        formPanel.add(passLabel, gbc);
+        passLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        passwordField = new JPasswordField();
-        styleField(passwordField);
-        gbc.gridy = 3;
-        formPanel.add(passwordField, gbc);
+        passwordField = createStyledPasswordField("Enter your password");
 
-        JLabel confirmLabel = new JLabel("Confirm Password:");
-        confirmLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // === Confirm Password Field ===
+        JLabel confirmLabel = new JLabel("Confirm Password");
+        confirmLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         confirmLabel.setForeground(TEXT_DARK);
-        gbc.gridy = 4;
-        formPanel.add(confirmLabel, gbc);
+        confirmLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        confirmPasswordField = new JPasswordField();
-        styleField(confirmPasswordField);
-        gbc.gridy = 5;
-        formPanel.add(confirmPasswordField, gbc);
+        confirmPasswordField = createStyledPasswordField("Confirm your password");
 
-        // === Centered Sign Up button ===
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // === Buttons ===
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonPanel.setBackground(CARD);
+
         JButton signUpBtn = createRoundedButton("Sign Up", ACCENT);
         signUpBtn.addActionListener(e -> handleSignUp());
         buttonPanel.add(signUpBtn);
 
-        JLabel loginLabel = new JLabel("Already have an account? Login here.");
-        loginLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        // === Login Label ===
+        JLabel loginLabel = new JLabel("<html><u>Already have an account? Login here.</u></html>");
+        loginLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         loginLabel.setForeground(TEXT_DARK);
         loginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // To switch panels, you can trigger a parent controller instead of creating new
-                // frames.
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SignUpUI.this);
                 if (frame != null) {
-                    frame.setContentPane(new LoginUI()); // replace content
+                    frame.setContentPane(new LoginUI());
                     frame.revalidate();
                 }
             }
         });
 
+        // === Status Label ===
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
-        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // === Add to Card ===
+        // === Add Components to Card ===
+        card.add(Box.createVerticalStrut(10));
         card.add(title);
-        card.add(Box.createVerticalStrut(5));
+        card.add(Box.createVerticalStrut(8));
         card.add(subtitle);
+        card.add(Box.createVerticalStrut(20));
+        card.add(userLabel);
+        card.add(Box.createVerticalStrut(5));
+        card.add(usernameField);
         card.add(Box.createVerticalStrut(15));
-        card.add(formPanel);
+        card.add(passLabel);
+        card.add(Box.createVerticalStrut(5));
+        card.add(passwordField);
+        card.add(Box.createVerticalStrut(15));
+        card.add(confirmLabel);
+        card.add(Box.createVerticalStrut(5));
+        card.add(confirmPasswordField);
         card.add(Box.createVerticalStrut(20));
         card.add(buttonPanel);
         card.add(Box.createVerticalStrut(15));
         card.add(loginLabel);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(8));
         card.add(statusLabel);
 
         add(card);
     }
 
-    private void styleField(JTextField field) {
-        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+    // === Styled JTextField ===
+    private JTextField createStyledField(String placeholder) {
+        JTextField field = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getText().isEmpty() && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.setFont(getFont());
+                    FontMetrics fm = g2.getFontMetrics();
+                    Insets insets = getInsets();
+                    g2.drawString(placeholder, insets.left, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                    g2.dispose();
+                }
+            }
+        };
+        field.setFont(new Font("SansSerif", Font.PLAIN, 13));
         field.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(180, 180, 180), 1, true),
-                new EmptyBorder(8, 10, 8, 10)));
-        field.setPreferredSize(new Dimension(300, 35));
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)
+        ));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return field;
     }
 
+    // === Styled JPasswordField ===
+    private JPasswordField createStyledPasswordField(String placeholder) {
+        JPasswordField field = new JPasswordField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getPassword().length == 0 && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.setFont(getFont());
+                    FontMetrics fm = g2.getFontMetrics();
+                    Insets insets = getInsets();
+                    g2.drawString(placeholder, insets.left, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                    g2.dispose();
+                }
+            }
+        };
+        field.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)
+        ));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return field;
+    }
+
+    // === Rounded Button ===
     private JButton createRoundedButton(String text, Color color) {
         JButton button = new JButton(text) {
             @Override
@@ -156,25 +197,21 @@ public class SignUpUI extends JPanel {
                 super.paintComponent(g);
             }
         };
-        button.setFont(new Font("SansSerif", Font.BOLD, 15));
+        button.setFont(new Font("SansSerif", Font.BOLD, 13));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(new EmptyBorder(10, 25, 10, 25));
+        button.setBorder(new EmptyBorder(10, 18, 10, 18));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setContentAreaFilled(false);
         button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(color.darker());
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(color);
-            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) { button.setBackground(color.darker()); }
+            public void mouseExited(java.awt.event.MouseEvent evt) { button.setBackground(color); }
         });
         return button;
     }
 
+    // === Handle Sign-Up ===
     private void handleSignUp() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
@@ -192,7 +229,8 @@ public class SignUpUI extends JPanel {
 
         boolean success = userRepository.registerUser(username, password);
         if (success) {
-            JOptionPane.showMessageDialog(this, "Account created successfully! You can now log in.");
+            JOptionPane.showMessageDialog(this,
+                    "Account created successfully! You can now log in.");
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
             if (frame != null) {
                 frame.setContentPane(new LoginUI());
@@ -203,6 +241,7 @@ public class SignUpUI extends JPanel {
         }
     }
 
+    // === Update Status ===
     private void setStatus(String msg, boolean success) {
         statusLabel.setText(msg);
         statusLabel.setForeground(success ? new Color(50, 120, 70) : new Color(160, 40, 40));
