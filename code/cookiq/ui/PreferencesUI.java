@@ -37,6 +37,8 @@ import org.bson.Document;
 
 import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
+import cookiq.services.PreferencesUtils;
+import cookiq.services.UserService;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
@@ -326,21 +328,40 @@ public class PreferencesUI extends JPanel {
             }
 
             // ============ Save to MongoDB ============
-            Document doc = new Document() 
-                .append("vegetarian", preferences.isVegetarian())
-                .append("keto", preferences.isKeto())
-                .append("glutenFree", preferences.isGlutenFree())
-                .append("lowCalorie", preferences.isLowCalorie())
-                .append("highCalorie", preferences.isHighCalorie())
-                .append("highProtein", preferences.isHighProtein())
-                .append("maxCookTime", preferences.getMaxCookTime())
-                .append("maxBudget", preferences.getMaxBudget())
-                .append("ingredients", preferences.getAvailableIngredients());
+            // Save preferences as JSON string along with username
+            Document doc = new Document()
+                .append("username", mainFrame.getCurrentUser().getUsername()) // make sure you can access the user
+                .append("preferences", PreferencesUtils.toJsonString(preferences));
 
             RecipeRepository.insertDocument("user_preferences", doc);
 
+            // Document doc = new Document() 
+            //     .append("vegetarian", preferences.isVegetarian())
+            //     .append("keto", preferences.isKeto())
+            //     .append("glutenFree", preferences.isGlutenFree())
+            //     .append("lowCalorie", preferences.isLowCalorie())
+            //     .append("highCalorie", preferences.isHighCalorie())
+            //     .append("highProtein", preferences.isHighProtein())
+            //     .append("maxCookTime", preferences.getMaxCookTime())
+            //     .append("maxBudget", preferences.getMaxBudget())
+            //     .append("ingredients", preferences.getAvailableIngredients());
+
+            // RecipeRepository.insertDocument("user_preferences", doc);
+
             // Tell MainFrame to switch to SwipeUI
             mainFrame.showSwipeUI(preferences);
+
+            //Save preferences to current user automatically
+            if (mainFrame.getCurrentUser() != null) {
+                // Convert Preferences object to JSON string
+                String prefStr = PreferencesUtils.toJsonString(preferences);
+                
+                // Save to current user
+                mainFrame.getCurrentUser().setPreferences(prefStr);
+
+                // Persist to MongoDB
+                new UserService().saveUserPreferences(mainFrame.getCurrentUser().getUsername(), preferences);
+            }
         });
 
         // ============ Reset Button ============
@@ -434,6 +455,46 @@ public class PreferencesUI extends JPanel {
         btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         add(btnPanel, BorderLayout.SOUTH);
+    }
+
+    public void setPreferences(Preferences prefs) {
+        if (prefs == null) return;
+
+        // Save reference
+        this.preferences = prefs;
+
+        // Dietary restrictions
+        vegetarianCB.setSelected(prefs.isVegetarian());
+        ketoCB.setSelected(prefs.isKeto());
+        glutenCB.setSelected(prefs.isGlutenFree());
+
+        // Health goals
+        lowCalCB.setSelected(prefs.isLowCalorie());
+        highCalCB.setSelected(prefs.isHighCalorie());
+        highProteinCB.setSelected(prefs.isHighProtein());
+
+        // Cook time
+        time15.setSelected(prefs.getMaxCookTime() == 15);
+        time30.setSelected(prefs.getMaxCookTime() == 30);
+        time60.setSelected(prefs.getMaxCookTime() == 60);
+
+        // Budget
+        budget10.setSelected(prefs.getMaxBudget() == 10);
+        budget30.setSelected(prefs.getMaxBudget() == 30);
+        budget50.setSelected(prefs.getMaxBudget() == 50);
+
+        // Ingredients
+        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
+            ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
+            ingredientField.setForeground(Color.BLACK);
+        } else {
+            ingredientField.setText("Type here (e.g., eggs)");
+            ingredientField.setForeground(Color.GRAY);
+        }
+    }
+
+    public Preferences getPreferences() {
+        return this.preferences;
     }
 }
 

@@ -63,4 +63,75 @@ public class RecipeRepository
         collection.find(filterDoc).into(results);
         return results;
     }
+
+    // Retrieve existing preferences or save new ones for a user
+    public static Document getUserPreferences(String userId, Document newPreferences) {
+        MongoCollection<Document> users = db.getCollection("users");
+
+        // Try to find existing preferences
+        Document filter = new Document("userId", userId);
+        Document userDoc = users.find(filter).first();
+
+        if (userDoc != null) {
+            // Existing user found
+            Document existingPrefs = (Document) userDoc.get("preferences");
+
+            // If new preferences were provided, update them
+            if (newPreferences != null && !newPreferences.isEmpty()) {
+                users.updateOne(filter, new Document("$set", new Document("preferences", newPreferences)));
+                System.out.println("Updated preferences for existing user: " + userId);
+                return newPreferences;
+            }
+
+            // Otherwise, just return existing preferences
+            System.out.println("Retrieved existing preferences for user: " + userId);
+            return existingPrefs != null ? existingPrefs : new Document();
+        }
+
+        // No existing user found — if new preferences provided, create new record
+        if (newPreferences != null && !newPreferences.isEmpty()) {
+            Document newUser = new Document("userId", userId)
+                                    .append("preferences", newPreferences);
+            users.insertOne(newUser);
+            System.out.println("Created new user with preferences: " + userId);
+            return newPreferences;
+        }
+
+        // No user and no preferences provided
+        System.out.println("No preferences found or provided for new user: " + userId);
+        return new Document();
+    }
+
+    // Get recipes filtered by user preferences
+    public static List<Document> getRecipesByPreferences(Document pref) {
+        MongoCollection<Document> recipes = db.getCollection("recipes");
+        Document filter = new Document();
+
+        // Example: match on diet type
+        if (pref.containsKey("diet")) {
+            filter.append("diet", Pattern.compile(
+                    Pattern.quote(pref.getString("diet")), Pattern.CASE_INSENSITIVE));
+        }
+
+        // Example: match on cuisine
+        if (pref.containsKey("cuisine")) {
+            filter.append("cuisine", Pattern.compile(
+                    Pattern.quote(pref.getString("cuisine")), Pattern.CASE_INSENSITIVE));
+        }
+
+        // Example: avoid certain ingredients
+        if (pref.containsKey("avoidIngredients")) {
+            @SuppressWarnings("unchecked")
+            List<String> avoid = (List<String>) pref.get("avoidIngredients");
+            if (!avoid.isEmpty()) {
+                filter.append("ingredients", new Document("$nin", avoid));
+            }
+        }
+
+        // Collect all matching recipes
+        List<Document> results = new ArrayList<>();
+        recipes.find(filter).into(results);
+        return results;
+    }
+
 }

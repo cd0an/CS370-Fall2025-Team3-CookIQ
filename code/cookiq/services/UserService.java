@@ -12,6 +12,8 @@ import java.util.List;
 import org.bson.Document;
 import cookiq.db.UserRepository;
 import cookiq.security.PasswordUtils;
+import com.google.gson.Gson;
+import cookiq.models.Preferences;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -97,6 +99,24 @@ public class UserService {
         List<String> dislikedRecipes = user.getList("dislikedRecipes", String.class);
         return dislikedRecipes != null ? dislikedRecipes : new ArrayList<>();
     }
+
+    //User Preference save/get
+    public boolean saveUserPreferences(String username, Preferences prefs) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return false;
+
+        String prefStr = PreferencesUtils.toJsonString(prefs);
+        user.put("preferences", prefStr);
+
+        userRepository.updateUser(username, user);
+        return true;
+    }
+
+    public Preferences getUserPreferences(String username) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return new Preferences();
+
+        String prefStr = user.getString("preferences");
+        return PreferencesUtils.fromJsonString(prefStr);
+    }
 }
-
-

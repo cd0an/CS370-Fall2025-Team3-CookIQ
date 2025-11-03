@@ -52,6 +52,10 @@ public class User {
         }
     }
 
+    public void setPreferences(String preferences) {
+        this.preferences = preferences != null ? preferences : "";
+    }
+
     @Override
     public String toString() {
         return "User{" +

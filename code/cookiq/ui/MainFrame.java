@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
+import cookiq.services.PreferencesUtils;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
 
@@ -110,6 +111,22 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "LikedRecipes");
     }
 
+    // Load current user's preferences from UserService
+    public void loadUserPreferences() {
+        if (currentUser == null) return;
+
+        UserService userService = new UserService();
+
+        // 1️⃣ Get Preferences object from UserService
+        Preferences prefs = userService.getUserPreferences(currentUser.getUsername());
+
+        // 2️⃣ Update PreferencesUI with loaded preferences
+        preferencesUI.setPreferences(prefs);
+
+        // 3️⃣ Keep currentUser.preferences string in sync
+        currentUser.setPreferences(PreferencesUtils.toJsonString(prefs));
+    }
+    
     public void addLikedRecipe(String[] recipe) {
         likedRecipesList.add(recipe);
         likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
