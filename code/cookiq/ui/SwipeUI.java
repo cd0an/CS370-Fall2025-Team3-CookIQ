@@ -31,6 +31,7 @@ import javax.swing.SwingConstants;
 
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.services.UserSession;
 
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
@@ -352,7 +353,19 @@ public class SwipeUI extends JPanel {
 
         // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
         viewLiked.addActionListener(e -> {
-            if (mainFrame != null) {
+            if (mainFrame == null) return;
+
+            // Always check at the moment of click
+            if (UserSession.getInstance().isGuest() || mainFrame.getCurrentUser() == null) {
+                // Show dialog for guests
+                javax.swing.JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Please log in to view your liked recipes.",
+                    "Login Required",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                // Logged-in user
                 mainFrame.showLikedRecipesUI();
             }
         });

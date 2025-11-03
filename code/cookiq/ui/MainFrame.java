@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
+import cookiq.services.UserService;
+import cookiq.services.UserSession;
 
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
@@ -32,7 +34,9 @@ public class MainFrame extends JFrame {
     private List<String[]> likedRecipesList = new ArrayList<>();
 
     // Constructor 
-    public MainFrame() {
+    public MainFrame(User user) {
+        this.currentUser = user; // Set current user
+
         setTitle("CookIQ Recipe Generator");
         setSize(1000,700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,6 +45,9 @@ public class MainFrame extends JFrame {
         // ======================== Navbar ======================== 
         navbar = new NavbarPanel(new NavListener());
         add(navbar, BorderLayout.NORTH);
+
+        // Enable/disable Liked button based on user
+        updateNavbarForUser();
 
         // ======================== Main Panel with CardLayout ======================== 
         cardLayout = new CardLayout(); // Allos switching between panels 
@@ -59,9 +66,15 @@ public class MainFrame extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
 
-        cardLayout.show(mainPanel, "Home"); // Show Preferences screen first 
+        cardLayout.show(mainPanel, "Home"); // Show Home Screen
 
         setVisible(true);
+    }
+
+    // ======================== Method to update navbar buttons based on login/guest ========================
+    private void updateNavbarForUser() {
+        boolean isGuest = UserSession.getInstance().isGuest() || currentUser == null;
+        navbar.getLikedBtn().setToolTipText(isGuest ? "Login to view your liked recipes!" : null);
     }
 
     // ======================== Method to switch to SwipeUI ========================
@@ -91,14 +104,6 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "LikedRecipes");
     }
 
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
     public void addLikedRecipe(String[] recipe) {
         likedRecipesList.add(recipe);
         likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
@@ -106,13 +111,24 @@ public class MainFrame extends JFrame {
         // Update User Object
         if (currentUser != null) {
             currentUser.addLikedRecipe(recipe[0]); // Store recipe by title 
+            new UserService().addLikedRecipe(currentUser.getUsername(), recipe[0]);
         }
     }
 
     public void addDislikedRecipe(String[] recipe) {
         if (currentUser != null) {
             currentUser.addDislikedRecipe(recipe[0]);
+            new UserService().addDislikedRecipe(currentUser.getUsername(), recipe[0]);
         }
+    }
+
+    // ======================== User getters/setters ========================
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 
     // ======================== Navbar Action Listener ========================
@@ -126,18 +142,32 @@ public class MainFrame extends JFrame {
             } else if (source == navbar.getPreferencesBtn()) {
                 cardLayout.show(mainPanel, "Preferences");
             } else if (source == navbar.getLikedBtn()) {
-                cardLayout.show(mainPanel, "LikedRecipes");
+                if (UserSession.getInstance().isGuest() || currentUser == null) {
+                    // Show dialog warning for guests
+                    javax.swing.JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "Please log in to view your liked recipes.",
+                        "Login Required",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE
+                    );
+                } else {
+                    cardLayout.show(mainPanel, "LikedRecipes");
+                }
             } else if (source == navbar.getMealMatchBtn()) {
                 cardLayout.show(mainPanel, "Swipe");
             } else if (source == navbar.getLoginBtn()) {
-                // Handle Login 
+                JFrame loginFrame = new JFrame("Login");
+                loginFrame.setContentPane(new LoginUI());
+                loginFrame.pack();
+                loginFrame.setLocationRelativeTo(null);
+                loginFrame.setVisible(true);
             }
         }
     } 
 
     // Main method 
     public static void main(String[] args) {
-        new MainFrame();
+        new MainFrame(UserSession.getInstance().getCurrentUser());
     }
 }
 

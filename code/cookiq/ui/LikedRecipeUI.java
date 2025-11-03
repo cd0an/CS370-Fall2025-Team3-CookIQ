@@ -161,27 +161,6 @@ public class LikedRecipeUI extends JPanel {
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
         }
     }
-
-    // ===== Test Main Method =====
-    // Displays the UI independently for testing purposes
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Liked Recipes UI Test");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-            MainFrame dummyMain = new MainFrame(); // Mock main frame
-            LikedRecipeUI likedUI = new LikedRecipeUI(dummyMain);
-
-            // Add some sample liked recipes
-            likedUI.addLikedRecipe("Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie", "Mediterranean", "25 min", "$12.50");
-            likedUI.addLikedRecipe("Spicy Chicken Tacos", "High-Protein • Gluten-Free", "Mexican", "30 min", "$15.00");
-            likedUI.addLikedRecipe("Avocado Toast", "Vegan • Low-Calorie", "American", "10 min", "$8.00");
-
-            frame.setContentPane(likedUI);
-            frame.setVisible(true);
-        });
-    }
 }
 
 

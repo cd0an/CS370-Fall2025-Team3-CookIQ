@@ -59,12 +59,6 @@ public class HomeDashboardUI extends JPanel {
             addHoverEffect(btn, new Color(0x5A7B63));
         }
 
-        // === Apply Guest Restriction Logic === // ADDED
-        if (UserSession.getInstance().isGuest()) {
-            likedBtn.setEnabled(false);
-            likedBtn.setToolTipText("Login to view your liked recipes!");
-        }
-
         // Add buttons to card panel
         cardPanel.add(Box.createVerticalGlue());
         for (int i = 0; i < buttons.length; i++) {
@@ -75,8 +69,7 @@ public class HomeDashboardUI extends JPanel {
         }
         cardPanel.add(Box.createVerticalGlue());
 
-        // When user clicks the 'My Preferences' button, it navigates to the Preferences
-        // UI
+        // When user clicks the 'My Preferences' button, it navigates to the Preferences UI
         prefsBtn.addActionListener(e -> {
             if (mainFrame != null) {
                 mainFrame.showPreferencesUI();
@@ -86,16 +79,26 @@ public class HomeDashboardUI extends JPanel {
         // When user clicks the 'Meal Match' button, it navigates to the Swipe UI
         mealMatchBtn.addActionListener(e -> {
             if (mainFrame != null) {
-                // If you have a Preferences object, pass it. Otherwise, pass null or default
-                // prefs for now
+                // If you have a Preferences object, pass it. Otherwise, pass null or default prefs for now
                 mainFrame.showSwipeUI(null);
             }
         });
 
-        // When user clicks the 'View Liked Recipes' button, it navigates to the Liked
-        // Recipes UI
+        // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
         likedBtn.addActionListener(e -> {
-            if (mainFrame != null) {
+            if (mainFrame == null) return;
+
+            // Always check at the moment of click
+            if (UserSession.getInstance().isGuest() || mainFrame.getCurrentUser() == null) {
+                // Show dialog for guests
+                javax.swing.JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Please log in to view your liked recipes.",
+                    "Login Required",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                // Logged-in user
                 mainFrame.showLikedRecipesUI();
             }
         });
@@ -165,21 +168,5 @@ public class HomeDashboardUI extends JPanel {
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
         }
-    }
-
-    // ===== Standalone Test =====
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Home Dashboard Test");
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-
-        // Simulate guest login for testing // ADDED
-        cookiq.services.UserSession.getInstance().loginAsGuest();
-
-        // Passing null for mainFrame for testing buttons
-        HomeDashboardUI dashboard = new HomeDashboardUI(null);
-        frame.add(dashboard);
-        frame.setVisible(true);
     }
 }
