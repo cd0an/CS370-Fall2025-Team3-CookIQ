@@ -15,6 +15,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import cookiq.services.UserSession;
+
 public class NavbarPanel extends JPanel {
     private JButton homeBtn;
     private JButton preferencesBtn;
@@ -32,8 +34,9 @@ public class NavbarPanel extends JPanel {
         preferencesBtn = new JButton("Preferences");
         likedBtn = new JButton("View Liked Recipes");
         mealMatchBtn = new JButton("Meal Match");
-        loginBtn = new JButton("Log In");
-
+           
+        // If user is a guest, 'Log In' in navbar, otherwise Logout 
+        loginBtn = new JButton(UserSession.getInstance().isGuest() ? "Log In" : "Log Out");
 
         JButton[] buttons = {homeBtn, preferencesBtn, likedBtn, mealMatchBtn, loginBtn};
         for (JButton btn : buttons) {
@@ -62,6 +65,16 @@ public class NavbarPanel extends JPanel {
             });
 
             add(btn);
+        }
+    }
+
+    public void updateLoginStatus() {
+        boolean isGuest = UserSession.getInstance().isGuest();
+
+        if (isGuest) {
+            loginBtn.setText("Log In");
+        } else {
+            loginBtn.setText("Log Out");
         }
     }
 

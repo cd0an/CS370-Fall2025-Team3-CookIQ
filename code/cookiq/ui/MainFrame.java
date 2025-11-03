@@ -42,12 +42,18 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Make sure session reflects guest or user properly
+        if (UserSession.getInstance().getCurrentUser() == null && !UserSession.getInstance().isGuest()) {
+            // default to guest if no one logged in
+            UserSession.getInstance().loginAsGuest();
+        }
+
         // ======================== Navbar ======================== 
         navbar = new NavbarPanel(new NavListener());
         add(navbar, BorderLayout.NORTH);
 
-        // Enable/disable Liked button based on user
-        updateNavbarForUser();
+        updateNavbarForUser(); // Enable/disable Liked button based on user
+        navbar.updateLoginStatus(); 
 
         // ======================== Main Panel with CardLayout ======================== 
         cardLayout = new CardLayout(); // Allos switching between panels 
@@ -139,8 +145,10 @@ public class MainFrame extends JFrame {
             
             if (source == navbar.getHomeBtn()) {
                 cardLayout.show(mainPanel, "Home");
+
             } else if (source == navbar.getPreferencesBtn()) {
                 cardLayout.show(mainPanel, "Preferences");
+
             } else if (source == navbar.getLikedBtn()) {
                 if (UserSession.getInstance().isGuest() || currentUser == null) {
                     // Show dialog warning for guests
@@ -153,14 +161,26 @@ public class MainFrame extends JFrame {
                 } else {
                     cardLayout.show(mainPanel, "LikedRecipes");
                 }
+                
             } else if (source == navbar.getMealMatchBtn()) {
                 cardLayout.show(mainPanel, "Swipe");
+
             } else if (source == navbar.getLoginBtn()) {
-                JFrame loginFrame = new JFrame("Login");
-                loginFrame.setContentPane(new LoginUI());
-                loginFrame.pack();
-                loginFrame.setLocationRelativeTo(null);
-                loginFrame.setVisible(true);
+                if (UserSession.getInstance().isGuest()) {
+                    // Show login window for guests
+                    JFrame loginFrame = new JFrame("Login");
+                    loginFrame.setContentPane(new LoginUI());
+                    loginFrame.pack();
+                    loginFrame.setLocationRelativeTo(null);
+                    loginFrame.setVisible(true);
+                } else {
+                    // Log out current user
+                    UserSession.getInstance().logout();
+                    currentUser = null;
+
+                    // Redirect to Home
+                    System.exit(0);
+                }
             }
         }
     } 
