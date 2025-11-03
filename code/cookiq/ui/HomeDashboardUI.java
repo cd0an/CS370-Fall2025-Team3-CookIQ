@@ -6,7 +6,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import cookiq.models.Preferences;
-import cookiq.services.UserSession; // ADDED
+import cookiq.services.UserSession; 
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
