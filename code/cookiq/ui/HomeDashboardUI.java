@@ -1,35 +1,37 @@
 /* Home Dashboard */
 
-package cookiq.ui; 
+package cookiq.ui;
+
 import java.awt.*;
 import javax.swing.*;
 
 import cookiq.models.Preferences;
+import cookiq.services.UserSession; // ADDED
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent; 
+import java.awt.event.MouseEvent;
 
 public class HomeDashboardUI extends JPanel {
     private JPanel cardPanel;
-    private MainFrame mainFrame; // Reference to parent frame 
+    private MainFrame mainFrame; // Reference to parent frame
 
-    // Constructor 
+    // Constructor
     public HomeDashboardUI(MainFrame frame) {
         this.mainFrame = frame;
 
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // Light Orange
 
-        // ======= Title ======= 
+        // ======= Title =======
         JLabel title = new JLabel("Dashboard", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.BOLD, 40));
         title.setForeground(new Color(0x473c38));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // ======= White Panel ======= 
+        // ======= White Panel =======
         cardPanel = new RoundedPanel(25, Color.WHITE);
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
@@ -44,7 +46,7 @@ public class HomeDashboardUI extends JPanel {
         JButton likedBtn = new JButton("View Liked Recipes");
 
         // Styling
-        JButton[] buttons = {prefsBtn, mealMatchBtn, likedBtn};
+        JButton[] buttons = { prefsBtn, mealMatchBtn, likedBtn };
         for (JButton btn : buttons) {
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setBackground(new Color(0x6E, 0x92, 0x77));
@@ -57,7 +59,13 @@ public class HomeDashboardUI extends JPanel {
             addHoverEffect(btn, new Color(0x5A7B63));
         }
 
-        // Add buttons to card panel 
+        // === Apply Guest Restriction Logic === // ADDED
+        if (UserSession.getInstance().isGuest()) {
+            likedBtn.setEnabled(false);
+            likedBtn.setToolTipText("Login to view your liked recipes!");
+        }
+
+        // Add buttons to card panel
         cardPanel.add(Box.createVerticalGlue());
         for (int i = 0; i < buttons.length; i++) {
             cardPanel.add(buttons[i]);
@@ -67,23 +75,25 @@ public class HomeDashboardUI extends JPanel {
         }
         cardPanel.add(Box.createVerticalGlue());
 
-        // When user clicks the 'My Preferences' button, it navigates to the Preferences UI 
+        // When user clicks the 'My Preferences' button, it navigates to the Preferences
+        // UI
         prefsBtn.addActionListener(e -> {
             if (mainFrame != null) {
                 mainFrame.showPreferencesUI();
             }
         });
 
-        // When user clicks the 'Meal Match' button, it navigates to the Swipe UI 
+        // When user clicks the 'Meal Match' button, it navigates to the Swipe UI
         mealMatchBtn.addActionListener(e -> {
             if (mainFrame != null) {
-                // If you have a Preferences object, pass it. Otherwise, pass null or default prefs for now
+                // If you have a Preferences object, pass it. Otherwise, pass null or default
+                // prefs for now
                 mainFrame.showSwipeUI(null);
             }
         });
 
-
-        // When user clicks the 'View Liked Recipes' button, it navigates to the Liked Recipes UI
+        // When user clicks the 'View Liked Recipes' button, it navigates to the Liked
+        // Recipes UI
         likedBtn.addActionListener(e -> {
             if (mainFrame != null) {
                 mainFrame.showLikedRecipesUI();
@@ -111,7 +121,7 @@ public class HomeDashboardUI extends JPanel {
 
     // ====================== Helper Functions ======================
 
-        private void addHoverEffect(JButton button, Color hoverColor) {
+    private void addHoverEffect(JButton button, Color hoverColor) {
         Color originalColor = button.getBackground();
         Dimension originalSize = button.getPreferredSize();
 
@@ -132,7 +142,7 @@ public class HomeDashboardUI extends JPanel {
         });
     }
 
-     // Custom Rounded Panel 
+    // Custom Rounded Panel
     private static class RoundedPanel extends JPanel {
         private final int cornerRadius;
         private final Color borderColor;
@@ -164,21 +174,12 @@ public class HomeDashboardUI extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
+        // Simulate guest login for testing // ADDED
+        cookiq.services.UserSession.getInstance().loginAsGuest();
+
         // Passing null for mainFrame for testing buttons
         HomeDashboardUI dashboard = new HomeDashboardUI(null);
         frame.add(dashboard);
         frame.setVisible(true);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import cookiq.db.UserRepository;
 
-public class SignUpUI extends JFrame {
+public class SignUpUI extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
@@ -20,22 +20,25 @@ public class SignUpUI extends JFrame {
         Color ACCENT = new Color(90, 130, 100);
         Color TEXT_DARK = new Color(60, 50, 40);
 
-        setTitle("CookIQ - Register");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 520); // increased height
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(BG);
+        // === Root panel (this) ===
+        setBackground(BG);
         setLayout(new GridBagLayout());
 
-        // === Main Card ===
+        // ===== MAIN CARD =====
         JPanel card = new JPanel();
         card.setBackground(CARD);
+
+        // Made the border padding larger & softer
         card.setBorder(new CompoundBorder(
                 new LineBorder(new Color(220, 210, 200), 1, true),
-                new EmptyBorder(40, 50, 40, 50)
+                new EmptyBorder(60, 70, 60, 70) // increased padding for more space inside
         ));
+
+        // Using BoxLayout for vertical stacking
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setPreferredSize(new Dimension(400, 440)); // larger to fit link
+
+        // Increased preferred size to make the card visually larger
+        card.setPreferredSize(new Dimension(450, 550)); // was 380x430 before
 
         // === Title ===
         JLabel title = new JLabel("Register", SwingConstants.CENTER);
@@ -64,7 +67,6 @@ public class SignUpUI extends JFrame {
 
         usernameField = new JTextField();
         styleField(usernameField);
-        gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(usernameField, gbc);
 
@@ -104,8 +106,13 @@ public class SignUpUI extends JFrame {
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                new LoginUI().setVisible(true);
-                dispose();
+                // To switch panels, you can trigger a parent controller instead of creating new
+                // frames.
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SignUpUI.this);
+                if (frame != null) {
+                    frame.setContentPane(new LoginUI()); // replace content
+                    frame.revalidate();
+                }
             }
         });
 
@@ -133,8 +140,7 @@ public class SignUpUI extends JFrame {
         field.setFont(new Font("SansSerif", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(180, 180, 180), 1, true),
-                new EmptyBorder(8, 10, 8, 10)
-        ));
+                new EmptyBorder(8, 10, 8, 10)));
         field.setPreferredSize(new Dimension(300, 35));
     }
 
@@ -161,6 +167,7 @@ public class SignUpUI extends JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(color.darker());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(color);
             }
@@ -186,8 +193,11 @@ public class SignUpUI extends JFrame {
         boolean success = userRepository.registerUser(username, password);
         if (success) {
             JOptionPane.showMessageDialog(this, "Account created successfully! You can now log in.");
-            dispose();
-            new LoginUI().setVisible(true);
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                frame.setContentPane(new LoginUI());
+                frame.revalidate();
+            }
         } else {
             setStatus("Username already exists.", false);
         }

@@ -7,39 +7,15 @@
 
 package cookiq.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
 import org.bson.Document;
-
 import cookiq.db.UserRepository;
 import cookiq.security.PasswordUtils;
+import cookiq.services.UserSession;
 
-public class LoginUI extends JFrame {
+public class LoginUI extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JLabel statusLabel;
@@ -52,102 +28,172 @@ public class LoginUI extends JFrame {
         Color CARD = Color.WHITE;
         Color ACCENT = new Color(90, 130, 100);
         Color TEXT_DARK = new Color(60, 50, 40);
+        Color TEXT_LIGHT = new Color(120, 120, 120);
 
-        setTitle("CookIQ - Sign In");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 420);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(BG);
+        setBackground(BG);
         setLayout(new GridBagLayout());
 
+        // === Main Card ===
         JPanel card = new JPanel();
         card.setBackground(CARD);
         card.setBorder(new CompoundBorder(
                 new LineBorder(new Color(220, 210, 200), 1, true),
-                new EmptyBorder(30, 40, 30, 40)
-        ));
+                new EmptyBorder(40, 50, 40, 50)));
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setPreferredSize(new Dimension(380, 340));
+        card.setPreferredSize(new Dimension(420, 400));
 
+        // === Title ===
         JLabel title = new JLabel("Sign-In", SwingConstants.CENTER);
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
+        title.setFont(new Font("SansSerif", Font.BOLD, 28));
         title.setForeground(TEXT_DARK);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JTextArea subtitle = new JTextArea("Welcome to CookIQ! Please enter your details.");
-        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        subtitle.setForeground(TEXT_DARK);
-        subtitle.setLineWrap(true); //wrap lines
-        subtitle.setWrapStyleWord(true); //wrap at word boundaries
-        subtitle.setEditable(false); //make it read-only
-        subtitle.setOpaque(false); //transparent background
+        JLabel subtitle = new JLabel("Welcome to CookIQ! Please enter your details.");
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        subtitle.setForeground(TEXT_LIGHT);
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel userLabel = new JLabel("Username:");
-        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // === Username Field ===
+        JLabel userLabel = new JLabel("Username");
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        userLabel.setForeground(TEXT_DARK);
         userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        usernameField = new JTextField();
-        styleField(usernameField);
+        usernameField = createStyledField("Enter your username");
 
-        JLabel passLabel = new JLabel("Password:");
-        passLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // === Password Field ===
+        JLabel passLabel = new JLabel("Password");
+        passLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        passLabel.setForeground(TEXT_DARK);
         passLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        passwordField = new JPasswordField();
-        styleField(passwordField);
+        passwordField = createStyledPasswordField("Enter your password");
 
-        // Centered login button
-        JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // === Login Buttons ===
+        JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         loginPanel.setBackground(CARD);
+
         JButton loginBtn = createRoundedButton("Login", ACCENT);
         loginBtn.addActionListener(e -> handleLogin());
         loginPanel.add(loginBtn);
-        
-        // Updated link style
-        JLabel signUpLabel = new JLabel("No account yet? Register here.");
-        signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+        // === Guest Mode Button ===
+        JButton guestBtn = createRoundedButton("Continue as Guest", new Color(150, 150, 150));
+        guestBtn.addActionListener(e -> {
+            UserSession.getInstance().loginAsGuest();
+            JOptionPane.showMessageDialog(LoginUI.this,
+                    "Guest mode activated!\nYou can browse recipes but data won't be saved.",
+                    "Guest Mode", JOptionPane.INFORMATION_MESSAGE);
+
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
+            if (frame != null) {
+                frame.dispose();
+            }
+            new MainFrame().setVisible(true);
+        });
+        loginPanel.add(guestBtn);
+
+        // === Sign Up Label ===
+        JLabel signUpLabel = new JLabel("<html><u>Already have account? Login here.</u></html>");
+        signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         signUpLabel.setForeground(TEXT_DARK);
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         signUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         signUpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                new SignUpUI().setVisible(true);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
+                if (frame != null) {
+                    frame.setContentPane(new SignUpUI());
+                    frame.revalidate();
+                }
             }
         });
 
+        // === Status Label ===
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
-        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // === Add Components ===
         card.add(Box.createVerticalStrut(10));
         card.add(title);
-        card.add(Box.createVerticalStrut(5));
+        card.add(Box.createVerticalStrut(8));
         card.add(subtitle);
-        card.add(Box.createVerticalStrut(20));
+        card.add(Box.createVerticalStrut(25));
         card.add(userLabel);
+        card.add(Box.createVerticalStrut(5));
         card.add(usernameField);
         card.add(Box.createVerticalStrut(15));
         card.add(passLabel);
+        card.add(Box.createVerticalStrut(5));
         card.add(passwordField);
-        card.add(Box.createVerticalStrut(20));
+        card.add(Box.createVerticalStrut(25));
         card.add(loginPanel);
         card.add(Box.createVerticalStrut(15));
         card.add(signUpLabel);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(8));
         card.add(statusLabel);
 
         add(card);
     }
 
-    private void styleField(JTextField field) {
-        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+    // === Helper to create styled text field with placeholder ===
+    private JTextField createStyledField(String placeholder) {
+        JTextField field = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getText().isEmpty() && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.setFont(getFont());
+                    FontMetrics fm = g2.getFontMetrics();
+                    Insets insets = getInsets();
+                    g2.drawString(placeholder, insets.left, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                    g2.dispose();
+                }
+            }
+        };
+        field.setFont(new Font("SansSerif", Font.PLAIN, 13));
         field.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(180, 180, 180), 1, true),
-                new EmptyBorder(8, 10, 8, 10)
-        ));
-        field.setPreferredSize(new Dimension(250, 35));
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return field;
     }
 
+    // === Helper to create styled password field with placeholder ===
+    private JPasswordField createStyledPasswordField(String placeholder) {
+        JPasswordField field = new JPasswordField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getPassword().length == 0 && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.setFont(getFont());
+                    FontMetrics fm = g2.getFontMetrics();
+                    Insets insets = getInsets();
+                    g2.drawString(placeholder, insets.left, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                    g2.dispose();
+                }
+            }
+        };
+        field.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return field;
+    }
+
+    // === Rounded Button ===
     private JButton createRoundedButton(String text, Color color) {
         JButton button = new JButton(text) {
             @Override
@@ -160,15 +206,13 @@ public class LoginUI extends JFrame {
                 super.paintComponent(g);
             }
         };
-        button.setFont(new Font("SansSerif", Font.BOLD, 15));
+        button.setFont(new Font("SansSerif", Font.BOLD, 13));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(new EmptyBorder(10, 20, 10, 20));
+        button.setBorder(new EmptyBorder(10, 18, 10, 18));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setContentAreaFilled(false);
-
-        // hover
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(color.darker());
@@ -177,10 +221,10 @@ public class LoginUI extends JFrame {
                 button.setBackground(color);
             }
         });
-
         return button;
     }
 
+    // === Handle Login ===
     private void handleLogin() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
@@ -199,18 +243,25 @@ public class LoginUI extends JFrame {
         String storedHash = user.getString("passwordHash");
         String enteredHash = PasswordUtils.sha256(password);
 
-        if (PasswordUtils.slowEquals(storedHash, enteredHash))
+        if (PasswordUtils.slowEquals(storedHash, enteredHash)) {
             setStatus("Welcome, " + username + "!", true);
-        else
+
+            cookiq.models.User currentUser =
+                    new cookiq.models.User(username, password, "");
+            UserSession.getInstance().login(currentUser);
+
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
+            if (frame != null) frame.dispose();
+            new MainFrame().setVisible(true);
+
+        } else {
             setStatus("Incorrect password.", false);
+        }
     }
 
+    // === Status Update ===
     private void setStatus(String msg, boolean success) {
         statusLabel.setText(msg);
         statusLabel.setForeground(success ? new Color(50, 120, 70) : new Color(160, 40, 40));
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LoginUI().setVisible(true));
     }
 }

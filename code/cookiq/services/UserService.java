@@ -4,76 +4,73 @@
  * - Login existing users
  * - Save/load users from a file
  */
-
 package cookiq.services;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import cookiq.models.User;
+import org.bson.Document;
+import cookiq.db.UserRepository;
+import cookiq.security.PasswordUtils;
 
 public class UserService {
-    private static final String USER_FILE = "../data/users.txt";
-    private List<User> users;
+    private final UserRepository userRepository;
 
     public UserService() {
-        users = loadUsers();
+        userRepository = new UserRepository();
     }
 
-    /** Registers a new user if username doesn't already exist */
+    // Register user
     public boolean registerUser(String username, String password) {
-        for (User u : users) {
-            if (u.getUsername().equals(username)) return false; // username already taken
-        }
-
-        users.add(new User(username, password, ""));
-        saveUsers();
-        return true;
+        return userRepository.registerUser(username, password);
     }
 
-    /** Logs in a user if username + password match */
-    public User loginUser(String username, String password) {
-        for (User u : users) {
-            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u;
-            }
-        }
-        return null; // no match found
+    // Login user (verifies hashed password)
+    public boolean loginUser(String username, String password) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return false;
+
+        String storedHash = user.getString("passwordHash");
+        String enteredHash = PasswordUtils.sha256(password);
+        return PasswordUtils.slowEquals(storedHash, enteredHash);
     }
 
-    /** Save users to text file */
-    private void saveUsers() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE))) {
-            for (User u : users) {
-                writer.write(u.getUsername() + "," + u.getPassword() + "," + u.getPreferences());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.err.println("Error saving users: " + e.getMessage());
+    // Add liked recipe for a user
+    public void addLikedRecipe(String username, String recipeName) {
+        Document user = userRepository.getUser(username);
+        if (user == null) {
+            System.out.println("User not found: " + username);
+            return;
+        }
+
+        List<String> likedRecipes = user.getList("likedRecipes", String.class);
+        if (likedRecipes == null) likedRecipes = new ArrayList<>();
+
+        if (!likedRecipes.contains(recipeName)) {
+            likedRecipes.add(recipeName);
+            user.put("likedRecipes", likedRecipes);
+            userRepository.updateUser(username, user);
+            System.out.println("Added '" + recipeName + "' to " + username + "'s liked recipes.");
         }
     }
 
-    /** Load users from text file */
-    private List<User> loadUsers() {
-        List<User> loaded = new ArrayList<>();
-        File file = new File(USER_FILE);
-        if (!file.exists()) return loaded;
+    // Retrieve liked recipes for a user
+    public List<String> getLikedRecipes(String username) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return new ArrayList<>();
+        return user.getList("likedRecipes", String.class);
+    }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String username = parts[0];
-                    String password = parts[1];
-                    String preferences = parts.length > 2 ? parts[2] : "";
-                    loaded.add(new User(username, password, preferences));
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error loading users: " + e.getMessage());
+    // Remove liked recipe
+    public void removeLikedRecipe(String username, String recipeName) {
+        Document user = userRepository.getUser(username);
+        if (user == null) return;
+
+        List<String> likedRecipes = user.getList("likedRecipes", String.class);
+        if (likedRecipes != null && likedRecipes.remove(recipeName)) {
+            user.put("likedRecipes", likedRecipes);
+            userRepository.updateUser(username, user);
+            System.out.println("Removed '" + recipeName + "' from " + username + "'s liked recipes.");
         }
-
-        return loaded;
     }
 }
+
