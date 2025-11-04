@@ -28,7 +28,7 @@ public class LoginUI extends JPanel {
         JPanel card = createCardPanel(420, 400);
         add(card);
 
-        JLabel title = createTitle("Sign-In");
+        JLabel title = createTitle("Sign In");
         JLabel subtitle = createSubtitle("Welcome to CookIQ! Please enter your details.");
         card.add(title);
         card.add(Box.createVerticalStrut(8));

@@ -22,8 +22,8 @@ public class SignUpUI extends JPanel {
         JPanel card = createCardPanel(420, 450);
         add(card);
 
-        JLabel title = createTitle("Sign-Up");
-        JLabel subtitle = createSubtitle("Create a new account to save your recipes.");
+        JLabel title = createTitle("Register");
+        JLabel subtitle = createSubtitle("Sign up to continue cooking!");
         card.add(title);
         card.add(Box.createVerticalStrut(8));
         card.add(subtitle);
