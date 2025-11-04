@@ -181,6 +181,6 @@ public class RecipeRanker {
      * Set the recipe database from external source
      */
     public void setRecipeDatabase(List<Recipe> recipes) {
-        this.recipeDatabase = new ArrayList<>(recipes);
+        this.recipeDatabase = new ArrayList<>(recipes); //GC cleans up the old reference
     }
 }

@@ -104,6 +104,7 @@ public class Preferences {
     
     //Ingredients management
     public List<String> getAvailableIngredients() { return availableIngredients; }
+    
     public void addAvailableIngredient(String ingredient) { 
         availableIngredients.add(ingredient.toLowerCase()); 
     }

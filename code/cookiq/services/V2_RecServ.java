@@ -16,86 +16,73 @@ import java.util.List;
 import cookiq.models.Preferences; //ArrayList class for a resizeable array
 import cookiq.models.Recipe; //Defines all behaviors that any list like DSA should have
 
-public class RecommendationService {
+public class V2_RecServ {
     private List<Recipe> recipeDatabase;
-    private static final int perfectMatch = 5;
-    private static final int semiMatch = 4;
+    private static final int PERFECT_MATCH = 6;
+    private static final int SEMI_MATCH = 5;
     
-    public RecommendationService() {
+    public V2_RecServ() {
         this.recipeDatabase = new ArrayList<>();
     }
     
-    public List<Recipe> getRecommendations(Preferences preferences) {
-        List<Recipe> matches = new ArrayList<>();
+    /**
+     * Returns two lists of recipes
+     * 1) Perfect matches based on user preferences - 100% match
+     * 2) Semi matches based on user preferences - 83.3333% match
+     */
+    public List<List<Recipe>> getRecommendations(Preferences preferences) {
+        List<List<Recipe>> recipeContainer = new ArrayList<>();
+        List<Recipe> perfMatches = new ArrayList<>();
+        List<Recipe> semiMatches = new ArrayList<>();
+    
+        recipeContainer.add(perfMatches);
+        recipeContainer.add(semiMatches);
         
-        for (Recipe recipe : recipeDatabase) {
-            // ❗Do not delete❗
-            // if (matchesAllPreferences(recipe, preferences) == perfectMatch) {
-            //     matches.add(recipe);
-            // }
-
-            if(matchesAllPreferences(recipe, preferences)) {
-                matches.add(recipe);
-            }
+        for(Recipe recipe : recipeDatabase) {
+            int matchNum = matchesAllPreferences(recipe, preferences); //Cache the result
+            if(matchNum == PERFECT_MATCH) { perfMatches.add(recipe); }
+            else if(matchNum == SEMI_MATCH) { semiMatches.add(recipe); }
         }
         
-        return matches;
+        return recipeContainer;
     }
     
     // ❗Do not delete❗
-    // private int matchesAllPreferences(Recipe recipe, Preferences prefs) {
-    //     int count = 0; //Counter for number of satisfied preferences
-    //     count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
-    //     count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-    //     count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
-        
-    //     //getCookTime() --> returns the cook time of the recipe.
-    //     //getMaxCookTime() --> returns the willingness to wait selected in the users preference
-    //     //❗This could probably be better implemented, implement ranges maybe?
-    //     // if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
-    //     count += (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) ? 1 : 0;
-
-    //     //getCost() --> returns the cost of the recipe
-    //     //getMaxBudget() --> returns the willingness to pay selected in the users preference
-    //     //❗This could probably be better implemented, implement ranges maybe?
-    //     // if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
-    //     count += (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) ? 1 : 0;
-
-    //     count += ()
-
-    //     return count;
-    // }
-
-    private boolean matchesAllPreferences(Recipe recipe, Preferences prefs) {
+    private int matchesAllPreferences(Recipe recipe, Preferences prefs) {
         int count = 0; //Counter for number of satisfied preferences
         count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
-        if(!matchesDietaryRestrictions(recipe, prefs)) { return false; }
-
         count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
-        
         count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
-        if(!matchesCuisinePreferences(recipe, prefs)) { return false; }
-
-        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
-
-        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
         
         //getCookTime() --> returns the cook time of the recipe.
         //getMaxCookTime() --> returns the willingness to wait selected in the users preference
-        //❗This could probably be better implemented, implement ranges maybe?
-        if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
-        
+        count += (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) ? 1 : 0;
+
         //getCost() --> returns the cost of the recipe
         //getMaxBudget() --> returns the willingness to pay selected in the users preference
-        //❗This could probably be better implemented, implement ranges maybe?
-        if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
+        count += (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) ? 1 : 0;
+
+        //countIngredientMatches returns 0 or 1
+        count += (countIngredientMatches(recipe, prefs.getAvailableIngredients()));
+
+        return count;
+    }
+
+    //Check if the current recipe has 90% of the user ingredients
+    private int countIngredientMatches(Recipe recipe, List<String> availableIngredients) {
+        int matches = 0;
+        List<String> ner = recipe.getNER();
+
+        //ioh --> Ingredient On Hand
+        for(String ioh : availableIngredients)
+        {
+            if(ner.contains(ioh)) { matches += 1; }
+        }
         
-        return true;
+        return matches >= (int)(availableIngredients.size() * 0.9) ? 1 : 0;
     }
     
+    //Do we want perfect match? Do we want more than selected?
     private boolean matchesDietaryRestrictions(Recipe recipe, Preferences prefs) {
         String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
         
