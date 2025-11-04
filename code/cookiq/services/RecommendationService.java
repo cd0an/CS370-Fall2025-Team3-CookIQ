@@ -3,18 +3,23 @@
  *
  * Implements logic to rank recipes based on user preferences
  * and provide the best recommendations.
+ * 
+ * ❗❗❗--> Implement a secondary list for the next closest recipe results where 4/5 preferences match.
  */
+
 
 package cookiq.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cookiq.models.Preferences;
+import cookiq.models.Preferences; //Used for getters for cook time, cost, max budget
 import cookiq.models.Recipe;
+
+import java.util.ArrayList; //ArrayList class for a resizeable array
+import java.util.List; //Defines all behaviors that any list like DSA should have
 
 public class RecommendationService {
     private List<Recipe> recipeDatabase;
+    private static final int perfectMatch = 5;
+    private static final int semiMatch = 4;
     
     public RecommendationService() {
         this.recipeDatabase = new ArrayList<>();
@@ -24,6 +29,11 @@ public class RecommendationService {
         List<Recipe> matches = new ArrayList<>();
         
         for (Recipe recipe : recipeDatabase) {
+            // ❗Do not delete❗
+            // if (matchesAllPreferences(recipe, preferences) == perfectMatch) {
+            //     matches.add(recipe);
+            // }
+
             if (matchesAllPreferences(recipe, preferences)) {
                 matches.add(recipe);
             }
@@ -32,26 +42,56 @@ public class RecommendationService {
         return matches;
     }
     
+    // ❗Do not delete❗
+    // private int matchesAllPreferences(Recipe recipe, Preferences prefs) {
+    //     int count = 0; //Counter for number of satisfied preferences
+    //     count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
+    //     count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+    //     count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
+    //     count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+    //     count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+    //     count += (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) ? 1 : 0;
+    //     count += (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) ? 1 : 0;
+
+    //     //getCookTime() --> returns the cook time of the recipe.
+    //     //getMaxCookTime() --> returns the willingness to wait selected in the users preference
+    //     //❗This could probably be better implemented, implement ranges maybe?
+    //     // if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
+        
+    //     //getCost() --> returns the cost of the recipe
+    //     //getMaxBudget() --> returns the willingness to pay selected in the users preference
+    //     //❗This could probably be better implemented, implement ranges maybe?
+    //     // if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
+        
+    //     return count;
+    // }
+
     private boolean matchesAllPreferences(Recipe recipe, Preferences prefs) {
-        if (!matchesDietaryRestrictions(recipe, prefs)) {
-            return false;
-        }
+        int count = 0; //Counter for number of satisfied preferences
+        count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
+        if(!matchesDietaryRestrictions(recipe, prefs)) { return false; }
+
+        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+        if(!matchesHealthGoals(recipe, prefs)) { return false; }
         
-        if (!matchesHealthGoals(recipe, prefs)) {
-            return false;
-        }
+        count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
+        if(!matchesCuisinePreferences(recipe, prefs)) { return false; }
+
+        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+        if(!matchesHealthGoals(recipe, prefs)) { return false; }
+
+        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
+        if(!matchesHealthGoals(recipe, prefs)) { return false; }
         
-        if (!matchesCuisinePreferences(recipe, prefs)) {
-            return false;
-        }
+        //getCookTime() --> returns the cook time of the recipe.
+        //getMaxCookTime() --> returns the willingness to wait selected in the users preference
+        //❗This could probably be better implemented, implement ranges maybe?
+        if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
         
-        if (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) {
-            return false;
-        }
-        
-        if (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) {
-            return false;
-        }
+        //getCost() --> returns the cost of the recipe
+        //getMaxBudget() --> returns the willingness to pay selected in the users preference
+        //❗This could probably be better implemented, implement ranges maybe?
+        if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
         
         return true;
     }
