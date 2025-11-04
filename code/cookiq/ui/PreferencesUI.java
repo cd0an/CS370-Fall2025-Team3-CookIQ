@@ -303,65 +303,36 @@ public class PreferencesUI extends JPanel {
             preferences.setVegetarian(vegetarianCB.isSelected());
             preferences.setKeto(ketoCB.isSelected());
             preferences.setGlutenFree(glutenCB.isSelected());
-
             preferences.setLowCalorie(lowCalCB.isSelected());
             preferences.setHighCalorie(highCalCB.isSelected());
             preferences.setHighProtein(highProteinCB.isSelected());
 
             // Cook Time
-            if (time15.isSelected()) preferences.setMaxCookTime(15);
-            else if (time30.isSelected()) preferences.setMaxCookTime(30);
-            else if(time60.isSelected()) preferences.setMaxCookTime(60);
+            preferences.setMaxCookTime(time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60);
 
             // Budget 
-            if (budget10.isSelected()) preferences.setMaxBudget(10);
-            else if (budget30.isSelected()) preferences.setMaxBudget(30);
-            else if (budget50.isSelected()) preferences.setMaxBudget(50);
+            preferences.setMaxBudget(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50);
 
             // Ingredients 
+            preferences.getAvailableIngredients().clear();
             String text = ingredientField.getText();
             if (!text.equals(placeholder) && !text.isEmpty()) {
-                String[] ingredients = text.split(",");
-                for (String ing : ingredients) {
+                for (String ing : text.split(",")) {
                     preferences.addAvailableIngredient(ing.trim());
                 }
             }
 
-            // ============ Save to MongoDB ============
-            // Save preferences as JSON string along with username
-            Document doc = new Document()
-                .append("username", mainFrame.getCurrentUser().getUsername()) // make sure you can access the user
-                .append("preferences", PreferencesUtils.toJsonString(preferences));
-
-            RecipeRepository.insertDocument("user_preferences", doc);
-
-            // Document doc = new Document() 
-            //     .append("vegetarian", preferences.isVegetarian())
-            //     .append("keto", preferences.isKeto())
-            //     .append("glutenFree", preferences.isGlutenFree())
-            //     .append("lowCalorie", preferences.isLowCalorie())
-            //     .append("highCalorie", preferences.isHighCalorie())
-            //     .append("highProtein", preferences.isHighProtein())
-            //     .append("maxCookTime", preferences.getMaxCookTime())
-            //     .append("maxBudget", preferences.getMaxBudget())
-            //     .append("ingredients", preferences.getAvailableIngredients());
-
-            // RecipeRepository.insertDocument("user_preferences", doc);
-
-            // Tell MainFrame to switch to SwipeUI
-            mainFrame.showSwipeUI(preferences);
-
-            //Save preferences to current user automatically
+            // ============ Save via UserService ============
+    
+            // Save/update preferences in MongoDB
             if (mainFrame.getCurrentUser() != null) {
-                // Convert Preferences object to JSON string
-                String prefStr = PreferencesUtils.toJsonString(preferences);
-                
-                // Save to current user
-                mainFrame.getCurrentUser().setPreferences(prefStr);
-
-                // Persist to MongoDB
-                new UserService().saveUserPreferences(mainFrame.getCurrentUser().getUsername(), preferences);
+                Document newPrefs = new Document("preferences", PreferencesUtils.toJsonString(preferences));
+                RecipeRepository.getUserPreferences(mainFrame.getCurrentUser().getUsername(), newPrefs);
+                mainFrame.getCurrentUser().setPreferences(PreferencesUtils.toJsonString(preferences));
             }
+
+            // Switch to SwipeUI
+            mainFrame.showSwipeUI(preferences);
         });
 
         // ============ Reset Button ============
