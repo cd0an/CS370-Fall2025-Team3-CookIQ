@@ -12,6 +12,8 @@ import java.util.List;
 import org.bson.Document;
 import cookiq.db.UserRepository;
 import cookiq.security.PasswordUtils;
+import cookiq.utils.PreferencesUtils;
+
 import com.google.gson.Gson;
 import cookiq.models.Preferences;
 

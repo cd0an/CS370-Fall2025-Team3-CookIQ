@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
-import cookiq.services.PreferencesUtils;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
+import cookiq.utils.PreferencesUtils;
 
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 

@@ -37,8 +37,8 @@ import org.bson.Document;
 
 import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
-import cookiq.services.PreferencesUtils;
 import cookiq.services.UserService;
+import cookiq.utils.PreferencesUtils;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 

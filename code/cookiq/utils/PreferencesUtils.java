@@ -1,4 +1,4 @@
-package cookiq.services;
+package cookiq.utils;
 
 import org.bson.Document;
 import com.google.gson.Gson;
