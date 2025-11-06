@@ -19,6 +19,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -29,6 +30,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.mongodb.client.model.Aggregates;
+import org.bson.Document;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+import cookiq.db.MongoDBConnection;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.services.UserSession;
@@ -43,7 +51,8 @@ public class SwipeUI extends JPanel {
     private Preferences userPreferences; // Store user preferences 
     private JLabel mealMatchTitle;
     private MainFrame mainFrame; // Reference to parent frame 
-
+     private List<Document> randomDocs;
+     
     // Constructor 
     public SwipeUI(MainFrame frame) {
         this.mainFrame = frame;
@@ -58,6 +67,9 @@ public class SwipeUI extends JPanel {
 
     // ====================== Set User Preferences ======================
     public void setUserPreferences(Preferences prefs) {
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> recipeList = db.getCollection("recipes");
+
         this.userPreferences = prefs;
         System.out.println("User preferences recevied: " + prefs);
 
@@ -71,6 +83,10 @@ public class SwipeUI extends JPanel {
         } else {
             // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
             recipes = new ArrayList<>();
+            List<Document> randomDocs = recipeList.aggregate(Arrays.asList(
+                Aggregates.sample(5)
+            )).into(new ArrayList<>());
+
 
             // Format: {title, tags/diet, cuisine, cookTime, cost}
             recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie", "Mediterranean", "25 min", "$12.50"});
@@ -152,22 +168,47 @@ public class SwipeUI extends JPanel {
         });
 
         // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
+        // viewRecipeBtn.addActionListener(e -> {
+        //     Recipe selectedRecipe = new Recipe(
+        //         Recipe selectedRecipe = new Recipe(
+        //                 "1",                                 // id
+        //                 recipes.get(currentIndex)[0],        // name
+        //                 recipes.get(currentIndex)[2],        // cuisine
+        //                 recipes.get(currentIndex)[1],        // diet/tags
+        //                 Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
+        //                 Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
+        //                 420,                                 // calories dummy
+        //                 List.of("Ingredient 1", "Ingredient 2"),
+        //                 List.of("Step 1", "Step 2"),
+        //                 null                                 // image
+        //         );
+        //         Tell MainFrame to show RecipeDetailsUI
+        //     );
+            
+        //     mainFrame.showRecipeDetailsUI(selectedRecipe);
+        // });
+
         viewRecipeBtn.addActionListener(e -> {
+            // Get the selected document from randomDocs
+            Document doc = randomDocs.get(currentIndex);
+
+            // Create a Recipe object from the Mongo document
             Recipe selectedRecipe = new Recipe(
-                    "1",                                 // id
-                    recipes.get(currentIndex)[0],        // name
-                    recipes.get(currentIndex)[2],        // cuisine
-                    recipes.get(currentIndex)[1],        // diet/tags
-                    Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
-                    Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
-                    420,                                 // calories dummy
-                    List.of("Ingredient 1", "Ingredient 2"),
-                    List.of("Step 1", "Step 2"),
-                    null                                 // image
+                doc.getString("name"),
+                doc.getString("cuisine"),
+                doc.getString("dietaryCategory"),
+                doc.getInteger("cookTime"),
+                doc.getDouble("cost"),
+                doc.getString("healthGoals"),
+                doc.getList("ingredients", String.class),
+                doc.getList("directions", String.class),
+                doc.getList("NER", String.class)
             );
-            // Tell MainFrame to show RecipeDetailsUI
+
+            // Show the recipe details UI
             mainFrame.showRecipeDetailsUI(selectedRecipe);
         });
+
 
         recipeCard.add(viewRecipeBtn);
         recipeCard.add(Box.createVerticalGlue());

@@ -31,12 +31,12 @@ public class UserService {
 
     //User login
     public boolean loginUser(String username, String password) {
-        Document user = userRepository.getUser(username);
+        Document user = userRepository.getUser(username); //Gets entire user info
         if (user == null) return false;
 
         String storedHash = user.getString("passwordHash");
         String enteredHash = PasswordUtils.sha256(password);
-        return PasswordUtils.slowEquals(storedHash, enteredHash);
+        return PasswordUtils.slowEquals(storedHash, enteredHash); //Slow equals is used to compare the passwords in the same amount of time regardless of password length
     }
 
     //Setter - Liked recipes

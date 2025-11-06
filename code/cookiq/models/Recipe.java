@@ -42,6 +42,20 @@ public class Recipe {
         this.healthGoals = healthGoals;
     }
 
+    public Recipe(String name, String cuisine, String dietaryCategory, 
+    int cookTime, double cost, String healthGoals, List<String> ingredients,
+    List<String> directions, List<String> NER) {
+        this.ingredients = ingredients;
+        this.directions = directions;
+        this.NER = NER;
+        this.name = name;
+        this.cuisine = cuisine;
+        this.dietaryCategory = dietaryCategory;
+        this.cookTime = cookTime;
+        this.cost = cost;
+        this.healthGoals = healthGoals;
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +

@@ -18,19 +18,20 @@ public class User {
     private List<String> disliked;
 
     // Constructor for new users
-    public User(String username, String password, Preferences preferences) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.preferences = preferences;
+        this.preferences = new Preferences();
         this.liked = new ArrayList<>();
         this.disliked = new ArrayList<>();
     }
 
+    //❗❗❗Idk what  this constructor does
     // Constructor for loading users with liked recipes
-    public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
-        this(username, password, preferences);
-        if (likedRecipes != null) this.liked = likedRecipes;
-    }
+    // public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
+    //     this(username, password, preferences);
+    //     if (likedRecipes != null) this.liked = likedRecipes;
+    // }
 
     public String getUsername() { return username; }
     public String getPassword() { return password; }

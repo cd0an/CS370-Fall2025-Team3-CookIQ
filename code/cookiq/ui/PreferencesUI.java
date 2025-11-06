@@ -7,6 +7,9 @@
 
 package cookiq.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -39,10 +42,11 @@ import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
 import cookiq.services.UserService;
 import cookiq.utils.PreferencesUtils;
+import cookiq.models.User;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
-    private Preferences preferences;
+    // private Preferences preferences;
 
     // ====================== Input Components ======================
     private JCheckBox vegetarianCB, ketoCB, glutenCB;
@@ -54,7 +58,8 @@ public class PreferencesUI extends JPanel {
 
     public PreferencesUI(MainFrame frame) {
         this.mainFrame = frame;
-        preferences = new Preferences();
+        User curr_user = mainFrame.getCurrentUser();
+        // preferences = new Preferences();
 
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
@@ -300,39 +305,38 @@ public class PreferencesUI extends JPanel {
             }
 
             // Update preferences object
-            preferences.setVegetarian(vegetarianCB.isSelected());
-            preferences.setKeto(ketoCB.isSelected());
-            preferences.setGlutenFree(glutenCB.isSelected());
-            preferences.setLowCalorie(lowCalCB.isSelected());
-            preferences.setHighCalorie(highCalCB.isSelected());
-            preferences.setHighProtein(highProteinCB.isSelected());
+            Preferences curr_selected_prefs = new Preferences(vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
+                                                          lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
+                                                          italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
+                                                          americanCB.isSelected(), medCB.isSelected(),
+                                                          time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
+                                                          (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
+                                                          //❗❗❗Add actual ingredients lists later
+                                                          new ArrayList<String>()
+                                                          );
+            curr_user.getPreferences().copyPrefs(curr_selected_prefs);
 
-            // Cook Time
-            preferences.setMaxCookTime(time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60);
-
-            // Budget 
-            preferences.setMaxBudget(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50);
-
-            // Ingredients 
-            preferences.getAvailableIngredients().clear();
-            String text = ingredientField.getText();
-            if (!text.equals(placeholder) && !text.isEmpty()) {
-                for (String ing : text.split(",")) {
-                    preferences.addAvailableIngredient(ing.trim());
-                }
-            }
+            // // Ingredients 
+            // preferences.getAvailableIngredients().clear();
+            // String text = ingredientField.getText();
+            // if (!text.equals(placeholder) && !text.isEmpty()) {
+            //     for (String ing : text.split(",")) {
+            //         preferences.addAvailableIngredient(ing.trim());
+            //     }
+            // }
 
             // ============ Save via UserService ============
     
             // Save/update preferences in MongoDB
-            if (mainFrame.getCurrentUser() != null) {
-                Document newPrefs = new Document("preferences", PreferencesUtils.toJsonString(preferences));
-                RecipeRepository.getUserPreferences(mainFrame.getCurrentUser().getUsername(), newPrefs);
-                mainFrame.getCurrentUser().setPreferences(PreferencesUtils.toJsonString(preferences));
+            if (curr_user != null) {
+                Document newPrefs = new Document("preferences", PreferencesUtils.toJsonString(curr_user.getPreferences()));
+                RecipeRepository.getUserPreferences(curr_user.getUsername(), newPrefs);
+                //❗❗❗Low key don't know what the follow line does, setPreferences doesn't even have an existing method
+                // curr_user.setPreferences(PreferencesUtils.toJsonString(curr_user.getPreferences()));
             }
 
             // Switch to SwipeUI
-            mainFrame.showSwipeUI(preferences);
+            mainFrame.showSwipeUI(curr_user.getPreferences());
         });
 
         // ============ Reset Button ============
@@ -380,7 +384,7 @@ public class PreferencesUI extends JPanel {
             }
 
             // Clear the Preferences object
-            preferences.clearAll();
+            curr_user.getPreferences().clearAll();
 
             // Uncheck all checkboxes
             vegetarianCB.setSelected(false);
@@ -428,45 +432,42 @@ public class PreferencesUI extends JPanel {
         add(btnPanel, BorderLayout.SOUTH);
     }
 
-    public void setPreferences(Preferences prefs) {
-        if (prefs == null) return;
+    //❗❗❗Possibly the same as copyPrefs in Preferences class (newly added)
+    // public void setPreferences(Preferences prefs) {
+    //     if (prefs == null) return;
 
-        // Save reference
-        this.preferences = prefs;
+    //     // Save reference
+    //     curr_user.getPreferences() = prefs;
 
-        // Dietary restrictions
-        vegetarianCB.setSelected(prefs.isVegetarian());
-        ketoCB.setSelected(prefs.isKeto());
-        glutenCB.setSelected(prefs.isGlutenFree());
+    //     // Dietary restrictions
+    //     vegetarianCB.setSelected(prefs.isVegetarian());
+    //     ketoCB.setSelected(prefs.isKeto());
+    //     glutenCB.setSelected(prefs.isGlutenFree());
 
-        // Health goals
-        lowCalCB.setSelected(prefs.isLowCalorie());
-        highCalCB.setSelected(prefs.isHighCalorie());
-        highProteinCB.setSelected(prefs.isHighProtein());
+    //     // Health goals
+    //     lowCalCB.setSelected(prefs.isLowCalorie());
+    //     highCalCB.setSelected(prefs.isHighCalorie());
+    //     highProteinCB.setSelected(prefs.isHighProtein());
 
-        // Cook time
-        time15.setSelected(prefs.getMaxCookTime() == 15);
-        time30.setSelected(prefs.getMaxCookTime() == 30);
-        time60.setSelected(prefs.getMaxCookTime() == 60);
+    //     // Cook time
+    //     time15.setSelected(prefs.getMaxCookTime() == 15);
+    //     time30.setSelected(prefs.getMaxCookTime() == 30);
+    //     time60.setSelected(prefs.getMaxCookTime() == 60);
 
-        // Budget
-        budget10.setSelected(prefs.getMaxBudget() == 10);
-        budget30.setSelected(prefs.getMaxBudget() == 30);
-        budget50.setSelected(prefs.getMaxBudget() == 50);
+    //     // Budget
+    //     budget10.setSelected(prefs.getMaxBudget() == 10);
+    //     budget30.setSelected(prefs.getMaxBudget() == 30);
+    //     budget50.setSelected(prefs.getMaxBudget() == 50);
 
-        // Ingredients
-        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
-            ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
-            ingredientField.setForeground(Color.BLACK);
-        } else {
-            ingredientField.setText("Type here (e.g., eggs)");
-            ingredientField.setForeground(Color.GRAY);
-        }
-    }
-
-    public Preferences getPreferences() {
-        return this.preferences;
-    }
+    //     // Ingredients
+    //     if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
+    //         ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
+    //         ingredientField.setForeground(Color.BLACK);
+    //     } else {
+    //         ingredientField.setText("Type here (e.g., eggs)");
+    //         ingredientField.setForeground(Color.GRAY);
+    //     }
+    // }
 }
 
 

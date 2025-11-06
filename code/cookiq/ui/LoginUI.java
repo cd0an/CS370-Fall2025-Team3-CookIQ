@@ -93,9 +93,11 @@ public class LoginUI extends JPanel {
             return;
         }
 
-        User currentUser = new User(username, "", "");
+        //We always load in the users last preferences (if they logged in)
+        User currentUser = new User(username, "");
         currentUser.getLikedRecipes().addAll(userService.getLikedRecipes(username));
         currentUser.getDislikedRecipes().addAll(userService.getDislikedRecipes(username));
+        currentUser.getPreferences().copyPrefs(userService.getUserPreferences(username));
         UserSession.getInstance().login(currentUser);
 
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);

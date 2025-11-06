@@ -58,6 +58,25 @@ public class Preferences {
         this.maxBudget = maxBudget;
         this.availableIngredients = availableIngredients;
     }
+
+    //Copy method
+    public void copyPrefs(Preferences other)
+    {
+        this.vegetarian = other.vegetarian;
+        this.keto = other.keto;
+        this.glutenFree = other.glutenFree;
+        this.lowCalorie = other.lowCalorie;
+        this.highCalorie = other.highCalorie;
+        this.highProtein = other.highProtein;
+        this.italian = other.italian;
+        this.mexican = other.mexican;
+        this.asian = other.asian;
+        this.american = other.american;
+        this.mediterranean = other.mediterranean;
+        this.maxCookTime = other.maxCookTime;
+        this.maxBudget = other.maxBudget;
+        this.availableIngredients = other.availableIngredients;
+    }
     
     //Dietary restrictions setters/getters
     public boolean isVegetarian() { return vegetarian; }
