@@ -12,9 +12,10 @@ package cookiq.services;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
-import cookiq.db.RecipeRepository;
 import cookiq.utils.RecipeRanker;
 
 /**
