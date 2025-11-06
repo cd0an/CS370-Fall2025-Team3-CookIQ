@@ -24,12 +24,12 @@ public class UserService {
         userRepository = new UserRepository();
     }
 
-    //==================== User Registration ====================
+    //Register User
     public boolean registerUser(String username, String password) {
         return userRepository.registerUser(username, password);
     }
 
-    // ==================== User Login ====================
+    //User login
     public boolean loginUser(String username, String password) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -39,7 +39,7 @@ public class UserService {
         return PasswordUtils.slowEquals(storedHash, enteredHash);
     }
 
-    // ==================== Liked Recipes ====================
+    //Setter - Liked recipes
     public boolean addLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -56,6 +56,7 @@ public class UserService {
         return false;
     }
 
+    //Getter - Liked recipes
     public List<String> getLikedRecipes(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new ArrayList<>();
@@ -63,6 +64,7 @@ public class UserService {
         return likedRecipes != null ? likedRecipes : new ArrayList<>();
     }
 
+    
     public boolean removeLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;

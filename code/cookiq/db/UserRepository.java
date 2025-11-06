@@ -3,12 +3,14 @@
 
 package cookiq.db;
 
+import java.util.ArrayList;
+
+import org.bson.Document;
+
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
 import static com.mongodb.client.model.Filters.eq;
 
-import java.util.ArrayList;
 import cookiq.security.PasswordUtils;
 
 public class UserRepository {
@@ -21,13 +23,16 @@ public class UserRepository {
 
     // Registers a new user if username does not already exist
     public boolean registerUser(String username, String password) {
-        Document existingUser = users.find(eq("username", username)).first();
-        if (existingUser != null) return false;
+        /**
+         * If connection users finds the specific username, return false
+         * Else it will create a new user
+         */        
+        if (users.find(eq("username", username)).first() != null) return false;
 
-        // Hash password before storing
+        //Hash password before storing
         String passwordHash = PasswordUtils.sha256(password);
 
-        // Create new user document
+        //Create new user document
         Document newUser = new Document("username", username)
                 .append("passwordHash", passwordHash)
                 .append("preferences", new Document())
@@ -39,12 +44,12 @@ public class UserRepository {
         return true;
     }
 
-    // Retrieves user document by username
+    //Retrieves the entire user document by username
     public Document getUser(String username) {
         return users.find(eq("username", username)).first();
     }
 
-    // Updates user document in MongoDB
+    //Updates the entire user document in MongoDB
     public void updateUser(String username, Document updatedUser) {
         users.replaceOne(eq("username", username), updatedUser);
         System.out.println("Updated user: " + username);

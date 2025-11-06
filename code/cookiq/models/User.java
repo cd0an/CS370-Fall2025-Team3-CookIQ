@@ -38,23 +38,23 @@ public class User {
     public List<String> getLikedRecipes() { return liked; }
     public List<String> getDislikedRecipes() { return disliked; }
 
-    public void addLikedRecipe(String recipe) {
-        if (!liked.contains(recipe)) {
-            liked.add(recipe);
-            disliked.remove(recipe);
-        }
-    }
+    // public void addLikedRecipe(String recipe) {
+    //     if (!liked.contains(recipe)) {
+    //         liked.add(recipe);
+    //         disliked.remove(recipe);
+    //     }
+    // }
 
-    public void addDislikedRecipe(String recipe) {
-        if (!disliked.contains(recipe)) {
-            disliked.add(recipe);
-            liked.remove(recipe);
-        }
-    }
+    // public void addDislikedRecipe(String recipe) {
+    //     if (!disliked.contains(recipe)) {
+    //         disliked.add(recipe);
+    //         liked.remove(recipe);
+    //     }
+    // }
 
-    public void setPreferences(Preferences preferences) {
-        this.preferences = preferences != null ? preferences : new Preferences();
-    }
+    // public void setPreferences(Preferences preferences) {
+    //     this.preferences = preferences != null ? preferences : new Preferences();
+    // }
 
     @Override
     public String toString() {
