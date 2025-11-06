@@ -39,6 +39,7 @@ public class Preferences {
     
     public Preferences() { this.availableIngredients = new ArrayList<>(); }
 
+    //Might not needs this at all
     public Preferences(boolean vegetarian, boolean keto, boolean glutenFree, boolean lowCalorie, boolean highCalorie, boolean highProtein,
                         boolean italian, boolean mexican, boolean asian, boolean american, boolean mediterranean, int maxCookTime, 
                         double maxBudget, List<String> availableIngredients){
@@ -56,7 +57,6 @@ public class Preferences {
         this.maxCookTime = maxCookTime;
         this.maxBudget = maxBudget;
         this.availableIngredients = availableIngredients;
-
     }
     
     //Dietary restrictions setters/getters

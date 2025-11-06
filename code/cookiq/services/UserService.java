@@ -9,13 +9,13 @@ package cookiq.services;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bson.Document;
+
 import cookiq.db.UserRepository;
+import cookiq.models.Preferences;
 import cookiq.security.PasswordUtils;
 import cookiq.utils.PreferencesUtils;
-
-import com.google.gson.Gson;
-import cookiq.models.Preferences;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -24,7 +24,7 @@ public class UserService {
         userRepository = new UserRepository();
     }
 
-    // ==================== User Registration ====================
+    //==================== User Registration ====================
     public boolean registerUser(String username, String password) {
         return userRepository.registerUser(username, password);
     }

@@ -13,12 +13,12 @@ import java.util.List;
 public class User {
     private String username;
     private String password;
-    private String preferences;
+    private Preferences preferences;
     private List<String> liked;
     private List<String> disliked;
 
     // Constructor for new users
-    public User(String username, String password, String preferences) {
+    public User(String username, String password, Preferences preferences) {
         this.username = username;
         this.password = password;
         this.preferences = preferences;
@@ -27,14 +27,14 @@ public class User {
     }
 
     // Constructor for loading users with liked recipes
-    public User(String username, String password, String preferences, List<String> likedRecipes) {
+    public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
         this(username, password, preferences);
         if (likedRecipes != null) this.liked = likedRecipes;
     }
 
     public String getUsername() { return username; }
     public String getPassword() { return password; }
-    public String getPreferences() { return preferences; }
+    public Preferences getPreferences() { return preferences; }
     public List<String> getLikedRecipes() { return liked; }
     public List<String> getDislikedRecipes() { return disliked; }
 
@@ -52,8 +52,8 @@ public class User {
         }
     }
 
-    public void setPreferences(String preferences) {
-        this.preferences = preferences != null ? preferences : "";
+    public void setPreferences(Preferences preferences) {
+        this.preferences = preferences != null ? preferences : new Preferences();
     }
 
     @Override
