@@ -7,9 +7,6 @@
 
 package cookiq.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,6 +17,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -40,9 +38,8 @@ import org.bson.Document;
 
 import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
-import cookiq.services.UserService;
-import cookiq.utils.PreferencesUtils;
 import cookiq.models.User;
+import cookiq.utils.PreferencesUtils;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
@@ -306,24 +303,22 @@ public class PreferencesUI extends JPanel {
 
             // Update preferences object
             Preferences curr_selected_prefs = new Preferences(vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
-                                                          lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
-                                                          italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
-                                                          americanCB.isSelected(), medCB.isSelected(),
-                                                          time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
-                                                          (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
-                                                          //❗❗❗Add actual ingredients lists later
-                                                          new ArrayList<String>()
-                                                          );
+                                                                lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
+                                                                italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
+                                                                americanCB.isSelected(), medCB.isSelected(),
+                                                                time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
+                                                                (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
+                                                                new ArrayList<String>());
             curr_user.getPreferences().copyPrefs(curr_selected_prefs);
 
-            // // Ingredients 
-            // preferences.getAvailableIngredients().clear();
-            // String text = ingredientField.getText();
-            // if (!text.equals(placeholder) && !text.isEmpty()) {
-            //     for (String ing : text.split(",")) {
-            //         preferences.addAvailableIngredient(ing.trim());
-            //     }
-            // }
+            // Ingredients 
+            preferences.getAvailableIngredients().clear();
+            String text = ingredientField.getText();
+            if (!text.equals(placeholder) && !text.isEmpty()) {
+                for (String ing : text.split(",")) {
+                    preferences.addAvailableIngredient(ing.trim());
+                }
+            }
 
             // ============ Save via UserService ============
     
@@ -331,8 +326,7 @@ public class PreferencesUI extends JPanel {
             if (curr_user != null) {
                 Document newPrefs = new Document("preferences", PreferencesUtils.toJsonString(curr_user.getPreferences()));
                 RecipeRepository.getUserPreferences(curr_user.getUsername(), newPrefs);
-                //❗❗❗Low key don't know what the follow line does, setPreferences doesn't even have an existing method
-                // curr_user.setPreferences(PreferencesUtils.toJsonString(curr_user.getPreferences()));
+                curr_user.setPreferences(PreferencesUtils.toJsonString(curr_user.getPreferences()));
             }
 
             // Switch to SwipeUI

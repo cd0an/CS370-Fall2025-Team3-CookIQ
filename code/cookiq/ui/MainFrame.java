@@ -56,7 +56,7 @@ public class MainFrame extends JFrame {
         navbar.updateLoginStatus(); 
 
         // ======================== Main Panel with CardLayout ======================== 
-        cardLayout = new CardLayout(); // Allos switching between panels 
+        cardLayout = new CardLayout(); // Allows switching between panels 
         mainPanel = new JPanel(cardLayout);
 
         // Initialize Panels 

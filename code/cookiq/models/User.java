@@ -26,12 +26,11 @@ public class User {
         this.disliked = new ArrayList<>();
     }
 
-    //❗❗❗Idk what  this constructor does
     // Constructor for loading users with liked recipes
-    // public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
-    //     this(username, password, preferences);
-    //     if (likedRecipes != null) this.liked = likedRecipes;
-    // }
+    public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
+        this(username, password, preferences);
+        if (likedRecipes != null) this.liked = likedRecipes;
+    }
 
     public String getUsername() { return username; }
     public String getPassword() { return password; }
@@ -39,23 +38,23 @@ public class User {
     public List<String> getLikedRecipes() { return liked; }
     public List<String> getDislikedRecipes() { return disliked; }
 
-    // public void addLikedRecipe(String recipe) {
-    //     if (!liked.contains(recipe)) {
-    //         liked.add(recipe);
-    //         disliked.remove(recipe);
-    //     }
-    // }
+    public void addLikedRecipe(String recipe) {
+        if (!liked.contains(recipe)) {
+            liked.add(recipe);
+            disliked.remove(recipe);
+        }
+    }
 
-    // public void addDislikedRecipe(String recipe) {
-    //     if (!disliked.contains(recipe)) {
-    //         disliked.add(recipe);
-    //         liked.remove(recipe);
-    //     }
-    // }
+    public void addDislikedRecipe(String recipe) {
+        if (!disliked.contains(recipe)) {
+            disliked.add(recipe);
+            liked.remove(recipe);
+        }
+    }
 
-    // public void setPreferences(Preferences preferences) {
-    //     this.preferences = preferences != null ? preferences : new Preferences();
-    // }
+    public void setPreferences(Preferences preferences) {
+        this.preferences = preferences != null ? preferences : new Preferences();
+    }
 
     @Override
     public String toString() {
