@@ -22,7 +22,7 @@ public class RecipeRanker {
     
     /**
      * Get recipe recommendations sorted by match score
-     * Recipes are ranked based on how well they match user preferences
+     * NOTE: Dietary restrictions and health goals are already filtered as mandatory
      */
     public List<Recipe> getRecommendations(Preferences preferences) {
         List<ScoredRecipe> scoredRecipes = new ArrayList<>();
@@ -44,104 +44,64 @@ public class RecipeRanker {
     }
     
     /**
-     * Calculate how well a recipe matches user preferences
-     * Higher scores indicate better matches
+     * Calculate score based on non-mandatory preferences
+     * Dietary restrictions and health goals are already handled as mandatory filters
      */
     private int calculateMatchScore(Recipe recipe, Preferences prefs) {
         int score = 0;
         
-        // Dietary restrictions are highest priority - must match if selected
-        String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
-        
-        // Award points for matching dietary restrictions
-        if (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) {
-            score += 25;
-        }
-        if (prefs.isKeto() && dietaryCategory.contains("keto")) {
-            score += 25;
-        }
-        if (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free")) {
-            score += 25;
-        }
-        
-        // Heavy penalty if recipe doesn't match selected dietary restrictions
-        boolean hasDietaryPreference = prefs.isVegetarian() || prefs.isKeto() || prefs.isGlutenFree();
-        boolean matchesDietary = (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) ||
-                                (prefs.isKeto() && dietaryCategory.contains("keto")) ||
-                                (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free"));
-        
-        if (hasDietaryPreference && !matchesDietary) {
-            score -= 40;
-        }
-        
-        // Cuisine preferences - medium priority
+        // Cuisine preferences - high priority
         String cuisine = recipe.getCuisine().toLowerCase();
         
         if (prefs.isItalian() && cuisine.contains("italian")) {
-            score += 15;
+            score += 20;
         }
         if (prefs.isMexican() && cuisine.contains("mexican")) {
-            score += 15;
+            score += 20;
         }
-        if (prefs.isAsian() && (cuisine.contains("asian") || cuisine.contains("chinese"))) {
-            score += 15;
+        if (prefs.isAsian() && cuisine.contains("asian")) {
+            score += 20;
         }
         if (prefs.isAmerican() && cuisine.contains("american")) {
-            score += 15;
+            score += 20;
         }
         if (prefs.isMediterranean() && cuisine.contains("mediterranean")) {
-            score += 15;
-        }
-        
-        // Health goals - medium priority
-        int calories = recipe.getCalories();
-        
-        if (prefs.isLowCalorie() && calories <= 400) {
-            score += 12;
-        }
-        if (prefs.isHighCalorie() && calories >= 600) {
-            score += 12;
-        }
-        if (prefs.isHighProtein() && calories >= 500) {
-            score += 12;
+            score += 20;
         }
         
         // Cooking time - recipes within time limit get full points
         if (prefs.getMaxCookTime() > 0) {
             if (recipe.getCookTime() <= prefs.getMaxCookTime()) {
-                score += 8;
+                score += 15;
             } else {
                 // Gradual penalty for exceeding time limit
                 int timeOver = recipe.getCookTime() - prefs.getMaxCookTime();
-                int timePenalty = Math.min(timeOver / 5, 12);
+                int timePenalty = Math.min(timeOver / 5, 15);
                 score -= timePenalty;
             }
         }
         
-        // Budget - recipes within budget get full points, cheaper recipes are equal
+        // Budget - recipes within budget get full points
         if (prefs.getMaxBudget() > 0) {
             if (recipe.getCost() <= prefs.getMaxBudget()) {
-                score += 6;
+                score += 10;
             } else {
                 // Penalty for exceeding budget
                 double costOver = recipe.getCost() - prefs.getMaxBudget();
-                int costPenalty = Math.min((int)(costOver / 2), 8);
+                int costPenalty = Math.min((int)(costOver / 2), 10);
                 score -= costPenalty;
             }
         }
         
-        // Ingredient matching - small bonus for using available ingredients
-        if (!prefs.getAvailableIngredients().isEmpty()) {
+        // Ingredient matching - bonus for using available ingredients
+        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
             int ingredientMatches = countIngredientMatches(recipe, prefs.getAvailableIngredients());
-            score += ingredientMatches * 2;
+            score += ingredientMatches * 3;
         }
         
         return Math.max(score, 0);
     }
     
-    /**
-     * Count how many recipe ingredients match user's available ingredients
-     */
     private int countIngredientMatches(Recipe recipe, List<String> availableIngredients) {
         int matches = 0;
         List<String> recipeIngredients = recipe.getNER();
@@ -150,7 +110,7 @@ public class RecipeRanker {
             for (String ingredient : recipeIngredients) {
                 String cleanIngredient = ingredient.toLowerCase().trim();
                 for (String available : availableIngredients) {
-                    if (cleanIngredient.contains(available)) {
+                    if (available != null && cleanIngredient.contains(available.toLowerCase().trim())) {
                         matches++;
                         break;
                     }
@@ -161,9 +121,6 @@ public class RecipeRanker {
         return matches;
     }
     
-    /**
-     * Helper class to associate recipes with their match scores
-     */
     private static class ScoredRecipe {
         private Recipe recipe;
         private int score;
@@ -177,10 +134,7 @@ public class RecipeRanker {
         public int getScore() { return score; }
     }
     
-    /**
-     * Set the recipe database from external source
-     */
     public void setRecipeDatabase(List<Recipe> recipes) {
-        this.recipeDatabase = new ArrayList<>(recipes); //GC cleans up the old reference
+        this.recipeDatabase = new ArrayList<>(recipes);
     }
 }

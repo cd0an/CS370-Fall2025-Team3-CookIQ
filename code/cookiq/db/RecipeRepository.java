@@ -6,15 +6,18 @@
 
 package cookiq.db;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.FindIterable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bson.Document;
+
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import cookiq.models.Recipe;
 
 public class RecipeRepository
 {
@@ -133,5 +136,25 @@ public class RecipeRepository
         recipes.find(filter).into(results);
         return results;
     }
+    
+public List<Recipe> getAllRecipes() {
+    List<Recipe> recipes = new ArrayList<>();
+    
+    try {
+        MongoCollection<Document> collection = db.getCollection("recipes");
+        
+        for (Document doc : collection.find()) {
+            Recipe recipe = Recipe.parseRecipe(doc);
+            recipes.add(recipe);
+        }
+        
+        System.out.println("Successfully loaded " + recipes.size() + " recipes from MongoDB");
+    } catch (Exception e) {
+        System.err.println("Error fetching recipes from MongoDB: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return recipes;
+}
 
 }

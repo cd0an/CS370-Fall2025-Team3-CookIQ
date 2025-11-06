@@ -8,27 +8,29 @@
 package cookiq.models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
 
 public class Recipe {
+    private String id;
     private String name;
     private List<String> ingredients;
     private List<String> directions;
     private List<String> NER; //Raw ingredients
     private String dietaryCategory;
-    private int calories;
+    private String healthGoals; // ONLY using healthGoals - no calories
     private String cuisine;
     private int cookTime;
     private double cost;
     
     public Recipe() {};
 
+    // REMOVED calories completely - only using healthGoals
     public Recipe(String id, String name, String cuisine, String dietaryCategory, 
-    int cookTime, double cost, int calories, List<String> ingredients,
+    int cookTime, double cost, String healthGoals, List<String> ingredients,
     List<String> directions, List<String> NER) {
+        this.id = id;
         this.ingredients = ingredients;
         this.directions = directions;
         this.NER = NER;
@@ -37,37 +39,38 @@ public class Recipe {
         this.dietaryCategory = dietaryCategory;
         this.cookTime = cookTime;
         this.cost = cost;
-        this.calories = calories;
+        this.healthGoals = healthGoals;
     }
 
     @Override
     public String toString() {
         return "Recipe{" +
+                "id='" + id + '\'' +
                 "title='" + name + '\'' +
                 ", ingredients=" + ingredients +
                 ", directions=" + directions +
                 ", NER=" + NER +
                 ", dietaryCategory='" + dietaryCategory + '\'' +
-                ", healthGoals='" + calories + '\'' +
+                ", healthGoals='" + healthGoals + '\'' +
                 ", cuisine='" + cuisine + '\'' +
-                ", maxCookTime='" + cookTime + '\'' +
-                ", budgetPerMeal='" + cost + '\'' +
-                ", calories=" + calories +
                 ", cookTime=" + cookTime +
                 ", cost=" + cost +
                 '}';
     }
     
     // Getters
+    public String getId() { return id; }
     public String getName() { return name; }
     public String getCuisine() { return cuisine; }
     public String getDietaryCategory() { return dietaryCategory; }
+    public String getHealthGoals() { return healthGoals; } // This is what RecommendationService uses
     public int getCookTime() { return cookTime; }
     public double getCost() { return cost; }
-    public int getCalories() { return calories; }
     public List<String> getIngredients() {return ingredients;}
     public List<String> getDirections() {return directions;}
     public List<String> getNER() {return NER;}
+
+    // NO getCalories() method - we don't have calories data
 
     public static Recipe parseRecipe(Document doc) {
         // Extract and sanitize fields
@@ -75,6 +78,7 @@ public class Recipe {
         String name = doc.getString("title");
         String cuisine = doc.getString("preferred_cuisines");
         String dietaryCategory = doc.getString("dietary_restrictions");
+        String healthGoals = doc.getString("health_goals"); // This exists in your MongoDB
         List<String> ingredients = (List<String>) doc.get("ingredients");
         List<String> directions = (List<String>) doc.get("directions");
         List<String> NER = (List<String>) doc.get("NER");
@@ -83,7 +87,7 @@ public class Recipe {
         int cookTime = 0;
         String timeString = doc.getString("max_cook_time");
         if (timeString != null) {
-            timeString = timeString.replaceAll("[^0-9]", ""); // keep only digits
+            timeString = timeString.replaceAll("[^0-9]", "");
             if (!timeString.isEmpty()) {
                 cookTime = Integer.parseInt(timeString);
             }
@@ -96,22 +100,19 @@ public class Recipe {
             String[] nums = costString.replaceAll("[$]", "").split("-");
             if (nums.length == 2) {
                 cost = (Double.parseDouble(nums[0].trim()) + Double.parseDouble(nums[1].trim())) / 2.0;
-            } else {
+            } else if (!nums[0].trim().isEmpty()) {
                 cost = Double.parseDouble(nums[0].trim());
             }
         }
 
-        // Calories might not be stored yet, default to 0
-        int calories = 0;
-
-        // Create and return Recipe object
-        return new Recipe(id, name, cuisine, dietaryCategory, cookTime, cost, calories, ingredients, directions, NER);
+        // Create and return Recipe object - NO calories, only healthGoals
+        return new Recipe(id, name, cuisine, dietaryCategory, cookTime, cost, healthGoals, ingredients, directions, NER);
     }
 
     // Helper to parse array strings like "[a, b, c]"
     private static List<String> parseArray(String arrayString) {
-        arrayString = arrayString.replaceAll("^\\[|]$", ""); // remove brackets
-        String[] items = arrayString.split(", (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); // split on comma outside quotes
+        arrayString = arrayString.replaceAll("^\\[|]$", "");
+        String[] items = arrayString.split(", (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
         List<String> list = new ArrayList<>();
         for (String item : items) {
             list.add(item.trim());

@@ -10,156 +10,167 @@
 
 package cookiq.services;
 
-import java.util.ArrayList; //Used for getters for cook time, cost, max budget
+import java.util.ArrayList;
 import java.util.List;
+import cookiq.models.Preferences;
+import cookiq.models.Recipe;
+import cookiq.db.RecipeRepository;
+import cookiq.utils.RecipeRanker;
 
-import cookiq.models.Preferences; //ArrayList class for a resizeable array
-import cookiq.models.Recipe; //Defines all behaviors that any list like DSA should have
-
+/**
+ * RecommendationService.java
+ *
+ * Implements logic to rank recipes based on user preferences
+ * and provide the best recommendations.
+ * 
+ * UPDATED: Now uses real MongoDB data instead of dummy recipes
+ * UPDATED: Dietary restrictions and health goals are mandatory filters
+ * UPDATED: Uses RecipeRanker for scoring remaining preferences
+ */
 public class RecommendationService {
-    private List<Recipe> recipeDatabase;
-    private static final int perfectMatch = 5;
-    private static final int semiMatch = 4;
+    private List<Recipe> allRecipes; // Now stores real recipes from MongoDB
+    private RecipeRepository recipeRepository; // Handles MongoDB connection
+    private RecipeRanker recipeRanker; // Handles scoring and ranking
     
     public RecommendationService() {
-        this.recipeDatabase = new ArrayList<>();
+        this.recipeRepository = new RecipeRepository();
+        this.recipeRanker = new RecipeRanker();
+        loadRecipesFromMongoDB(); // Load real data on startup
     }
     
+    /**
+     * Load recipes from MongoDB instead of using dummy data
+     */
+    private void loadRecipesFromMongoDB() {
+        this.allRecipes = recipeRepository.getAllRecipes();
+        this.recipeRanker.setRecipeDatabase(this.allRecipes);
+        System.out.println("Loaded " + this.allRecipes.size() + " recipes from MongoDB");
+    }
+    
+    /**
+     * Get recommendations with mandatory dietary and health goal filtering
+     * then ranked by other preferences
+     */
     public List<Recipe> getRecommendations(Preferences preferences) {
         List<Recipe> matches = new ArrayList<>();
         
-        for (Recipe recipe : recipeDatabase) {
-            // ❗Do not delete❗
-            // if (matchesAllPreferences(recipe, preferences) == perfectMatch) {
-            //     matches.add(recipe);
-            // }
-
-            if(matchesAllPreferences(recipe, preferences)) {
-                matches.add(recipe);
+        // Step 1: Mandatory filtering for dietary restrictions and health goals
+        List<Recipe> mandatoryFiltered = filterByMandatoryPreferences(preferences);
+        
+        if (mandatoryFiltered.isEmpty()) {
+            System.out.println("No recipes match mandatory dietary/health filters");
+            return matches; // Return empty list if no matches
+        }
+        
+        // Step 2: Use RecipeRanker to score and rank the remaining recipes
+        recipeRanker.setRecipeDatabase(mandatoryFiltered);
+        List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
+        
+        System.out.println("Returning " + rankedRecommendations.size() + " ranked recommendations");
+        return rankedRecommendations;
+    }
+    
+    /**
+     * MANDATORY FILTERING: Recipes MUST match dietary restrictions AND health goals
+     * This replaces the old matchesAllPreferences logic
+     */
+    private List<Recipe> filterByMandatoryPreferences(Preferences preferences) {
+        List<Recipe> filtered = new ArrayList<>();
+        
+        for (Recipe recipe : allRecipes) {
+            if (matchesDietaryRestrictions(recipe, preferences) && 
+                matchesHealthGoals(recipe, preferences)) {
+                filtered.add(recipe);
             }
         }
         
-        return matches;
+        System.out.println("After mandatory filtering: " + filtered.size() + " recipes (from " + 
+                          allRecipes.size() + " total)");
+        return filtered;
     }
     
-    // ❗Do not delete❗
-    // private int matchesAllPreferences(Recipe recipe, Preferences prefs) {
-    //     int count = 0; //Counter for number of satisfied preferences
-    //     count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
-    //     count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-    //     count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
-        
-    //     //getCookTime() --> returns the cook time of the recipe.
-    //     //getMaxCookTime() --> returns the willingness to wait selected in the users preference
-    //     //❗This could probably be better implemented, implement ranges maybe?
-    //     // if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
-    //     count += (prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) ? 1 : 0;
-
-    //     //getCost() --> returns the cost of the recipe
-    //     //getMaxBudget() --> returns the willingness to pay selected in the users preference
-    //     //❗This could probably be better implemented, implement ranges maybe?
-    //     // if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
-    //     count += (prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) ? 1 : 0;
-
-    //     count += ()
-
-    //     return count;
-    // }
-
-    private boolean matchesAllPreferences(Recipe recipe, Preferences prefs) {
-        int count = 0; //Counter for number of satisfied preferences
-        count += (matchesDietaryRestrictions(recipe, prefs)) ? 1 : 0;
-        if(!matchesDietaryRestrictions(recipe, prefs)) { return false; }
-
-        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
-        
-        count += (matchesCuisinePreferences(recipe, prefs)) ? 1 : 0;
-        if(!matchesCuisinePreferences(recipe, prefs)) { return false; }
-
-        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
-
-        count += (matchesHealthGoals(recipe, prefs)) ? 1 : 0;
-        if(!matchesHealthGoals(recipe, prefs)) { return false; }
-        
-        //getCookTime() --> returns the cook time of the recipe.
-        //getMaxCookTime() --> returns the willingness to wait selected in the users preference
-        //❗This could probably be better implemented, implement ranges maybe?
-        if(prefs.getMaxCookTime() > 0 && recipe.getCookTime() > prefs.getMaxCookTime()) { return false; }
-        
-        //getCost() --> returns the cost of the recipe
-        //getMaxBudget() --> returns the willingness to pay selected in the users preference
-        //❗This could probably be better implemented, implement ranges maybe?
-        if(prefs.getMaxBudget() > 0 && recipe.getCost() > prefs.getMaxBudget()) { return false; }
-        
-        return true;
-    }
-    
+    /**
+     * Dietary restrictions are MANDATORY - recipe must match user's selections
+     * UPDATED: Uses health_goals field from MongoDB instead of calories
+     */
     private boolean matchesDietaryRestrictions(Recipe recipe, Preferences prefs) {
         String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
         
-        if (prefs.isVegetarian() && !dietaryCategory.contains("vegetarian")) {
-            return false;
+        // If user has NO dietary restrictions selected, allow all recipes
+        boolean hasDietaryPreference = prefs.isVegetarian() || prefs.isKeto() || prefs.isGlutenFree();
+        
+        if (!hasDietaryPreference) {
+            return true; // No dietary restrictions specified by user
         }
         
-        if (prefs.isKeto() && !dietaryCategory.contains("keto")) {
-            return false;
-        }
-        
-        if (prefs.isGlutenFree() && !dietaryCategory.contains("gluten-free")) {
-            return false;
-        }
-        
-        return true;
-    }
-    
-    private boolean matchesHealthGoals(Recipe recipe, Preferences prefs) {
-        int calories = recipe.getCalories();
-        
-        if (prefs.isLowCalorie() && calories > 400) {
-            return false;
-        }
-        
-        if (prefs.isHighCalorie() && calories < 600) {
-            return false;
-        }
-        
-        if (prefs.isHighProtein() && calories < 500) {
-            return false;
-        }
-        
-        return true;
-    }
-    
-    private boolean matchesCuisinePreferences(Recipe recipe, Preferences prefs) {
-        String cuisine = recipe.getCuisine().toLowerCase();
-        
-        if (!prefs.isItalian() && !prefs.isMexican() && !prefs.isAsian() && 
-            !prefs.isAmerican() && !prefs.isMediterranean()) {
+        // User HAS dietary restrictions - recipe MUST match at least one
+        if (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) {
             return true;
         }
-        
-        if (prefs.isItalian() && cuisine.contains("italian")) {
+        if (prefs.isKeto() && dietaryCategory.contains("keto")) {
             return true;
         }
-        if (prefs.isMexican() && cuisine.contains("mexican")) {
-            return true;
-        }
-        if (prefs.isAsian() && (cuisine.contains("asian") || cuisine.contains("chinese"))) {
-            return true;
-        }
-        if (prefs.isAmerican() && cuisine.contains("american")) {
-            return true;
-        }
-        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) {
+        if (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free")) {
             return true;
         }
         
         return false;
     }
     
+    /**
+     * Health goals are MANDATORY - recipe must match user's selections  
+     * UPDATED: Uses health_goals field from MongoDB instead of calories
+     */
+    private boolean matchesHealthGoals(Recipe recipe, Preferences prefs) {
+        String recipeHealth = recipe.getHealthGoals().toLowerCase();
+        
+        // If user has NO health goals selected, allow all recipes
+        boolean hasHealthPreference = prefs.isLowCalorie() || prefs.isHighCalorie() || prefs.isHighProtein();
+        
+        if (!hasHealthPreference) {
+            return true; // No health goals specified by user
+        }
+        
+        // User HAS health goals - recipe MUST match at least one
+        if (prefs.isLowCalorie() && recipeHealth.contains("low-calorie")) {
+            return true;
+        }
+        if (prefs.isHighCalorie() && recipeHealth.contains("high-calorie")) {
+            return true;
+        }
+        if (prefs.isHighProtein() && recipeHealth.contains("high-protein")) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Refresh recipes from MongoDB (useful for "request new suggestions")
+     */
+    public void refreshRecipes() {
+        loadRecipesFromMongoDB();
+    }
+    
+    /**
+     * Set recipe database (kept for compatibility with existing code)
+     */
     public void setRecipeDatabase(List<Recipe> recipes) {
-        this.recipeDatabase = new ArrayList<>(recipes);
+        this.allRecipes = new ArrayList<>(recipes);
+        this.recipeRanker.setRecipeDatabase(this.allRecipes);
+    }
+    
+    /**
+     * Get all recipes without filtering (for debugging or admin use)
+     */
+    public List<Recipe> getAllRecipes() {
+        return new ArrayList<>(allRecipes);
+    }
+    
+    /**
+     * Get count of total recipes loaded from MongoDB
+     */
+    public int getTotalRecipeCount() {
+        return allRecipes.size();
     }
 }
