@@ -168,25 +168,25 @@ public class SwipeUI extends JPanel {
         });
 
         // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
-        // viewRecipeBtn.addActionListener(e -> {
-        //     Recipe selectedRecipe = new Recipe(
-        //         Recipe selectedRecipe = new Recipe(
-        //                 "1",                                 // id
-        //                 recipes.get(currentIndex)[0],        // name
-        //                 recipes.get(currentIndex)[2],        // cuisine
-        //                 recipes.get(currentIndex)[1],        // diet/tags
-        //                 Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
-        //                 Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
-        //                 420,                                 // calories dummy
-        //                 List.of("Ingredient 1", "Ingredient 2"),
-        //                 List.of("Step 1", "Step 2"),
-        //                 null                                 // image
-        //         );
-        //         Tell MainFrame to show RecipeDetailsUI
-        //     );
+        viewRecipeBtn.addActionListener(e -> {
+            Recipe selectedRecipe = new Recipe(
+                Recipe selectedRecipe = new Recipe(
+                        "1",                                 // id
+                        recipes.get(currentIndex)[0],        // name
+                        recipes.get(currentIndex)[2],        // cuisine
+                        recipes.get(currentIndex)[1],        // diet/tags
+                        Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
+                        Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
+                        420,                                 // calories dummy
+                        List.of("Ingredient 1", "Ingredient 2"),
+                        List.of("Step 1", "Step 2"),
+                        null                                 // image
+                );
+                Tell MainFrame to show RecipeDetailsUI
+            );
             
-        //     mainFrame.showRecipeDetailsUI(selectedRecipe);
-        // });
+            mainFrame.showRecipeDetailsUI(selectedRecipe);
+        });
 
         viewRecipeBtn.addActionListener(e -> {
             // Get the selected document from randomDocs

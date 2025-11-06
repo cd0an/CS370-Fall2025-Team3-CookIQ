@@ -110,23 +110,23 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "LikedRecipes");
     }
     
-    // public void addLikedRecipe(String[] recipe) {
-    //     likedRecipesList.add(recipe);
-    //     likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
+    public void addLikedRecipe(String[] recipe) {
+        likedRecipesList.add(recipe);
+        likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
 
-    //     // Update User Object
-    //     if (currentUser != null) {
-    //         currentUser.addLikedRecipe(recipe[0]); // Store recipe by title 
-    //         new UserService().addLikedRecipe(currentUser.getUsername(), recipe[0]);
-    //     }
-    // }
+        // Update User Object
+        if (currentUser != null) {
+            currentUser.addLikedRecipe(recipe[0]); // Store recipe by title 
+            new UserService().addLikedRecipe(currentUser.getUsername(), recipe[0]);
+        }
+    }
 
-    // public void addDislikedRecipe(String[] recipe) {
-    //     if (currentUser != null) {
-    //         currentUser.addDislikedRecipe(recipe[0]);
-    //         new UserService().addDislikedRecipe(currentUser.getUsername(), recipe[0]);
-    //     }
-    // }
+    public void addDislikedRecipe(String[] recipe) {
+        if (currentUser != null) {
+            currentUser.addDislikedRecipe(recipe[0]);
+            new UserService().addDislikedRecipe(currentUser.getUsername(), recipe[0]);
+        }
+    }
 
     // ======================== User getters/setters ========================
     public void setCurrentUser(User user) {
