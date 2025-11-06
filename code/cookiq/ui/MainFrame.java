@@ -18,7 +18,6 @@ import cookiq.models.Recipe;
 import cookiq.models.User;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
-import cookiq.utils.PreferencesUtils;
 
 public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
@@ -109,22 +108,6 @@ public class MainFrame extends JFrame {
     // ======================== Method to switch to LikedRecipesUI ========================
     public void showLikedRecipesUI() {
         cardLayout.show(mainPanel, "LikedRecipes");
-    }
-
-    // Load current user's preferences from UserService
-    public void loadUserPreferences() {
-        if (currentUser == null) return;
-
-        UserService userService = new UserService();
-
-        // 1️⃣ Get Preferences object from UserService
-        Preferences prefs = userService.getUserPreferences(currentUser.getUsername());
-
-        // 2️⃣ Update PreferencesUI with loaded preferences
-        preferencesUI.setPreferences(prefs);
-
-        // 3️⃣ Keep currentUser.preferences string in sync
-        currentUser.setPreferences(PreferencesUtils.toJsonString(prefs));
     }
     
     public void addLikedRecipe(String[] recipe) {

@@ -194,32 +194,6 @@ public class RecipeDetailsUI extends JPanel {
         wrapper.add(Box.createHorizontalGlue());
         return wrapper;
     }
-
-    // ===== Temporary main method for testing =====
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Recipe Details UI Test");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-            Recipe dummyRecipe = new Recipe(
-                    "1",
-                    "Spaghetti Carbonara",
-                    "Italian",
-                    "Vegetarian",
-                    30,
-                    12.5,
-                    420,
-                    List.of("Spaghetti", "Eggs", "Parmesan Cheese", "Pepper"),
-                    List.of("Boil pasta", "Mix eggs and cheese", "Combine with pasta", "Season with pepper"),
-                    null
-            );
-
-            RecipeDetailsUI ui = new RecipeDetailsUI(null, dummyRecipe);
-            frame.setContentPane(ui);
-            frame.setVisible(true);
-        });
-    }
 }
 
 
