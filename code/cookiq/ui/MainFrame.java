@@ -57,9 +57,8 @@ public class MainFrame extends JFrame {
         // ======================== Navbar ======================== 
         navbar = new NavbarPanel(new NavListener());
         add(navbar, BorderLayout.NORTH);
-
-        updateNavbarForUser(); // Enable/disable Liked button based on user
-        navbar.updateLoginStatus(); 
+        updateNavbarForUser();
+        navbar.updateLoginStatus();
 
         // ======================== Main Panel with CardLayout ======================== 
         cardLayout = new CardLayout(); // Allows switching between panels 
@@ -77,7 +76,6 @@ public class MainFrame extends JFrame {
         mainPanel.add(likedRecipeUI, "LikedRecipes");
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
-
         cardLayout.show(mainPanel, "Home"); // Show Home Screen
 
         setVisible(true);
@@ -125,6 +123,7 @@ public class MainFrame extends JFrame {
     // ======================== User getters/setters ========================
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        updateNavbarForUser();
     }
 
     public User getCurrentUser() {
@@ -172,7 +171,6 @@ public class MainFrame extends JFrame {
                     UserSession.getInstance().logout();
                     currentUser = null;
 
-                    // Redirect to Home
                     System.exit(0);
                 }
             }
@@ -184,6 +182,3 @@ public class MainFrame extends JFrame {
         new MainFrame(UserSession.getInstance().getCurrentUser());
     }
 }
-
-
-

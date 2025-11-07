@@ -28,24 +28,17 @@ public class UserService {
     }
 
     // ==================== User Registration/Login ====================
-    //Register User
     public boolean registerUser(String username, String password) {
         return userRepository.registerUser(username, password);
     }
 
-    //User login
     public boolean loginUser(String username, String password) {
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            return false;
-        }
-
-        Document user = userRepository.getUser(username);
+        Document user = userRepository.getUser(username); // Gets entire user info
         if (user == null) return false;
 
         String storedHash = user.getString("passwordHash");
         String enteredHash = PasswordUtils.sha256(password);
-
-        return PasswordUtils.slowEquals(storedHash, enteredHash); // Slow equals is used to compare the passwords in the same amount of time regardless of password length
+        return PasswordUtils.slowEquals(storedHash, enteredHash);
     }
 
     // ==================== Full User Fetch ====================
@@ -70,7 +63,7 @@ public class UserService {
         return user;
     }
 
-    //Setter - Liked recipes
+    // ==================== Liked Recipes ====================
     public boolean addLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -87,7 +80,6 @@ public class UserService {
         return false;
     }
 
-     // ==================== Liked Recipes ====================
     public List<String> getLikedRecipes(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new ArrayList<>();
@@ -95,7 +87,6 @@ public class UserService {
         return likedRecipes != null ? likedRecipes : new ArrayList<>();
     }
 
-    
     public boolean removeLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -111,17 +102,14 @@ public class UserService {
         return false;
     }
 
-    // Return all liked recipes of a user 
     public List<Recipe> getLikedRecipesFull(String username) {
-        List<String> likedNames = getLikedRecipes(username); // Get names of liked recipes
+        List<String> likedNames = getLikedRecipes(username);
         List<Recipe> likedRecipes = new ArrayList<>();
         if (likedNames.isEmpty()) return likedRecipes;
 
-        List<Recipe> allRecipes = new RecipeRepository().getAllRecipes(); // Fetch all recipes
+        List<Recipe> allRecipes = new RecipeRepository().getAllRecipes();
         for (Recipe r : allRecipes) {
-            if (likedNames.contains(r.getName())) {
-                likedRecipes.add(r); // Add only the recipes the user liked
-            }
+            if (likedNames.contains(r.getName())) likedRecipes.add(r);
         }
         return likedRecipes;
     }
@@ -150,7 +138,7 @@ public class UserService {
         return dislikedRecipes != null ? dislikedRecipes : new ArrayList<>();
     }
 
-    //  ==================== User Preferences ====================
+    // ==================== User Preferences ====================
     public boolean saveUserPreferences(String username, Preferences prefs) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -170,6 +158,7 @@ public class UserService {
         return PreferencesUtils.fromJsonString(prefStr);
     }
 
+    // ==================== Utility ====================
     public void printPreferences(Preferences prefs) {
         System.out.println("Vegetarian:" + prefs.isVegetarian());
         System.out.println("Keto:" + prefs.isKeto());

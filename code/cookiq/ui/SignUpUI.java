@@ -39,6 +39,7 @@ public class SignUpUI extends JPanel {
 
     public SignUpUI() {
         userService = new UserService();
+
         setBackground(new Color(245, 240, 235));
         setLayout(new GridBagLayout());
 

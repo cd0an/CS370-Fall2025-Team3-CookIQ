@@ -23,16 +23,12 @@ public class UserRepository {
 
     // Registers a new user if username does not already exist
     public boolean registerUser(String username, String password) {
-        /**
-         * If connection users finds the specific username, return false
-         * Else it will create a new user
-         */        
+        username = username.toLowerCase(); // ensure consistency
+
         if (users.find(eq("username", username)).first() != null) return false;
 
-        //Hash password before storing
         String passwordHash = PasswordUtils.sha256(password);
 
-        //Create new user document
         Document newUser = new Document("username", username)
                 .append("passwordHash", passwordHash)
                 .append("preferences", new Document())
@@ -44,15 +40,18 @@ public class UserRepository {
         return true;
     }
 
-    //Retrieves the entire user document by username
+    // Retrieves the entire user document by username
     public Document getUser(String username) {
-        return users.find(eq("username", username)).first();
+        if (username == null) return null;
+        return users.find(eq("username", username.toLowerCase())).first();
     }
 
-    //Updates the entire user document in MongoDB
+    // Updates the entire user document in MongoDB
     public void updateUser(String username, Document updatedUser) {
-        users.replaceOne(eq("username", username), updatedUser);
+        if (username == null || updatedUser == null) return;
+        users.replaceOne(eq("username", username.toLowerCase()), updatedUser);
         System.out.println("Updated user: " + username);
     }
 }
+
 

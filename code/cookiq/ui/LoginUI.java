@@ -7,36 +7,12 @@
 
 package cookiq.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
-import cookiq.models.User;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
+import cookiq.models.User;
 
 public class LoginUI extends JPanel {
     private JTextField usernameField;
@@ -76,7 +52,7 @@ public class LoginUI extends JPanel {
         card.add(Box.createVerticalStrut(25));
         card.add(loginPanel);
 
-        // Sign-up link
+        // Sign‑up link
         JLabel signUpLabel = new JLabel("<html><u>Don't have an account? Sign up here.</u></html>");
         signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         signUpLabel.setForeground(new Color(60,50,40));
@@ -117,7 +93,7 @@ public class LoginUI extends JPanel {
             return;
         }
 
-        //We always load in the users last preferences (if they logged in)
+        // We always load in the users last preferences (if they logged in)
         User currentUser = new User(username, "");
         currentUser.getLikedRecipes().addAll(userService.getLikedRecipes(username));
         currentUser.getDislikedRecipes().addAll(userService.getDislikedRecipes(username));
@@ -268,6 +244,7 @@ public class LoginUI extends JPanel {
         return button;
     }
 }
+
 
 
 
