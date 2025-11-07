@@ -45,6 +45,13 @@
             <version>5.9</version>
         </dependency>
 
+        <!-- Open Source Google Image Getter -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
         <!-- Web framework for API (Spring Boot) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
