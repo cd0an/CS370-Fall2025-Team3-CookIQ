@@ -6,8 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,13 +24,11 @@ public class MainFrame extends JFrame {
 
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
-    private RecipeDetailsUI recipeDetailsUI;
     private LikedRecipeUI likedRecipeUI;
     private HomeDashboardUI homeDashboardUI;
     private RecipeDetailsUI detailsUI;
 
     private User currentUser; // Currently logged-in 
-    private List<String[]> likedRecipesList = new ArrayList<>();
 
     private final UserService userService; // SINGLE UserService instance
     private final RecommendationService recommendationService; 
@@ -144,6 +140,7 @@ public class MainFrame extends JFrame {
         return likedRecipeUI;
     }
 
+    //  ======================== Changes the navbar accordingly to log in/out in navbar ========================
     public NavbarPanel getNavbar() {
         return navbar;
     }
