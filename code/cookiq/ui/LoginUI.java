@@ -10,9 +10,9 @@ package cookiq.ui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import cookiq.models.User;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
-import cookiq.models.User;
 
 public class LoginUI extends JPanel {
     private JTextField usernameField;
@@ -93,13 +93,26 @@ public class LoginUI extends JPanel {
             return;
         }
 
-        // We always load in the users last preferences (if they logged in)
+        // Create User object and populate data correctly
         User currentUser = new User(username, "");
-        currentUser.getLikedRecipes().addAll(userService.getLikedRecipes(username));
-        currentUser.getDislikedRecipes().addAll(userService.getDislikedRecipes(username));
+
+        // Populate liked recipes
+        for (String recipe : userService.getLikedRecipes(username)) {
+            currentUser.addLikedRecipe(recipe);
+        }
+
+        // Populate disliked recipes
+        for (String recipe : userService.getDislikedRecipes(username)) {
+            currentUser.addDislikedRecipe(recipe);
+        }
+
+        // Populate preferences
         currentUser.getPreferences().copyPrefs(userService.getUserPreferences(username));
+
+        // Set the session
         UserSession.getInstance().login(currentUser);
 
+        // Close login window and open main frame
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
         if (frame != null) frame.dispose();
         new MainFrame(currentUser).setVisible(true);
