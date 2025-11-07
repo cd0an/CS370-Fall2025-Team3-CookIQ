@@ -2,22 +2,39 @@
 
 package cookiq.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
 import cookiq.models.Recipe;
-import java.util.ArrayList;
+import cookiq.services.UserService;
 
 public class LikedRecipeUI extends JPanel {
     private JPanel likedRecipesPanel; // Container for all liked recipe cards
     private JScrollPane scrollPane; // Scrolls when there are many recipes 
-    private List<String[]> likedRecipe; // Each recipe: {title, tags, cuisine, cookTime, cost}
     private MainFrame mainFrame; // Reference to MainFrame for navigation
+    private UserService userService; // Calls UserService 
 
     // Constructor
     public LikedRecipeUI(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        likedRecipe = new ArrayList<>();
+        this.userService = mainFrame.getUserService();
 
         // Main layout setup
         setLayout(new BorderLayout()); 
@@ -43,10 +60,27 @@ public class LikedRecipeUI extends JPanel {
 
     }
 
+    //  ========= Load all liked recipes from UserService =========
+    public void loadLikedRecipes() {
+        if (mainFrame == null || mainFrame.getCurrentUser() == null) return;
+
+        likedRecipesPanel.removeAll();
+
+        // Fetch full Recipe objects, not just names
+        List<Recipe> likedRecipes = userService.getLikedRecipesFull(mainFrame.getCurrentUser().getUsername());
+
+        for (Recipe recipe : likedRecipes) {
+            addLikedRecipe(recipe);
+        }
+
+        likedRecipesPanel.revalidate();
+        likedRecipesPanel.repaint();
+    }
+
     // ========= Add a Liked Recipe Card ========= 
     // Dynamically adds a recipe card to the list
-    public void addLikedRecipe(String title, String tags, String cuisine, String cookTime, String cost) {
-        JPanel card = createRecipeCard(title, tags, cuisine, cookTime, cost);
+    public void addLikedRecipe(Recipe recipe) {
+        JPanel card = createRecipeCard(recipe);
         likedRecipesPanel.add(card);
         likedRecipesPanel.add(Box.createVerticalStrut(20)); // Space between cards
         likedRecipesPanel.revalidate();
@@ -54,7 +88,7 @@ public class LikedRecipeUI extends JPanel {
     }
 
     // Create a Single Recipe Card
-    private JPanel createRecipeCard(String title, String tags, String cuisine, String cookTime, String cost) {
+    private JPanel createRecipeCard(Recipe recipe) {
         JPanel card = new RoundedPanel(25, Color.WHITE);
         card.setBackground(Color.WHITE);
         card.setOpaque(true);
@@ -75,21 +109,21 @@ public class LikedRecipeUI extends JPanel {
         card.add(Box.createVerticalStrut(15));
 
         // --- Recipe Title ---
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(titleLabel);
         card.add(Box.createVerticalStrut(15));
 
         // --- Cuisine | Cook Time | Cost ---
-        JLabel infoLabel = new JLabel(cuisine + " | " + cookTime + " | " + cost, SwingConstants.CENTER);
+        JLabel infoLabel = new JLabel(recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost(), SwingConstants.CENTER);
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(infoLabel);
         card.add(Box.createVerticalStrut(12));
 
         // --- Recipe Tags ---
-        JLabel tagsLabel = new JLabel(tags, SwingConstants.CENTER);
+        JLabel tagsLabel = new JLabel(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals(), SwingConstants.CENTER);
         tagsLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         tagsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(tagsLabel);
@@ -115,21 +149,9 @@ public class LikedRecipeUI extends JPanel {
             }
         });
 
-        // --- Action: Navigate to RecipeDetailsUI when clicked ---
+        // --- Navigate to RecipeDetailsUI when clicked ---
         viewRecipeBtn.addActionListener(e -> {
-            Recipe selectedRecipe = new Recipe(
-                "1", // Dummy ID
-                title,
-                cuisine,
-                tags,
-                Integer.parseInt(cookTime.replaceAll("[^0-9]", "")),
-                Double.parseDouble(cost.replaceAll("[^0-9.]", "")),
-                420, // Dummy calories
-                List.of("Ingredient 1", "Ingredient 2"),
-                List.of("Step 1", "Step 2"),
-                null // No image
-            );
-            mainFrame.showRecipeDetailsUI(selectedRecipe);
+            mainFrame.showRecipeDetailsUI(recipe);
         });
 
         card.add(viewRecipeBtn);

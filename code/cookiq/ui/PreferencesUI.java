@@ -34,16 +34,11 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.bson.Document;
-
-import cookiq.db.RecipeRepository;
-import cookiq.models.Preferences;
 import cookiq.models.User;
-import cookiq.utils.PreferencesUtils;
+import cookiq.services.UserService;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
-    // private Preferences preferences;
 
     // ====================== Input Components ======================
     private JCheckBox vegetarianCB, ketoCB, glutenCB;
@@ -53,10 +48,13 @@ public class PreferencesUI extends JPanel {
     private JRadioButton budget10, budget30, budget50;
     private JTextField ingredientField;
 
+    // Button groups for radio buttons
+    private ButtonGroup timeGroup;
+    private ButtonGroup budgetGroup;
+
     public PreferencesUI(MainFrame frame) {
         this.mainFrame = frame;
         User curr_user = mainFrame.getCurrentUser();
-        // preferences = new Preferences();
 
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
@@ -163,7 +161,7 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Cook Time Radio Button 
-        ButtonGroup timeGroup = new ButtonGroup();
+        timeGroup = new ButtonGroup();
         time15 = new JRadioButton(">15 min");
         time30 = new JRadioButton(">30 min");
         time60 = new JRadioButton(">60 min");
@@ -189,7 +187,7 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Budget Per Meal Radio Button 
-        ButtonGroup budgetGroup = new ButtonGroup();
+        budgetGroup = new ButtonGroup();
         budget10 = new JRadioButton(">$10");
         budget30 = new JRadioButton(">$30");
         budget50 = new JRadioButton(">$50");
@@ -218,7 +216,6 @@ public class PreferencesUI extends JPanel {
         ingredientField = new JTextField(); 
         ingredientField.setPreferredSize(new Dimension(200,30));
         ingredientField.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Set black border
-
         String placeholder = "Type here (e.g., eggs)";
         ingredientField.setText(placeholder);
         ingredientField.setForeground(Color.GRAY);
@@ -284,54 +281,124 @@ public class PreferencesUI extends JPanel {
 
         // Connects Preference UI input to Preference object from Preference.java
         generateBtn.addActionListener(e -> {
-            // Check if at least one option is selected
-            boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
-            boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
-            boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
-                                || americanCB.isSelected() || medCB.isSelected();
-            boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
-            boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
-            boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
-                                    !ingredientField.getText().equals("Type here (e.g., eggs)");
+            try {
+                System.out.println("Generate Recipes button clicked!");
+                
+                boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
+                boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
+                boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
+                                    || americanCB.isSelected() || medCB.isSelected();
+                boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
+                boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
+                boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
+                                        !ingredientField.getText().equals("Type here (e.g., eggs)");
 
-            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
-                // Nothing selected, show warning
-                JOptionPane.showMessageDialog(this, "Please select your preferences first!", 
-                                            "Warning", JOptionPane.WARNING_MESSAGE);
-                return; // Stop further execution
-            }
-
-            // Update preferences object
-            Preferences curr_selected_prefs = new Preferences(vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
-                                                                lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
-                                                                italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
-                                                                americanCB.isSelected(), medCB.isSelected(),
-                                                                time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
-                                                                (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
-                                                                new ArrayList<String>());
-            curr_user.getPreferences().copyPrefs(curr_selected_prefs);
-
-            // Ingredients 
-            preferences.getAvailableIngredients().clear();
-            String text = ingredientField.getText();
-            if (!text.equals(placeholder) && !text.isEmpty()) {
-                for (String ing : text.split(",")) {
-                    preferences.addAvailableIngredient(ing.trim());
+                if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+                    JOptionPane.showMessageDialog(null, "Please select your preferences first!", 
+                                                "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
-            }
 
-            // ============ Save via UserService ============
-    
-            // Save/update preferences in MongoDB
-            if (curr_user != null) {
-                Document newPrefs = new Document("preferences", PreferencesUtils.toJsonString(curr_user.getPreferences()));
-                RecipeRepository.getUserPreferences(curr_user.getUsername(), newPrefs);
-                curr_user.setPreferences(PreferencesUtils.toJsonString(curr_user.getPreferences()));
-            }
+                Preferences curr_selected_prefs = new Preferences(
+                    vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
+                    lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
+                    italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
+                    americanCB.isSelected(), medCB.isSelected(),
+                    time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
+                    (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
+                    new ArrayList<String>()
+                );
 
-            // Switch to SwipeUI
-            mainFrame.showSwipeUI(curr_user.getPreferences());
+                if (curr_user != null) {
+                    curr_user.getPreferences().copyPrefs(curr_selected_prefs);
+
+                    String text = ingredientField.getText();
+                    curr_user.getPreferences().getAvailableIngredients().clear();
+                    if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
+                        for (String ing : text.split(",")) {
+                            curr_user.getPreferences().addAvailableIngredient(ing.trim());
+                        }
+                    }
+
+                    UserService userService = new UserService();
+                    userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
+
+                    if (mainFrame != null) {
+                        mainFrame.showSwipeUI(curr_user.getPreferences());
+                    } else {
+                        System.out.println("mainFrame is null!");
+                    }
+
+                } else {
+                    System.out.println("curr_user is null!");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace(); // This will show exactly where it fails
+            }
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // generateBtn.addActionListener(e -> {
+        //     System.out.println("Generate Recipes button clicked!");
+            
+        //     // Check if at least one option is selected
+        //     boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
+        //     boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
+        //     boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
+        //                         || americanCB.isSelected() || medCB.isSelected();
+        //     boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
+        //     boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
+        //     boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
+        //                             !ingredientField.getText().equals("Type here (e.g., eggs)");
+
+        //     if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+        //         // Nothing selected, show warning
+        //         JOptionPane.showMessageDialog(null, "Please select your preferences first!", 
+        //                                     "Warning", JOptionPane.WARNING_MESSAGE);
+        //         return; // Stop further execution
+        //     }
+
+        //     // Create new Preferences object
+        //     Preferences curr_selected_prefs = new Preferences(
+        //         vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
+        //         lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
+        //         italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
+        //         americanCB.isSelected(), medCB.isSelected(),
+        //         time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
+        //         (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
+        //         new ArrayList<String>()
+        //     );
+
+        //     curr_user.getPreferences().copyPrefs(curr_selected_prefs); // Copy into User's Preferences 
+
+        //     // Update Ingredients 
+        //     curr_user.getPreferences().getAvailableIngredients().clear();
+        //     String text = ingredientField.getText();
+        //     if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
+        //         for (String ing : text.split(",")) {
+        //             curr_user.getPreferences().addAvailableIngredient(ing.trim());
+        //         }
+        //     }
+
+        //     // ================= Save Preferences to DB via UserService =================
+        //     UserService userService = new UserService();
+        //     userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
+
+        //     // Switch to SwipeUI
+        //     mainFrame.showSwipeUI(curr_user.getPreferences());
+        // });
 
         // ============ Reset Button ============
         JButton resetBtn = new JButton("Reset");
@@ -360,7 +427,7 @@ public class PreferencesUI extends JPanel {
 
         // Action for Reset Button: clears all inputs
         resetBtn.addActionListener( e -> {
-            // Check if anything is selected
+            // First, check if anything is selected
             boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
             boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
             boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
@@ -377,8 +444,10 @@ public class PreferencesUI extends JPanel {
                 return;
             }
 
-            // Clear the Preferences object
-            curr_user.getPreferences().clearAll();
+            // Clear Preferences object in memory
+            if (curr_user != null) {
+                curr_user.getPreferences().clearAll();
+            }
 
             // Uncheck all checkboxes
             vegetarianCB.setSelected(false);
@@ -393,23 +462,21 @@ public class PreferencesUI extends JPanel {
             americanCB.setSelected(false);
             medCB.setSelected(false);
 
-            // Deselected radio buttons
-            time15.setSelected(false);
-            time30.setSelected(false);
-            time60.setSelected(false);
-            budget10.setSelected(false);
-            budget30.setSelected(false);
-            budget50.setSelected(false);
-
-            // Reset radio buttons
+            // Clear radio buttons
             timeGroup.clearSelection();
             budgetGroup.clearSelection();
 
-            // Clear ingredient field
+            // Reset ingredient field
             ingredientField.setText("Type here (e.g., eggs)");
             ingredientField.setForeground(Color.GRAY);
 
-            JOptionPane.showMessageDialog(null, "Preferences reset!");
+            // Save cleared preferences to DB
+            if (curr_user != null) {
+                UserService userService = new UserService();
+                userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
+            }
+
+            JOptionPane.showMessageDialog(this, "Preferences reset!");
         });
 
         // ============ Button Panel ============
@@ -425,45 +492,7 @@ public class PreferencesUI extends JPanel {
 
         add(btnPanel, BorderLayout.SOUTH);
     }
-
-    //❗❗❗Possibly the same as copyPrefs in Preferences class (newly added)
-    // public void setPreferences(Preferences prefs) {
-    //     if (prefs == null) return;
-
-    //     // Save reference
-    //     curr_user.getPreferences() = prefs;
-
-    //     // Dietary restrictions
-    //     vegetarianCB.setSelected(prefs.isVegetarian());
-    //     ketoCB.setSelected(prefs.isKeto());
-    //     glutenCB.setSelected(prefs.isGlutenFree());
-
-    //     // Health goals
-    //     lowCalCB.setSelected(prefs.isLowCalorie());
-    //     highCalCB.setSelected(prefs.isHighCalorie());
-    //     highProteinCB.setSelected(prefs.isHighProtein());
-
-    //     // Cook time
-    //     time15.setSelected(prefs.getMaxCookTime() == 15);
-    //     time30.setSelected(prefs.getMaxCookTime() == 30);
-    //     time60.setSelected(prefs.getMaxCookTime() == 60);
-
-    //     // Budget
-    //     budget10.setSelected(prefs.getMaxBudget() == 10);
-    //     budget30.setSelected(prefs.getMaxBudget() == 30);
-    //     budget50.setSelected(prefs.getMaxBudget() == 50);
-
-    //     // Ingredients
-    //     if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
-    //         ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
-    //         ingredientField.setForeground(Color.BLACK);
-    //     } else {
-    //         ingredientField.setText("Type here (e.g., eggs)");
-    //         ingredientField.setForeground(Color.GRAY);
-    //     }
-    // }
 }
-
 
 
 

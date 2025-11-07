@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
+import cookiq.services.RecommendationService;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
 
@@ -33,9 +34,14 @@ public class MainFrame extends JFrame {
     private User currentUser; // Currently logged-in 
     private List<String[]> likedRecipesList = new ArrayList<>();
 
+    private final UserService userService; // SINGLE UserService instance
+    private final RecommendationService recommendationService; 
+
     // Constructor 
     public MainFrame(User user) {
         this.currentUser = user; // Set current user
+        this.userService = new UserService(); 
+        this.recommendationService = new RecommendationService();
 
         setTitle("CookIQ Recipe Generator");
         setSize(1000,700);
@@ -44,8 +50,7 @@ public class MainFrame extends JFrame {
 
         // Make sure session reflects guest or user properly
         if (UserSession.getInstance().getCurrentUser() == null && !UserSession.getInstance().isGuest()) {
-            // default to guest if no one logged in
-            UserSession.getInstance().loginAsGuest();
+            UserSession.getInstance().loginAsGuest(); // Default to guest if no one logged in
         }
 
         // ======================== Navbar ======================== 
@@ -61,7 +66,7 @@ public class MainFrame extends JFrame {
 
         // Initialize Panels 
         preferencesUI = new PreferencesUI(this);
-        swipeUI = new SwipeUI(this);
+        swipeUI = new SwipeUI(this, recommendationService); 
         likedRecipeUI = new LikedRecipeUI(this);
         homeDashboardUI = new HomeDashboardUI(this);
 
@@ -75,6 +80,11 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "Home"); // Show Home Screen
 
         setVisible(true);
+    }
+
+    // ======================= UserService getter ========================
+    public UserService getUserService() {
+        return userService;
     }
 
     // ======================== Method to update navbar buttons based on login/guest ========================
@@ -96,36 +106,15 @@ public class MainFrame extends JFrame {
 
     // ======================== Method to switch to RecipeDetailsUI ========================
     public void showRecipeDetailsUI(Recipe recipe) {
-        if (recipeDetailsUI == null) {
-            recipeDetailsUI = new RecipeDetailsUI(this, recipe);
-            mainPanel.add(recipeDetailsUI, "RecipeDetails");
-        } else {
-             recipeDetailsUI = new RecipeDetailsUI(this, recipe);
+        if (currentUser != null && !UserSession.getInstance().isGuest()) {
+            likedRecipeUI.loadLikedRecipes(); // Load full recipe cards dynamically
         }
-        cardLayout.show(mainPanel, "RecipeDetails");
+        cardLayout.show(mainPanel, "LikedRecipes");
     }
 
     // ======================== Method to switch to LikedRecipesUI ========================
     public void showLikedRecipesUI() {
         cardLayout.show(mainPanel, "LikedRecipes");
-    }
-    
-    public void addLikedRecipe(String[] recipe) {
-        likedRecipesList.add(recipe);
-        likedRecipeUI.addLikedRecipe(recipe[0], recipe[1], recipe[2], recipe[3], recipe[4]);
-
-        // Update User Object
-        if (currentUser != null) {
-            currentUser.addLikedRecipe(recipe[0]); // Store recipe by title 
-            new UserService().addLikedRecipe(currentUser.getUsername(), recipe[0]);
-        }
-    }
-
-    public void addDislikedRecipe(String[] recipe) {
-        if (currentUser != null) {
-            currentUser.addDislikedRecipe(recipe[0]);
-            new UserService().addDislikedRecipe(currentUser.getUsername(), recipe[0]);
-        }
     }
 
     // ======================== User getters/setters ========================
@@ -159,7 +148,7 @@ public class MainFrame extends JFrame {
                         javax.swing.JOptionPane.INFORMATION_MESSAGE
                     );
                 } else {
-                    cardLayout.show(mainPanel, "LikedRecipes");
+                   showLikedRecipesUI();
                 }
                 
             } else if (source == navbar.getMealMatchBtn()) {

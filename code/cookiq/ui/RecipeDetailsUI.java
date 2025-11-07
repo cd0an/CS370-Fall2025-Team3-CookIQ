@@ -7,12 +7,26 @@
 
 package cookiq.ui;
 
-import cookiq.models.Recipe;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+
+import cookiq.models.Recipe;
 
 public class RecipeDetailsUI extends JPanel {
     private MainFrame mainFrame; // Reference to the MainFrame.java 
@@ -20,7 +34,7 @@ public class RecipeDetailsUI extends JPanel {
     private JSplitPane splitPane; // Used to separate left and right sections
 
     // Constructor 
-    public RecipeDetailsUI(MainFrame mainframe, Recipe recipe) {
+    public RecipeDetailsUI(MainFrame mainFrame, Recipe recipe) {
         this.mainFrame = mainFrame;
         this.recipe = recipe;
 
@@ -81,8 +95,7 @@ public class RecipeDetailsUI extends JPanel {
             new Font("SansSerif", Font.BOLD, 16)
         ));
         nutritionPanel.setMaximumSize(new Dimension(500, 180));
-        nutritionPanel.add(new JLabel("Calories " + recipe.getCalories(), SwingConstants.CENTER));
-        nutritionPanel.add(new JLabel("Protein: 35g", SwingConstants.CENTER));
+        nutritionPanel.add(new JLabel(recipe.getHealthGoals(), SwingConstants.CENTER));
 
         leftPanel.add(nutritionPanel);
         

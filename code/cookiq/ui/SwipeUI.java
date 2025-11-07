@@ -18,8 +18,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -30,32 +28,27 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.mongodb.client.model.Aggregates;
-import org.bson.Document;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-
-import cookiq.db.MongoDBConnection;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.models.User;
+import cookiq.services.RecommendationService;
+import cookiq.services.UserService;
 import cookiq.services.UserSession;
 
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
     private JPanel recipeCard;
-    private List<String[]> recipes;
-    private List<String[]> likedRecipes = new ArrayList<>();
+    private List<Recipe> recipes;
     private int currentIndex; 
     private Preferences userPreferences; // Store user preferences 
-    private JLabel mealMatchTitle;
     private MainFrame mainFrame; // Reference to parent frame 
-     private List<Document> randomDocs;
+    private RecommendationService recommendationService;
      
     // Constructor 
-    public SwipeUI(MainFrame frame) {
+    public SwipeUI(MainFrame frame, RecommendationService service) {
         this.mainFrame = frame;
+        this.recommendationService = service;
         
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
@@ -67,43 +60,33 @@ public class SwipeUI extends JPanel {
 
     // ====================== Set User Preferences ======================
     public void setUserPreferences(Preferences prefs) {
-        MongoDatabase db = MongoDBConnection.getDatabase();
-        MongoCollection<Document> recipeList = db.getCollection("recipes");
-
         this.userPreferences = prefs;
-        System.out.println("User preferences recevied: " + prefs);
+        System.out.println("User preferences received: " + prefs);
 
         removeAll();
         revalidate();
         repaint();
 
-        // If user has not set their preferences, display the following UI
         if (userPreferences == null) {
             showSetPreferencesUI();
         } else {
-            // ====================== Fetch User Preferences from MongoDB (Dummy Test Rn) ======================
-            recipes = new ArrayList<>();
-            List<Document> randomDocs = recipeList.aggregate(Arrays.asList(
-                Aggregates.sample(5)
-            )).into(new ArrayList<>());
+            // Fetch recommended recipes as Recipe objects
+            recipes = recommendationService.getRecommendations(userPreferences);
 
-
-            // Format: {title, tags/diet, cuisine, cookTime, cost}
-            recipes.add(new String[]{"Mediterranean Pasta Bowl", "Vegetarian • Low-Calorie", "Mediterranean", "25 min", "$12.50"});
-            recipes.add(new String[]{"Spicy Chicken Tacos", "High-Protein • Gluten-Free", "Mexican", "30 min", "$15.00"});
-            recipes.add(new String[]{"Avocado Toast", "Vegan • Low-Calorie", "American", "10 min", "$8.00"});
-            recipes.add(new String[]{"Beef Stir-Fry", "High-Calorie • Protein-Rich", "Chinese", "20 min", "$14.00"});
-            recipes.add(new String[]{"Shrimp Fried Rice", "Asian • Gluten-Free", "Chinese", "25 min", "$13.50"});
-            recipes.add(new String[]{"Quinoa Salad", "Vegetarian • High-Protein", "Mediterranean", "15 min", "$11.00"});
-
-            currentIndex = 0;
-            initSwipeUI(); // Build the swipe interface 
+            if (recipes.isEmpty()) {
+                System.out.println("No recipes match the user preferences");
+                showSetPreferencesUI();
+            } else {
+                currentIndex = 0;
+                initSwipeUI();
+            }
         }
     }
 
-
     // ====================== Function to Display Swipe UI ====================== 
     private void initSwipeUI() {
+        Recipe recipe = recipes.get(currentIndex); // Current recipe
+
         // ====================== Recipe Card Panel ======================
         recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
         recipeCard.setBackground(Color.WHITE);
@@ -124,7 +107,7 @@ public class SwipeUI extends JPanel {
         recipeCard.add(Box.createVerticalStrut(15));
 
         // Recipe Title 
-        titleLabel = new JLabel(recipes.get(currentIndex)[0], SwingConstants.CENTER);
+        titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeCard.add(titleLabel);
@@ -132,7 +115,7 @@ public class SwipeUI extends JPanel {
 
         // Cuisine, Cook Timme, Cost
         JLabel infoLabel = new JLabel(
-            recipes.get(currentIndex)[2] + " | " + recipes.get(currentIndex)[3] + " | " + recipes.get(currentIndex)[4],
+            recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost(),
             SwingConstants.CENTER
         );
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -141,7 +124,7 @@ public class SwipeUI extends JPanel {
         recipeCard.add(Box.createVerticalStrut(12));
 
         // Recipe Tags 
-        tagsLabel = new JLabel(recipes.get(currentIndex)[1], SwingConstants.CENTER);
+        tagsLabel = new JLabel(recipe.getDietaryCategory(), SwingConstants.CENTER);
         tagsLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         tagsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeCard.add(tagsLabel);
@@ -169,46 +152,8 @@ public class SwipeUI extends JPanel {
 
         // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
         viewRecipeBtn.addActionListener(e -> {
-            Recipe selectedRecipe = new Recipe(
-                Recipe selectedRecipe = new Recipe(
-                        "1",                                 // id
-                        recipes.get(currentIndex)[0],        // name
-                        recipes.get(currentIndex)[2],        // cuisine
-                        recipes.get(currentIndex)[1],        // diet/tags
-                        Integer.parseInt(recipes.get(currentIndex)[3].replaceAll("[^0-9]", "")), // cook time
-                        Double.parseDouble(recipes.get(currentIndex)[4].replaceAll("[^0-9.]", "")), // cost
-                        420,                                 // calories dummy
-                        List.of("Ingredient 1", "Ingredient 2"),
-                        List.of("Step 1", "Step 2"),
-                        null                                 // image
-                );
-                Tell MainFrame to show RecipeDetailsUI
-            );
-            
-            mainFrame.showRecipeDetailsUI(selectedRecipe);
+            if (mainFrame != null) mainFrame.showRecipeDetailsUI(recipe);
         });
-
-        viewRecipeBtn.addActionListener(e -> {
-            // Get the selected document from randomDocs
-            Document doc = randomDocs.get(currentIndex);
-
-            // Create a Recipe object from the Mongo document
-            Recipe selectedRecipe = new Recipe(
-                doc.getString("name"),
-                doc.getString("cuisine"),
-                doc.getString("dietaryCategory"),
-                doc.getInteger("cookTime"),
-                doc.getDouble("cost"),
-                doc.getString("healthGoals"),
-                doc.getList("ingredients", String.class),
-                doc.getList("directions", String.class),
-                doc.getList("NER", String.class)
-            );
-
-            // Show the recipe details UI
-            mainFrame.showRecipeDetailsUI(selectedRecipe);
-        });
-
 
         recipeCard.add(viewRecipeBtn);
         recipeCard.add(Box.createVerticalGlue());
@@ -323,11 +268,21 @@ public class SwipeUI extends JPanel {
 
     // ====================== Next Recipe ======================
     private void nextRecipe(boolean liked) {
-        if (mainFrame != null) {
+        if (currentIndex >= recipes.size()) return;
+        Recipe currentRecipe = recipes.get(currentIndex);
+
+        if (mainFrame != null && mainFrame.getCurrentUser() != null) {
+            User currentUser = mainFrame.getCurrentUser();
+            UserService userService = mainFrame.getUserService();
+
             if (liked) {
-                mainFrame.addLikedRecipe(recipes.get(currentIndex));
+                // Update user model
+                currentUser.addLikedRecipe(currentRecipe.getName());
+                // Persist to database
+                userService.addLikedRecipe(currentUser.getUsername(), currentRecipe.getName());
             } else {
-                mainFrame.addDislikedRecipe(recipes.get(currentIndex));
+                currentUser.addDislikedRecipe(currentRecipe.getName());
+                userService.addDislikedRecipe(currentUser.getUsername(), currentRecipe.getName());
             }
         }
 
@@ -341,8 +296,9 @@ public class SwipeUI extends JPanel {
 
     // Function to update recipe 
     private void updateRecipe() {
-        titleLabel.setText(recipes.get(currentIndex)[0]);
-        tagsLabel.setText(recipes.get(currentIndex)[1]);
+        Recipe recipe = recipes.get(currentIndex);
+        titleLabel.setText(recipe.getName());
+        tagsLabel.setText(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals());
     }
 
 
@@ -417,8 +373,11 @@ public class SwipeUI extends JPanel {
         // When user clicks the 'Reset Preferences' button, it navigates to the Preferences UI 
         resetPrefs.addActionListener(e -> {
             if (mainFrame != null) {
-                mainFrame.showPreferencesUI();
-            }
+            this.userPreferences = null; // Clear stored preferences
+            recipes = null;
+            currentIndex = 0;
+            mainFrame.showPreferencesUI(); // Navigate to PreferencesUI
+    }
         });
 
         // Add components to the white panel 

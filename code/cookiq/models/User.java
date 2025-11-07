@@ -27,16 +27,21 @@ public class User {
     }
 
     // Constructor for loading users with liked recipes
-    public User(String username, String password, Preferences preferences, List<String> likedRecipes) {
-        this(username, password, preferences);
-        if (likedRecipes != null) this.liked = likedRecipes;
+    public User(String username, String password, Preferences preferences, List<String> likedRecipes, List<String> dislikedRecipes) {
+        this.username = username;
+        this.password = password;
+        this.preferences = preferences != null ? preferences : new Preferences();
+        this.liked = likedRecipes != null ? new ArrayList<>(likedRecipes) : new ArrayList<>();
+        this.disliked = dislikedRecipes != null ? new ArrayList<>(dislikedRecipes) : new ArrayList<>();
     }
 
     public String getUsername() { return username; }
     public String getPassword() { return password; }
     public Preferences getPreferences() { return preferences; }
-    public List<String> getLikedRecipes() { return liked; }
-    public List<String> getDislikedRecipes() { return disliked; }
+
+    // Return copies to prevent external modification
+    public List<String> getLikedRecipes() { return new ArrayList<>(liked); }
+    public List<String> getDislikedRecipes() { return new ArrayList<>(disliked);}
 
     public void addLikedRecipe(String recipe) {
         if (!liked.contains(recipe)) {
@@ -49,6 +54,18 @@ public class User {
         if (!disliked.contains(recipe)) {
             disliked.add(recipe);
             liked.remove(recipe);
+        }
+    }
+
+    public void removeLikedRecipe(String recipe) {
+        if (recipe != null) {
+            liked.remove(recipe);
+        }
+    }
+
+    public void removeDislikedRecipe(String recipe) {
+        if (recipe != null) {
+            disliked.remove(recipe);
         }
     }
 
