@@ -15,7 +15,7 @@ public class TestLoadPreferences
     {
         //Creates a UserService object for this instance
         UserService user_service = new UserService();
-        String username = "Zhuo Cheng";
+        String username = "cindy";
 
         //Save user preferences
         Preferences new_prefs = new Preferences(true, true, false, true, false, false, false, false, true, false, false, 15, 30, Arrays.asList("tomatos", "apples", "cucumbers"));

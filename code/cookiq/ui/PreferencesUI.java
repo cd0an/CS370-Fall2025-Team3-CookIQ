@@ -431,40 +431,41 @@ public class PreferencesUI extends JPanel {
         add(btnPanel, BorderLayout.SOUTH);
     }
 
-        public void loadPreferencesFromUser(User user) {
-            if (user == null || user.getPreferences() == null) return;
+    // To keep the prferences of what logged-in users selected remain selected (radio buttons, check boxes) through any sessions 
+    public void loadPreferencesFromUser(User user) {
+        if (user == null || user.getPreferences() == null) return;
 
-            Preferences prefs = user.getPreferences();
+        Preferences prefs = user.getPreferences();
 
-            vegetarianCB.setSelected(prefs.isVegetarian());
-            ketoCB.setSelected(prefs.isKeto());
-            glutenCB.setSelected(prefs.isGlutenFree());
+        vegetarianCB.setSelected(prefs.isVegetarian());
+        ketoCB.setSelected(prefs.isKeto());
+        glutenCB.setSelected(prefs.isGlutenFree());
 
-            lowCalCB.setSelected(prefs.isLowCalorie());
-            highCalCB.setSelected(prefs.isHighCalorie());
-            highProteinCB.setSelected(prefs.isHighProtein());
+        lowCalCB.setSelected(prefs.isLowCalorie());
+        highCalCB.setSelected(prefs.isHighCalorie());
+        highProteinCB.setSelected(prefs.isHighProtein());
 
-            italianCB.setSelected(prefs.isItalian());
-            mexicanCB.setSelected(prefs.isMexican());
-            asianCB.setSelected(prefs.isAsian());
-            americanCB.setSelected(prefs.isAmerican());
-            medCB.setSelected(prefs.isMediterranean());
+        italianCB.setSelected(prefs.isItalian());
+        mexicanCB.setSelected(prefs.isMexican());
+        asianCB.setSelected(prefs.isAsian());
+        americanCB.setSelected(prefs.isAmerican());
+        medCB.setSelected(prefs.isMediterranean());
 
-            time15.setSelected(prefs.getMaxCookTime() == 15);
-            time30.setSelected(prefs.getMaxCookTime() == 30);
-            time60.setSelected(prefs.getMaxCookTime() == 60);
+        time15.setSelected(prefs.getMaxCookTime() == 15);
+        time30.setSelected(prefs.getMaxCookTime() == 30);
+        time60.setSelected(prefs.getMaxCookTime() == 60);
 
-            budget10.setSelected(prefs.getMaxBudget() == 10);
-            budget30.setSelected(prefs.getMaxBudget() == 30);
-            budget50.setSelected(prefs.getMaxBudget() == 50);
+        budget10.setSelected(prefs.getMaxBudget() == 10);
+        budget30.setSelected(prefs.getMaxBudget() == 30);
+        budget50.setSelected(prefs.getMaxBudget() == 50);
 
-            if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
-                ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
-            } else {
-                ingredientField.setText("Type here (e.g., eggs)");
-            }
+        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
+            ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
+        } else {
+            ingredientField.setText("Type here (e.g., eggs)");
         }
     }
+}
 
 
 
