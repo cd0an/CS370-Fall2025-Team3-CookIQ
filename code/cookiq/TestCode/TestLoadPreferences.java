@@ -11,11 +11,10 @@ import cookiq.services.UserService;
 
 public class TestLoadPreferences {
     public static void main(String[] args) {
-        // Create a UserService instance
         UserService userService = new UserService();
         String username = "cindy";
 
-        // Step 1: Create and save preferences for this user
+        // STEP 1: Create and save initial preferences
         Preferences prefs = new Preferences(
             true,  // vegetarian
             true,  // keto
@@ -36,26 +35,50 @@ public class TestLoadPreferences {
         userService.saveUserPreferences(username, prefs);
         System.out.println("✅ Saved initial preferences for " + username);
 
-        // Step 2: Load and print preferences before reset
         System.out.println("\n=== Preferences BEFORE Reset ===");
         Preferences beforeReset = userService.getUserPreferences(username);
         userService.printPreferences(beforeReset);
 
-        // Step 3: Simulate clearing preferences (like clicking reset in UI)
+        // STEP 2: Simulate Reset (like clicking reset in UI)
         beforeReset.clearAll();
         userService.saveUserPreferences(username, beforeReset);
         System.out.println("\n✅ Preferences cleared and saved.");
 
-        // Step 4: Load and print preferences after reset
         System.out.println("\n=== Preferences AFTER Reset ===");
         Preferences afterReset = userService.getUserPreferences(username);
         userService.printPreferences(afterReset);
 
-        // Step 5: Verify the reset worked
         if (afterReset.isEmpty()) {
             System.out.println("\n✅ Test passed: Preferences were successfully cleared.");
         } else {
             System.out.println("\n❌ Test failed: Some preferences were not cleared properly.");
         }
+
+        // STEP 3: Save new preferences again (simulate user setting them after reset)
+        Preferences newPrefs = new Preferences(
+            false, // vegetarian
+            false, // keto
+            true,  // glutenFree
+            false, // lowCalorie
+            true,  // highCalorie
+            true,  // highProtein
+            false, // italian
+            true,  // mexican
+            true,  // asian
+            false, // american
+            true,  // mediterranean
+            60,    // maxCookTime
+            40.0,  // maxBudget
+            Arrays.asList("chicken", "rice", "onions")
+        );
+
+        userService.saveUserPreferences(username, newPrefs);
+        System.out.println("\n✅ Saved new preferences after reset.");
+
+        // STEP 4: Reload and print to verify new data persisted
+        System.out.println("\n=== Preferences AFTER Setting New Ones ===");
+        Preferences reloaded = userService.getUserPreferences(username);
+        userService.printPreferences(reloaded);
     }
 }
+
