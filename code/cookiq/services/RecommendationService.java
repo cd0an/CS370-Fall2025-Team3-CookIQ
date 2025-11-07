@@ -38,7 +38,19 @@ public class RecommendationService {
         this.recipeRanker = new RecipeRanker();
         loadRecipesFromMongoDB(); // Load real data on startup
     }
-    
+
+    // Fetch a single recipe by its name
+    public Recipe getRecipeByName(String name) {
+        if (name == null || allRecipes == null) return null;
+
+        for (Recipe recipe : allRecipes) {
+            if (recipe.getName() != null && recipe.getName().equalsIgnoreCase(name)) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
     /**
      * Load recipes from MongoDB instead of using dummy data
      */

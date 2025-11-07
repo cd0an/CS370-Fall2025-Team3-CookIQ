@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
 import cookiq.services.RecommendationService;
@@ -69,11 +68,13 @@ public class MainFrame extends JFrame {
         swipeUI = new SwipeUI(this, recommendationService); 
         likedRecipeUI = new LikedRecipeUI(this);
         homeDashboardUI = new HomeDashboardUI(this);
+        detailsUI = new RecipeDetailsUI(this, null);
 
         mainPanel.add(homeDashboardUI, "Home");
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
         mainPanel.add(likedRecipeUI, "LikedRecipes");
+        mainPanel.add(detailsUI, "RecipeDetails");
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
         cardLayout.show(mainPanel, "Home"); // Show Home Screen
@@ -93,13 +94,18 @@ public class MainFrame extends JFrame {
     }
 
     // ======================== Method to switch to SwipeUI ========================
-    public void showSwipeUI(Preferences prefs) {
-        swipeUI.setUserPreferences(prefs);
+    public void showSwipeUI() {
+        if (currentUser != null && currentUser.getPreferences() != null) {
+            swipeUI.setUserPreferences(currentUser.getPreferences());
+        }
         cardLayout.show(mainPanel, "Swipe");
     }
 
     // ======================== Method to switch to ShowPreferencesUI ========================
     public void showPreferencesUI() {
+        if (preferencesUI != null && currentUser != null) {
+            preferencesUI.loadPreferencesFromUser(currentUser);
+        }
         cardLayout.show(mainPanel, "Preferences");
     }
 
@@ -117,6 +123,9 @@ public class MainFrame extends JFrame {
 
     // ======================== Method to switch to LikedRecipesUI ========================
     public void showLikedRecipesUI() {
+        if (likedRecipeUI != null) {
+            likedRecipeUI.loadLikedRecipes();
+        }
         cardLayout.show(mainPanel, "LikedRecipes");
     }
 
@@ -130,6 +139,15 @@ public class MainFrame extends JFrame {
         return currentUser;
     }
 
+    //  ======================== LikedRecipe getters/setters ========================
+    public LikedRecipeUI getLikedRecipeUI() {
+        return likedRecipeUI;
+    }
+
+    public NavbarPanel getNavbar() {
+        return navbar;
+    }
+    
     // ======================== Navbar Action Listener ========================
     private class NavListener implements ActionListener {
         @Override

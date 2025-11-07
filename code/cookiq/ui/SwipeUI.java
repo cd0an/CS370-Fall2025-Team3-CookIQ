@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -152,7 +153,7 @@ public class SwipeUI extends JPanel {
 
         // When user clicks the 'View Full Recipe' button, it navigates to the RecipeDetailsUI
         viewRecipeBtn.addActionListener(e -> {
-            if (mainFrame != null) mainFrame.showRecipeDetailsUI(recipe);
+            mainFrame.showRecipeDetailsUI(recipe);
         });
 
         recipeCard.add(viewRecipeBtn);
@@ -265,7 +266,6 @@ public class SwipeUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
-
     // ====================== Next Recipe ======================
     private void nextRecipe(boolean liked) {
         if (currentIndex >= recipes.size()) return;
@@ -280,6 +280,10 @@ public class SwipeUI extends JPanel {
                 currentUser.addLikedRecipe(currentRecipe.getName());
                 // Persist to database
                 userService.addLikedRecipe(currentUser.getUsername(), currentRecipe.getName());
+
+                if (mainFrame.getLikedRecipeUI() != null) {
+                    mainFrame.getLikedRecipeUI().addLikedRecipe(currentRecipe);
+                }
             } else {
                 currentUser.addDislikedRecipe(currentRecipe.getName());
                 userService.addDislikedRecipe(currentUser.getUsername(), currentRecipe.getName());
@@ -296,9 +300,20 @@ public class SwipeUI extends JPanel {
 
     // Function to update recipe 
     private void updateRecipe() {
-        Recipe recipe = recipes.get(currentIndex);
-        titleLabel.setText(recipe.getName());
-        tagsLabel.setText(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals());
+        if (currentIndex >= recipes.size()) return;
+            Recipe recipe = recipes.get(currentIndex);
+
+            // Update labels
+            titleLabel.setText(recipe.getName());
+            tagsLabel.setText(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals());
+
+            // Remove old listeners from viewRecipeBtn
+            for (ActionListener al : viewRecipeBtn.getActionListeners()) {
+                viewRecipeBtn.removeActionListener(al);
+            }
+
+            // Add a new listener for the current recipe
+            viewRecipeBtn.addActionListener(e -> mainFrame.showRecipeDetailsUI(recipe));
     }
 
 

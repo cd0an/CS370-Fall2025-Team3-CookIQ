@@ -90,8 +90,8 @@ public class HomeDashboardUI extends JPanel {
         // When user clicks the 'Meal Match' button, it navigates to the Swipe UI
         mealMatchBtn.addActionListener(e -> {
             if (mainFrame != null) {
-                // If you have a Preferences object, pass it. Otherwise, pass null or default prefs for now
-                mainFrame.showSwipeUI(null);
+                // Trigger the navbar's Meal Match button
+                mainFrame.getNavbar().getMealMatchBtn().doClick();
             }
         });
 

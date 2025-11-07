@@ -33,10 +33,16 @@ public class RecipeDetailsUI extends JPanel {
     private Recipe recipe; // Recipe whose details are to be displayed 
     private JSplitPane splitPane; // Used to separate left and right sections
 
+     // UI components that need updating
+    private JLabel titleLabel;
+    private JLabel cuisineLabel, cookTimeLabel, costLabel;
+    private JLabel nutritionLabel;
+    private JPanel ingredientsPanel;
+    private JPanel instructionsPanel;
+
     // Constructor 
     public RecipeDetailsUI(MainFrame mainFrame, Recipe recipe) {
         this.mainFrame = mainFrame;
-        this.recipe = recipe;
 
         // Main Layout Setup
         setLayout(new BorderLayout());
@@ -56,9 +62,7 @@ public class RecipeDetailsUI extends JPanel {
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(new Color(0xF2, 0xEf, 0xEB)); // Light Orange 
         leftPanel.setMinimumSize(new Dimension(450, 0));
-
-        // Add spacing from the top 
-        leftPanel.add(Box.createVerticalStrut(100));
+        leftPanel.add(Box.createVerticalStrut(100)); // Add spacing from the top 
 
         // Recipe Image Placeholder
         JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
@@ -76,15 +80,20 @@ public class RecipeDetailsUI extends JPanel {
         infoRow.setBackground(new Color(0xF2, 0xEf, 0xEB)); // Light Orange
         infoRow.setMaximumSize(new Dimension(500, 100));
 
-        infoRow.add(createSmallInfoBox("Cuisine", recipe.getCuisine()));
-        infoRow.add(createSmallInfoBox("Cook Time", recipe.getCookTime() + " min"));
-        infoRow.add(createSmallInfoBox("Cost", String.format("$%.2f", recipe.getCost())));
+        cuisineLabel = new JLabel("", SwingConstants.CENTER);
+        cookTimeLabel = new JLabel("", SwingConstants.CENTER);
+        costLabel = new JLabel(String.format("", SwingConstants.CENTER));
+        nutritionLabel = new JLabel("", SwingConstants.CENTER);
+
+        infoRow.add(createSmallInfoBox("Cuisine", cuisineLabel));
+        infoRow.add(createSmallInfoBox("Cook Time", cookTimeLabel));
+        infoRow.add(createSmallInfoBox("Cost", costLabel));
 
         leftPanel.add(infoRow);
-
         leftPanel.add(Box.createVerticalStrut(30));
 
         // Nutrition Facts Panel 
+        nutritionLabel = new JLabel("", SwingConstants.CENTER);
         JPanel nutritionPanel = new JPanel(new GridLayout(2, 1));
         nutritionPanel.setBackground(Color.WHITE);
         nutritionPanel.setBorder(BorderFactory.createTitledBorder(
@@ -95,10 +104,9 @@ public class RecipeDetailsUI extends JPanel {
             new Font("SansSerif", Font.BOLD, 16)
         ));
         nutritionPanel.setMaximumSize(new Dimension(500, 180));
-        nutritionPanel.add(new JLabel(recipe.getHealthGoals(), SwingConstants.CENTER));
+        nutritionPanel.add(nutritionLabel);
 
         leftPanel.add(nutritionPanel);
-        
         leftPanel.add(Box.createVerticalStrut(60)); // Bottom spacing
 
         // Add left panel to split pane
@@ -110,7 +118,7 @@ public class RecipeDetailsUI extends JPanel {
         rightPanel.setMinimumSize(new Dimension(500, 0));
 
         // Recipe Title
-        JLabel titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);
+        titleLabel = new JLabel("", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
         rightPanel.add(titleLabel, BorderLayout.NORTH);
@@ -121,10 +129,13 @@ public class RecipeDetailsUI extends JPanel {
         contentWrapper.setBackground(new Color(0xF2, 0xEF, 0xEB));
         contentWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        ingredientsPanel = createFixedWidthPanel(new JPanel(), 800);
+        instructionsPanel = createFixedWidthPanel(new JPanel(), 800);
+
         contentWrapper.add(Box.createVerticalStrut(10));
-        contentWrapper.add(createFixedWidthPanel(createTextAreaPanel("Ingredients", recipe.getIngredients(), 100), 800));
+        contentWrapper.add(ingredientsPanel);
         contentWrapper.add(Box.createVerticalStrut(15));
-        contentWrapper.add(createFixedWidthPanel(createTextAreaPanel("Instructions", recipe.getDirections(), 150), 800));
+        contentWrapper.add(instructionsPanel);
         contentWrapper.add(Box.createVerticalStrut(30));
         contentWrapper.add(Box.createVerticalGlue());
 
@@ -133,17 +144,46 @@ public class RecipeDetailsUI extends JPanel {
         rightPanel.add(scrollPane, BorderLayout.CENTER);
 
         splitPane.setRightComponent(rightPanel);
+
+        // Set initial recipe 
+        if (recipe != null) setRecipe(recipe);
+        
     }
 
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+
+        if (recipe == null) return;
+
+        titleLabel.setText(recipe.getName());
+        cuisineLabel.setText(recipe.getCuisine());
+        cookTimeLabel.setText(recipe.getCookTime() + " min");
+        costLabel.setText(String.format("$%.2f", recipe.getCost()));
+        nutritionLabel.setText(recipe.getHealthGoals());
+
+        // Update Ingredients
+        ingredientsPanel.removeAll();
+        ingredientsPanel.add(createTextAreaPanel("Ingredients", recipe.getIngredients(), 100));
+
+        // Update Instructions
+        instructionsPanel.removeAll();
+        instructionsPanel.add(createTextAreaPanel("Instructions", recipe.getDirections(), 150));
+
+         splitPane.setRightComponent(splitPane.getRightComponent()); // force layout refresh
+
+        revalidate();
+        repaint();
+    }
+
+    // ============ Helper Methods ============
+    
     // Function to allow split adjustment 
     public JSplitPane getSplitPane() {
         return splitPane;
     }
 
-    // ============ Helper Methods ============
-
     // Creates small titled info box
-    private JPanel createSmallInfoBox(String title, String value) {
+    private JPanel createSmallInfoBox(String title, JLabel valueLabel) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createTitledBorder(
@@ -153,7 +193,6 @@ public class RecipeDetailsUI extends JPanel {
             TitledBorder.TOP,
             new Font("SansSerif", Font.BOLD, 14)
         ));
-        JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
         valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         panel.add(valueLabel, BorderLayout.CENTER);
         return panel;
@@ -207,6 +246,7 @@ public class RecipeDetailsUI extends JPanel {
         wrapper.add(Box.createHorizontalGlue());
         return wrapper;
     }
+
 }
 
 

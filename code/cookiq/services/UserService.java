@@ -33,11 +33,23 @@ public class UserService {
     }
 
     public boolean loginUser(String username, String password) {
-        Document user = userRepository.getUser(username); // Gets entire user info
-        if (user == null) return false;
+        if (username == null || password == null) return false;
+        username = username.trim().toLowerCase();
+        password = password.trim();
+
+        Document user = userRepository.getUser(username);
+        if (user == null) {
+            System.out.println("User not found: " + username);
+            return false;
+        }
 
         String storedHash = user.getString("passwordHash");
         String enteredHash = PasswordUtils.sha256(password);
+
+        System.out.println("Trying login for: " + username);
+        System.out.println("Stored hash: " + storedHash);
+        System.out.println("Entered hash: " + enteredHash);
+
         return PasswordUtils.slowEquals(storedHash, enteredHash);
     }
 
@@ -47,15 +59,19 @@ public class UserService {
         if (userDoc == null) return null;
 
         User user = new User(username, ""); // password not needed
+
         List<String> liked = userDoc.getList("likedRecipes", String.class);
         if (liked != null) user.getLikedRecipes().addAll(liked);
 
         List<String> disliked = userDoc.getList("dislikedRecipes", String.class);
         if (disliked != null) user.getDislikedRecipes().addAll(disliked);
 
-        String prefStr = userDoc.getString("preferences");
-        if (prefStr != null) {
-            user.getPreferences().copyPrefs(PreferencesUtils.fromJsonString(prefStr));
+         Object prefObj = userDoc.get("preferences");
+        if (prefObj instanceof Document) {
+            Document prefDoc = (Document) prefObj;
+            user.getPreferences().copyPrefs(PreferencesUtils.fromDocument(prefDoc));
+        } else if (prefObj instanceof String) {
+            user.getPreferences().copyPrefs(PreferencesUtils.fromJsonString((String) prefObj));
         } else {
             user.setPreferences(new Preferences());
         }
@@ -154,8 +170,13 @@ public class UserService {
         Document user = userRepository.getUser(username);
         if (user == null) return new Preferences();
 
-        String prefStr = user.getString("preferences");
-        return PreferencesUtils.fromJsonString(prefStr);
+        Object prefObj = user.get("preferences");
+        if (prefObj instanceof Document) {
+            return PreferencesUtils.fromDocument((Document) prefObj);
+        } else if (prefObj instanceof String) {
+            return PreferencesUtils.fromJsonString((String) prefObj);
+        }
+        return new Preferences();
     }
 
     // ==================== Utility ====================

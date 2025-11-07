@@ -146,4 +146,13 @@ public class Preferences {
         //Ingredients 
         availableIngredients.clear(); //Imported method from java.util.List
     }
+
+    // Check if a user has ever set preferences
+    public boolean isEmpty() {
+        return !vegetarian && !keto && !glutenFree &&
+            !lowCalorie && !highCalorie && !highProtein &&
+            !italian && !mexican && !asian && !american && !mediterranean &&
+            maxCookTime == 0 && maxBudget == 0 &&
+            (availableIngredients == null || availableIngredients.isEmpty());
+    }
 }

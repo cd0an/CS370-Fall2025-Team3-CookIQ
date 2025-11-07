@@ -327,70 +327,9 @@ public class PreferencesUI extends JPanel {
             }
 
             // Switch to SwipeUI
-            if (mainFrame != null) mainFrame.showSwipeUI(curr_user.getPreferences());
+            if (mainFrame != null) mainFrame.showSwipeUI();
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-        // generateBtn.addActionListener(e -> {
-        //     System.out.println("Generate Recipes button clicked!");
-            
-        //     // Check if at least one option is selected
-        //     boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
-        //     boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
-        //     boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
-        //                         || americanCB.isSelected() || medCB.isSelected();
-        //     boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
-        //     boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
-        //     boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
-        //                             !ingredientField.getText().equals("Type here (e.g., eggs)");
-
-        //     if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
-        //         // Nothing selected, show warning
-        //         JOptionPane.showMessageDialog(null, "Please select your preferences first!", 
-        //                                     "Warning", JOptionPane.WARNING_MESSAGE);
-        //         return; // Stop further execution
-        //     }
-
-        //     // Create new Preferences object
-        //     Preferences curr_selected_prefs = new Preferences(
-        //         vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
-        //         lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
-        //         italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
-        //         americanCB.isSelected(), medCB.isSelected(),
-        //         time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
-        //         (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
-        //         new ArrayList<String>()
-        //     );
-
-        //     curr_user.getPreferences().copyPrefs(curr_selected_prefs); // Copy into User's Preferences 
-
-        //     // Update Ingredients 
-        //     curr_user.getPreferences().getAvailableIngredients().clear();
-        //     String text = ingredientField.getText();
-        //     if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
-        //         for (String ing : text.split(",")) {
-        //             curr_user.getPreferences().addAvailableIngredient(ing.trim());
-        //         }
-        //     }
-
-        //     // ================= Save Preferences to DB via UserService =================
-        //     UserService userService = new UserService();
-        //     userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
-
-        //     // Switch to SwipeUI
-        //     mainFrame.showSwipeUI(curr_user.getPreferences());
-        // });
 
         // ============ Reset Button ============
         JButton resetBtn = new JButton("Reset");
@@ -484,6 +423,41 @@ public class PreferencesUI extends JPanel {
 
         add(btnPanel, BorderLayout.SOUTH);
     }
+
+        public void loadPreferencesFromUser(User user) {
+            if (user == null || user.getPreferences() == null) return;
+
+            Preferences prefs = user.getPreferences();
+
+            vegetarianCB.setSelected(prefs.isVegetarian());
+            ketoCB.setSelected(prefs.isKeto());
+            glutenCB.setSelected(prefs.isGlutenFree());
+
+            lowCalCB.setSelected(prefs.isLowCalorie());
+            highCalCB.setSelected(prefs.isHighCalorie());
+            highProteinCB.setSelected(prefs.isHighProtein());
+
+            italianCB.setSelected(prefs.isItalian());
+            mexicanCB.setSelected(prefs.isMexican());
+            asianCB.setSelected(prefs.isAsian());
+            americanCB.setSelected(prefs.isAmerican());
+            medCB.setSelected(prefs.isMediterranean());
+
+            time15.setSelected(prefs.getMaxCookTime() == 15);
+            time30.setSelected(prefs.getMaxCookTime() == 30);
+            time60.setSelected(prefs.getMaxCookTime() == 60);
+
+            budget10.setSelected(prefs.getMaxBudget() == 10);
+            budget30.setSelected(prefs.getMaxBudget() == 30);
+            budget50.setSelected(prefs.getMaxBudget() == 50);
+
+            if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
+                ingredientField.setText(String.join(", ", prefs.getAvailableIngredients()));
+            } else {
+                ingredientField.setText("Type here (e.g., eggs)");
+            }
+        }
+
 }
 
 
