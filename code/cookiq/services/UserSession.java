@@ -55,6 +55,11 @@ public class UserSession {
         return currentUser;
     }
 
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        this.guestMode = user == null || "Guest".equals(user.getUsername());
+    }
+
     /** Get username, or “Guest” if not logged in */
     public String getUsernameOrGuest() {
         return isLoggedIn() ? currentUser.getUsername() : "Guest";

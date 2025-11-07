@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
 import cookiq.services.RecommendationService;
@@ -21,6 +22,7 @@ public class MainFrame extends JFrame {
     private NavbarPanel navbar; // Top navigation bar 
     private JPanel mainPanel; // Main content panel that show different screens 
     private CardLayout cardLayout; // Main layout manager to switch between screens 
+    private static MainFrame currentFrame;
 
     private PreferencesUI preferencesUI;
     private SwipeUI swipeUI;
@@ -38,6 +40,7 @@ public class MainFrame extends JFrame {
         this.currentUser = user; // Set current user
         this.userService = new UserService(); 
         this.recommendationService = new RecommendationService();
+        currentFrame = this;
 
         setTitle("CookIQ Recipe Generator");
         setSize(1000,700);
@@ -91,9 +94,11 @@ public class MainFrame extends JFrame {
 
     // ======================== Method to switch to SwipeUI ========================
     public void showSwipeUI() {
-        if (currentUser != null && currentUser.getPreferences() != null) {
+        User currUser = getCurrentUser();
+        if (currUser.getPreferences() == null) {
             swipeUI.setUserPreferences(currentUser.getPreferences());
         }
+        swipeUI.setUserPreferences(currUser.getPreferences());
         cardLayout.show(mainPanel, "Swipe");
     }
 
@@ -132,7 +137,17 @@ public class MainFrame extends JFrame {
     }
 
     public User getCurrentUser() {
-        return currentUser;
+        User sessionUser = UserSession.getInstance().getCurrentUser();
+        if (sessionUser == null) {
+            // If no user in session, create a Guest user
+            sessionUser = new User("Guest", "");
+            sessionUser.setPreferences(new Preferences());
+            UserSession.getInstance().setCurrentUser(sessionUser);
+            UserSession.getInstance().loginAsGuest();
+        } else if (sessionUser.getPreferences() == null) {
+            sessionUser.setPreferences(new Preferences());
+        }
+        return sessionUser;
     }
 
     //  ======================== LikedRecipe getters/setters ========================
@@ -143,6 +158,14 @@ public class MainFrame extends JFrame {
     //  ======================== Changes the navbar accordingly to log in/out in navbar ========================
     public NavbarPanel getNavbar() {
         return navbar;
+    }
+
+    // Close exisiting panels when either in guest or logging in (Only have one panel open)
+    public static void closeCurrentFrame() {
+        if (currentFrame != null) {
+            currentFrame.dispose();
+            currentFrame = null;
+        }
     }
     
     // ======================== Navbar Action Listener ========================

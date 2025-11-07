@@ -285,11 +285,6 @@ public class PreferencesUI extends JPanel {
         generateBtn.addActionListener(e -> {
             User curr_user = mainFrame.getCurrentUser();
 
-            // Ensure guest has a Preferences object
-            if (curr_user.getPreferences() == null) {
-                curr_user.setPreferences(new Preferences());
-            }
-
             boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
             boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
             boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected()
@@ -299,8 +294,7 @@ public class PreferencesUI extends JPanel {
             boolean anyIngredient = !ingredientField.getText().trim().isEmpty() &&
                                     !ingredientField.getText().equals("Type here (e.g., eggs)");
 
-             if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient
-                && !curr_user.getUsername().equals("Guest")) {
+            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
                 JOptionPane.showMessageDialog(null, "Please select your preferences first!",
                         "Warning", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -409,7 +403,7 @@ public class PreferencesUI extends JPanel {
             ingredientField.setForeground(Color.GRAY);
 
             // Save cleared preferences to DB
-            if (curr_user != null && !curr_user.getUsername().equals("Guest")) {
+            if (curr_user != null && curr_user.getPreferences() != null) {
                 UserService userService = new UserService();
                 userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
             }
