@@ -383,7 +383,7 @@ public class PreferencesUI extends JPanel {
             }
 
             // Clear Preferences object in memory
-            if (curr_user != null) {
+            if (curr_user != null && curr_user.getPreferences() != null) {
                 curr_user.getPreferences().clearAll();
             }
 
@@ -409,7 +409,7 @@ public class PreferencesUI extends JPanel {
             ingredientField.setForeground(Color.GRAY);
 
             // Save cleared preferences to DB
-            if (curr_user != null) {
+            if (curr_user != null && !curr_user.getUsername().equals("Guest")) {
                 UserService userService = new UserService();
                 userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
             }

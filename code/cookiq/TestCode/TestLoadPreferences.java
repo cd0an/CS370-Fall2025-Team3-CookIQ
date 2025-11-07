@@ -24,7 +24,7 @@ public class TestLoadPreferences
         //Load user preferences
         System.out.println();
         System.out.println("Loading in " + username + "'s preferences");
-        Preferences loaded_prefs = user_service.getUserPreferences("Zhuo Cheng");
+        Preferences loaded_prefs = user_service.getUserPreferences("cindy");
         user_service.printPreferences(loaded_prefs);
     }
 }
