@@ -40,6 +40,7 @@ import cookiq.services.UserService;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
+    private User curr_user;
 
     // ====================== Input Components ======================
     private JCheckBox vegetarianCB, ketoCB, glutenCB;
@@ -55,7 +56,7 @@ public class PreferencesUI extends JPanel {
 
     public PreferencesUI(MainFrame frame) {
         this.mainFrame = frame;
-        User curr_user = mainFrame.getCurrentUser();
+        this.curr_user = frame.getCurrentUser();
 
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
@@ -282,7 +283,17 @@ public class PreferencesUI extends JPanel {
 
         // Connects Preference UI input to Preference object from Preference.java
         generateBtn.addActionListener(e -> {
-            System.out.println("Generate Recipes button clicked!");
+            User curr_user = mainFrame.getCurrentUser();
+
+            if (curr_user == null) {
+                JOptionPane.showMessageDialog(null, "Error: No user available.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Ensure guest has a Preferences object
+            if (curr_user.getPreferences() == null) {
+                curr_user.setPreferences(new Preferences());
+            }
 
             boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
             boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
@@ -293,7 +304,8 @@ public class PreferencesUI extends JPanel {
             boolean anyIngredient = !ingredientField.getText().trim().isEmpty() &&
                                     !ingredientField.getText().equals("Type here (e.g., eggs)");
 
-            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+             if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient
+                && !curr_user.getUsername().equals("Guest")) {
                 JOptionPane.showMessageDialog(null, "Please select your preferences first!",
                         "Warning", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -457,8 +469,7 @@ public class PreferencesUI extends JPanel {
                 ingredientField.setText("Type here (e.g., eggs)");
             }
         }
-
-}
+    }
 
 
 
