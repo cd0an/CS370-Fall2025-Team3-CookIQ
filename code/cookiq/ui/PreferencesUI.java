@@ -285,11 +285,6 @@ public class PreferencesUI extends JPanel {
         generateBtn.addActionListener(e -> {
             User curr_user = mainFrame.getCurrentUser();
 
-            if (curr_user == null) {
-                JOptionPane.showMessageDialog(null, "Error: No user available.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
             // Ensure guest has a Preferences object
             if (curr_user.getPreferences() == null) {
                 curr_user.setPreferences(new Preferences());
