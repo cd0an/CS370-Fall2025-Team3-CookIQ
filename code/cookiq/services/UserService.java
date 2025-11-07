@@ -123,4 +123,22 @@ public class UserService {
         String prefStr = user.getString("preferences");
         return PreferencesUtils.fromJsonString(prefStr);
     }
+
+    public void printPreferences(Preferences prefs)
+    {
+        System.out.println("Vegetarian:" + prefs.isVegetarian());
+        System.out.println("Keto:" + prefs.isKeto());
+        System.out.println("Gluten Free:" + prefs.isGlutenFree());
+        System.out.println("Low Calorie:" + prefs.isLowCalorie());
+        System.out.println("High Calorie:" + prefs.isHighCalorie());
+        System.out.println("High Protein:" + prefs.isHighProtein());
+        System.out.println("Italian:" + prefs.isItalian());
+        System.out.println("Mexican:" + prefs.isMexican());
+        System.out.println("Asian:" + prefs.isAsian());
+        System.out.println("American:" + prefs.isAmerican());
+        System.out.println("Mediterranean:" + prefs.isMediterranean());
+        System.out.println("Max Cook Time:" + prefs.getMaxCookTime());
+        System.out.println("Max Budget:" + prefs.getMaxBudget());
+        System.out.println("Available Ingredients:" + prefs.getAvailableIngredients());
+    }
 }
