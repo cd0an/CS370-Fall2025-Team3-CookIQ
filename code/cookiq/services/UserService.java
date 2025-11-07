@@ -16,6 +16,7 @@ import cookiq.db.RecipeRepository;
 import cookiq.db.UserRepository;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.models.User;
 import cookiq.security.PasswordUtils;
 import cookiq.utils.PreferencesUtils;
 
@@ -34,12 +35,39 @@ public class UserService {
 
     //User login
     public boolean loginUser(String username, String password) {
-        Document user = userRepository.getUser(username); // Gets entire user info
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+            return false;
+        }
+
+        Document user = userRepository.getUser(username);
         if (user == null) return false;
 
         String storedHash = user.getString("passwordHash");
         String enteredHash = PasswordUtils.sha256(password);
+
         return PasswordUtils.slowEquals(storedHash, enteredHash); // Slow equals is used to compare the passwords in the same amount of time regardless of password length
+    }
+
+    // ==================== Full User Fetch ====================
+    public User getUserByUsername(String username) {
+        Document userDoc = userRepository.getUser(username);
+        if (userDoc == null) return null;
+
+        User user = new User(username, ""); // password not needed
+        List<String> liked = userDoc.getList("likedRecipes", String.class);
+        if (liked != null) user.getLikedRecipes().addAll(liked);
+
+        List<String> disliked = userDoc.getList("dislikedRecipes", String.class);
+        if (disliked != null) user.getDislikedRecipes().addAll(disliked);
+
+        String prefStr = userDoc.getString("preferences");
+        if (prefStr != null) {
+            user.getPreferences().copyPrefs(PreferencesUtils.fromJsonString(prefStr));
+        } else {
+            user.setPreferences(new Preferences());
+        }
+
+        return user;
     }
 
     //Setter - Liked recipes

@@ -34,6 +34,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import cookiq.models.Preferences;
 import cookiq.models.User;
 import cookiq.services.UserService;
 
@@ -281,61 +282,52 @@ public class PreferencesUI extends JPanel {
 
         // Connects Preference UI input to Preference object from Preference.java
         generateBtn.addActionListener(e -> {
-            try {
-                System.out.println("Generate Recipes button clicked!");
-                
-                boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
-                boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
-                boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected() 
-                                    || americanCB.isSelected() || medCB.isSelected();
-                boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
-                boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
-                boolean anyIngredient = !ingredientField.getText().trim().isEmpty() && 
-                                        !ingredientField.getText().equals("Type here (e.g., eggs)");
+            System.out.println("Generate Recipes button clicked!");
 
-                if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
-                    JOptionPane.showMessageDialog(null, "Please select your preferences first!", 
-                                                "Warning", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+            boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
+            boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
+            boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected()
+                                || americanCB.isSelected() || medCB.isSelected();
+            boolean anyTime = time15.isSelected() || time30.isSelected() || time60.isSelected();
+            boolean anyBudget = budget10.isSelected() || budget30.isSelected() || budget50.isSelected();
+            boolean anyIngredient = !ingredientField.getText().trim().isEmpty() &&
+                                    !ingredientField.getText().equals("Type here (e.g., eggs)");
 
-                Preferences curr_selected_prefs = new Preferences(
-                    vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
-                    lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
-                    italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
-                    americanCB.isSelected(), medCB.isSelected(),
-                    time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
-                    (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
-                    new ArrayList<String>()
-                );
-
-                if (curr_user != null) {
-                    curr_user.getPreferences().copyPrefs(curr_selected_prefs);
-
-                    String text = ingredientField.getText();
-                    curr_user.getPreferences().getAvailableIngredients().clear();
-                    if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
-                        for (String ing : text.split(",")) {
-                            curr_user.getPreferences().addAvailableIngredient(ing.trim());
-                        }
-                    }
-
-                    UserService userService = new UserService();
-                    userService.saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
-
-                    if (mainFrame != null) {
-                        mainFrame.showSwipeUI(curr_user.getPreferences());
-                    } else {
-                        System.out.println("mainFrame is null!");
-                    }
-
-                } else {
-                    System.out.println("curr_user is null!");
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace(); // This will show exactly where it fails
+            if (!anyDiet && !anyHealth && !anyCuisine && !anyTime && !anyBudget && !anyIngredient) {
+                JOptionPane.showMessageDialog(null, "Please select your preferences first!",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+
+            Preferences selectedPrefs = new Preferences(
+                vegetarianCB.isSelected(), ketoCB.isSelected(), glutenCB.isSelected(),
+                lowCalCB.isSelected(), highCalCB.isSelected(), highProteinCB.isSelected(),
+                italianCB.isSelected(), mexicanCB.isSelected(), asianCB.isSelected(),
+                americanCB.isSelected(), medCB.isSelected(),
+                time15.isSelected() ? 15 : time30.isSelected() ? 30 : 60,
+                (double)(budget10.isSelected() ? 10 : budget30.isSelected() ? 30 : 50),
+                new ArrayList<>()
+            );
+
+            // Copy preferences into the current user
+            curr_user.getPreferences().copyPrefs(selectedPrefs);
+
+            // Update available ingredients
+            curr_user.getPreferences().getAvailableIngredients().clear();
+            String text = ingredientField.getText();
+            if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
+                for (String ing : text.split(",")) {
+                    curr_user.getPreferences().addAvailableIngredient(ing.trim());
+                }
+            }
+
+            // Save preferences to DB only if not guest
+            if (!curr_user.getUsername().equals("Guest")) {
+                new UserService().saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
+            }
+
+            // Switch to SwipeUI
+            if (mainFrame != null) mainFrame.showSwipeUI(curr_user.getPreferences());
         });
 
 

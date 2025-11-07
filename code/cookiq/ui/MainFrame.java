@@ -30,6 +30,7 @@ public class MainFrame extends JFrame {
     private RecipeDetailsUI recipeDetailsUI;
     private LikedRecipeUI likedRecipeUI;
     private HomeDashboardUI homeDashboardUI;
+    private RecipeDetailsUI detailsUI;
 
     private User currentUser; // Currently logged-in 
     private List<String[]> likedRecipesList = new ArrayList<>();
@@ -106,10 +107,14 @@ public class MainFrame extends JFrame {
 
     // ======================== Method to switch to RecipeDetailsUI ========================
     public void showRecipeDetailsUI(Recipe recipe) {
-        if (currentUser != null && !UserSession.getInstance().isGuest()) {
-            likedRecipeUI.loadLikedRecipes(); // Load full recipe cards dynamically
-        }
-        cardLayout.show(mainPanel, "LikedRecipes");
+        JFrame detailsFrame = new JFrame(recipe.getName());
+        RecipeDetailsUI detailsUI = new RecipeDetailsUI(this, recipe);
+        detailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        detailsFrame.getContentPane().add(detailsUI);
+        detailsFrame.pack();
+        detailsFrame.setSize(1000, 700);
+        detailsFrame.setLocationRelativeTo(null);
+        detailsFrame.setVisible(true);
     }
 
     // ======================== Method to switch to LikedRecipesUI ========================
