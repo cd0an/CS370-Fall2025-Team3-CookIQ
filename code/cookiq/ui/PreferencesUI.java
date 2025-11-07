@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -243,9 +244,13 @@ public class PreferencesUI extends JPanel {
         whitePanel.add(ingredientPanel);
         whitePanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // ============ Add White Panel ============
-        whitePanel.setPreferredSize(new Dimension(700, 700));
-        add(whitePanel, BorderLayout.CENTER);
+    // ============ Wrap White Panel in ScrollPane ============
+    JScrollPane scrollPane = new JScrollPane(whitePanel,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16); // smoother scrolling
+    scrollPane.setBorder(BorderFactory.createEmptyBorder()); // remove extra border
+    add(scrollPane, BorderLayout.CENTER);
 
         // ============ Generate Recipes Button ============
         JButton generateBtn = new JButton("Generate Recipes");
