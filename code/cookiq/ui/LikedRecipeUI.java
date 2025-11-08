@@ -23,8 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import cookiq.models.Recipe;
-import cookiq.services.UserService;
 import cookiq.services.ImageService;
+import cookiq.services.UserService;
 
 public class LikedRecipeUI extends JPanel {
     private JPanel likedRecipesPanel; // Container for all liked recipe cards
@@ -99,7 +99,7 @@ public class LikedRecipeUI extends JPanel {
         card.setMaximumSize(new Dimension(480, 480));
         card.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        // --- Recipe Image Placeholder ---
+        // --- Recipe Image ---
         img_service.displayRecipeImageLiked(card, recipe.getName());
 
         // --- Recipe Title ---

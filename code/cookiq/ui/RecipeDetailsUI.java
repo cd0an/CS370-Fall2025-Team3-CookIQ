@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import cookiq.models.Recipe;
-import cookiq.services.*;
+import cookiq.services.ImageService;
 
 public class RecipeDetailsUI extends JPanel {
     private MainFrame mainFrame; // Reference to the MainFrame.java 
@@ -66,7 +66,7 @@ public class RecipeDetailsUI extends JPanel {
         leftPanel.setMinimumSize(new Dimension(450, 0));
         leftPanel.add(Box.createVerticalStrut(100)); // Add spacing from the top 
 
-        // Recipe Image Placeholder
+        // Recipe Image 
         if(recipe != null)
         {
             img_service.displayRecipeImageFR(leftPanel, recipe.getName(), 500, 350);

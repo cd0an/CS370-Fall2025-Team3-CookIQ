@@ -32,13 +32,13 @@ import javax.swing.SwingConstants;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
+import cookiq.services.ImageService;
 import cookiq.services.RecommendationService;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
-import cookiq.services.ImageService;
 
 public class SwipeUI extends JPanel {
-    private JLabel titleLabel, tagsLabel;
+    private JLabel titleLabel, infoLabel,tagsLabel;
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
     private JPanel recipeCard;
     private List<Recipe> recipes;
@@ -101,28 +101,6 @@ public class SwipeUI extends JPanel {
         // Preview Image
         img_service.displayRecipeImagePreview(recipeCard, recipe);
 
-
-
-        // // ====================== Recipe Card Panel ======================
-        // recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
-        // recipeCard.setBackground(Color.WHITE);
-        // recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
-        // recipeCard.setPreferredSize(new Dimension(480, 500));
-        // recipeCard.setMaximumSize(new Dimension(480, 500));
-        // recipeCard.setBorder(BorderFactory.createEmptyBorder(40, 30, 30, 30));
-
-        // // Preview Imaage 
-        // // img_service.displayRecipeImagePreview(recipeCard, recipe);
-        // JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
-        // imageLabel.setOpaque(true);
-        // imageLabel.setBackground(Color.LIGHT_GRAY);
-        // imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        // imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // imageLabel.setPreferredSize(new Dimension(420, 250));
-        // imageLabel.setMaximumSize(new Dimension(420, 250));
-        // recipeCard.add(imageLabel);
-        // recipeCard.add(Box.createVerticalStrut(15));
-
         // Recipe Title 
         titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -131,7 +109,7 @@ public class SwipeUI extends JPanel {
         recipeCard.add(Box.createVerticalStrut(15));
 
         // Cuisine, Cook Timme, Cost
-        JLabel infoLabel = new JLabel(
+        infoLabel = new JLabel(
             recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost(),
             SwingConstants.CENTER
         );
@@ -319,8 +297,12 @@ public class SwipeUI extends JPanel {
         if (currentIndex >= recipes.size()) return;
             Recipe recipe = recipes.get(currentIndex);
 
+            // Update Image
+            img_service.displayRecipeImagePreview(recipeCard, recipe);
+
             // Update labels
             titleLabel.setText(recipe.getName());
+            infoLabel.setText(recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost());
             tagsLabel.setText(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals());
 
             // Remove old listeners from viewRecipeBtn
