@@ -73,7 +73,8 @@ public class MainFrame extends JFrame {
         mainPanel.add(preferencesUI, "Preferences");
         mainPanel.add(swipeUI, "Swipe");
         mainPanel.add(likedRecipeUI, "LikedRecipes");
-        mainPanel.add(detailsUI, "RecipeDetails");
+        // mainPanel.add(detailsUI, "RecipeDetails");
+        detailsUI = new RecipeDetailsUI(this, null);
 
         add(mainPanel, BorderLayout.CENTER); // Add main panel below navbar
         cardLayout.show(mainPanel, "Home"); // Show Home Screen

@@ -12,14 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import java.awt.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject; 
+import org.json.JSONObject;
+
+import cookiq.models.Recipe; 
 
 public class ImageService 
 {
@@ -292,5 +298,133 @@ public class ImageService
         g2d.dispose();
         
         return new ImageIcon(background);
+    }
+
+    public void displayRecipeImageFR(JPanel leftPanel, String recipeName, int width, int height) 
+    {
+        ImageService imgService = new ImageService();
+        
+        //Load images for a recipe
+        List<BufferedImage> images = imgService.getImage(recipeName);
+        if(images == null || images.isEmpty()) 
+        {
+            System.out.println("No images found.");
+            //Fallback to placeholder
+            JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+            imageLabel.setOpaque(true);
+            imageLabel.setBackground(Color.LIGHT_GRAY);
+            imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            imageLabel.setPreferredSize(new Dimension(width, height));
+            imageLabel.setMaximumSize(new Dimension(width, height));
+            leftPanel.add(imageLabel);
+            leftPanel.add(Box.createVerticalStrut(20));
+            return;
+        }
+        
+        //Get scaled image with blurred background
+        ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), width, height);
+        
+        JLabel imageLabel = new JLabel(scaledIcon);
+        imageLabel.setPreferredSize(new Dimension(width, height));
+        imageLabel.setMaximumSize(new Dimension(width, height));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        leftPanel.add(imageLabel);
+        leftPanel.add(Box.createVerticalStrut(20));
+    }
+
+    public void displayRecipeImageLiked(JPanel card, String recipeName) 
+    {
+        ImageService imgService = new ImageService();
+        
+        // Load images for a recipe
+        List<BufferedImage> images = imgService.getImage(recipeName);
+        if (images == null || images.isEmpty()) {
+            System.out.println("No images found.");
+            // Fallback to placeholder
+            JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+            imageLabel.setOpaque(true);
+            imageLabel.setBackground(Color.LIGHT_GRAY);
+            imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            imageLabel.setPreferredSize(new Dimension(420, 250));
+            imageLabel.setMaximumSize(new Dimension(420, 250));
+            card.add(imageLabel);
+            card.add(Box.createVerticalStrut(15));
+            return;
+        }
+        
+        // Get scaled image with blurred background
+        ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), 420, 250);
+        
+        JLabel imageLabel = new JLabel(scaledIcon);
+        imageLabel.setPreferredSize(new Dimension(420, 250));
+        imageLabel.setMaximumSize(new Dimension(420, 250));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        card.add(imageLabel);
+        card.add(Box.createVerticalStrut(15));
+    }
+
+    // public void displayRecipeImagePreview(JPanel card, Recipe recipe) {
+    //     ImageService imgService = new ImageService();
+        
+    //     // Load images for a recipe
+    //     List<BufferedImage> images = imgService.getImage(recipe.getName());
+    //     if (images == null || images.isEmpty()) {
+    //         System.out.println("No images found.");
+    //         // Fallback to placeholder
+    //         JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+    //         imageLabel.setOpaque(true);
+    //         imageLabel.setBackground(Color.LIGHT_GRAY);
+    //         imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+    //         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    //         imageLabel.setPreferredSize(new Dimension(420, 250));
+    //         imageLabel.setMaximumSize(new Dimension(420, 250));
+    //         card.add(imageLabel);
+    //         card.add(Box.createVerticalStrut(15));
+    //         return;
+    //     }
+        
+    //     // Get scaled image with blurred background
+    //     ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), 420, 250);
+        
+    //     JLabel imageLabel = new JLabel(scaledIcon);
+    //     imageLabel.setPreferredSize(new Dimension(420, 250));
+    //     imageLabel.setMaximumSize(new Dimension(420, 250));
+    //     imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+    //     card.add(imageLabel);
+    //     card.add(Box.createVerticalStrut(15));
+    // }
+    public void displayRecipeImagePreview(JPanel recipeCard, Recipe recipe) {
+        // Load images for a recipe
+        List<BufferedImage> images = getImage(recipe.getName());
+        if (images == null || images.isEmpty()) {
+            System.out.println("No images found.");
+            // Fallback to placeholder
+            JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+            imageLabel.setOpaque(true);
+            imageLabel.setBackground(Color.LIGHT_GRAY);
+            imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            imageLabel.setPreferredSize(new Dimension(420, 250));
+            imageLabel.setMaximumSize(new Dimension(420, 250));
+            recipeCard.add(imageLabel);
+            recipeCard.add(Box.createVerticalStrut(15));
+            return;
+        }
+        
+        // Get scaled image with blurred background
+        ImageIcon scaledIcon = getScaledImage(images.get(0), 420, 250);
+        
+        JLabel imageLabel = new JLabel(scaledIcon);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setPreferredSize(new Dimension(420, 250));
+        imageLabel.setMaximumSize(new Dimension(420, 250));
+        
+        recipeCard.add(imageLabel);
+        recipeCard.add(Box.createVerticalStrut(15));
     }
 }

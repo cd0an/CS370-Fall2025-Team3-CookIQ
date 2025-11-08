@@ -27,11 +27,13 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import cookiq.models.Recipe;
+import cookiq.services.*;
 
 public class RecipeDetailsUI extends JPanel {
     private MainFrame mainFrame; // Reference to the MainFrame.java 
     private Recipe recipe; // Recipe whose details are to be displayed 
     private JSplitPane splitPane; // Used to separate left and right sections
+    private ImageService img_service = new ImageService();
 
      // UI components that need updating
     private JLabel titleLabel;
@@ -65,15 +67,23 @@ public class RecipeDetailsUI extends JPanel {
         leftPanel.add(Box.createVerticalStrut(100)); // Add spacing from the top 
 
         // Recipe Image Placeholder
-        JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
-        imageLabel.setOpaque(true);
-        imageLabel.setBackground(Color.LIGHT_GRAY);
-        imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        imageLabel.setPreferredSize(new Dimension(500, 350));
-        imageLabel.setMaximumSize(new Dimension(500, 350));
-        leftPanel.add(imageLabel);
-        leftPanel.add(Box.createVerticalStrut(20));
+        if(recipe != null)
+        {
+            img_service.displayRecipeImageFR(leftPanel, recipe.getName(), 500, 350);
+        }
+        else
+        {
+            JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+            imageLabel.setOpaque(true);
+            imageLabel.setBackground(Color.LIGHT_GRAY);
+            imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            imageLabel.setPreferredSize(new Dimension(500, 350));
+            imageLabel.setMaximumSize(new Dimension(500, 350));
+            leftPanel.add(imageLabel);
+            leftPanel.add(Box.createVerticalStrut(15));
+        }
+        
 
         // Info Boxes (Cuisine, Cook Time, Cost)
         JPanel infoRow = new JPanel(new GridLayout(1, 3, 15, 0));

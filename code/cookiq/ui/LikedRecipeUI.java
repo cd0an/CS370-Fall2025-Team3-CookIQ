@@ -24,12 +24,14 @@ import javax.swing.SwingConstants;
 
 import cookiq.models.Recipe;
 import cookiq.services.UserService;
+import cookiq.services.ImageService;
 
 public class LikedRecipeUI extends JPanel {
     private JPanel likedRecipesPanel; // Container for all liked recipe cards
     private JScrollPane scrollPane; // Scrolls when there are many recipes 
     private MainFrame mainFrame; // Reference to MainFrame for navigation
     private UserService userService; // Calls UserService 
+    private ImageService img_service = new ImageService();
 
     // Constructor
     public LikedRecipeUI(MainFrame mainFrame) {
@@ -98,15 +100,7 @@ public class LikedRecipeUI extends JPanel {
         card.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // --- Recipe Image Placeholder ---
-        JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
-        imageLabel.setOpaque(true);
-        imageLabel.setBackground(Color.LIGHT_GRAY);
-        imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        imageLabel.setPreferredSize(new Dimension(420, 250));
-        imageLabel.setMaximumSize(new Dimension(420, 250));
-        card.add(imageLabel);
-        card.add(Box.createVerticalStrut(15));
+        img_service.displayRecipeImageLiked(card, recipe.getName());
 
         // --- Recipe Title ---
         JLabel titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);

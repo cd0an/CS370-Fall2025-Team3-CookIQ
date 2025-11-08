@@ -35,6 +35,7 @@ import cookiq.models.User;
 import cookiq.services.RecommendationService;
 import cookiq.services.UserService;
 import cookiq.services.UserSession;
+import cookiq.services.ImageService;
 
 public class SwipeUI extends JPanel {
     private JLabel titleLabel, tagsLabel;
@@ -45,6 +46,7 @@ public class SwipeUI extends JPanel {
     private Preferences userPreferences; // Store user preferences 
     private MainFrame mainFrame; // Reference to parent frame 
     private RecommendationService recommendationService;
+    private ImageService img_service = new ImageService();
      
     // Constructor 
     public SwipeUI(MainFrame frame, RecommendationService service) {
@@ -89,23 +91,37 @@ public class SwipeUI extends JPanel {
         Recipe recipe = recipes.get(currentIndex); // Current recipe
 
         // ====================== Recipe Card Panel ======================
-        recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
+        recipeCard = new RoundedPanel(25, Color.WHITE);
         recipeCard.setBackground(Color.WHITE);
         recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
         recipeCard.setPreferredSize(new Dimension(480, 500));
         recipeCard.setMaximumSize(new Dimension(480, 500));
         recipeCard.setBorder(BorderFactory.createEmptyBorder(40, 30, 30, 30));
 
-        // Preview Imaage 
-        JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
-        imageLabel.setOpaque(true);
-        imageLabel.setBackground(Color.LIGHT_GRAY);
-        imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        imageLabel.setPreferredSize(new Dimension(420, 250));
-        imageLabel.setMaximumSize(new Dimension(420, 250));
-        recipeCard.add(imageLabel);
-        recipeCard.add(Box.createVerticalStrut(15));
+        // Preview Image
+        img_service.displayRecipeImagePreview(recipeCard, recipe);
+
+
+
+        // // ====================== Recipe Card Panel ======================
+        // recipeCard = new RoundedPanel(25, Color.WHITE); //#c2b19c 
+        // recipeCard.setBackground(Color.WHITE);
+        // recipeCard.setLayout(new BoxLayout(recipeCard, BoxLayout.Y_AXIS));
+        // recipeCard.setPreferredSize(new Dimension(480, 500));
+        // recipeCard.setMaximumSize(new Dimension(480, 500));
+        // recipeCard.setBorder(BorderFactory.createEmptyBorder(40, 30, 30, 30));
+
+        // // Preview Imaage 
+        // // img_service.displayRecipeImagePreview(recipeCard, recipe);
+        // JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+        // imageLabel.setOpaque(true);
+        // imageLabel.setBackground(Color.LIGHT_GRAY);
+        // imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        // imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // imageLabel.setPreferredSize(new Dimension(420, 250));
+        // imageLabel.setMaximumSize(new Dimension(420, 250));
+        // recipeCard.add(imageLabel);
+        // recipeCard.add(Box.createVerticalStrut(15));
 
         // Recipe Title 
         titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);

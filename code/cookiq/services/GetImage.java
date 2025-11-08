@@ -1,34 +1,37 @@
-package cookiq.TestCode;
+package cookiq.services;
 
-import cookiq.services.ImageService;
-import cookiq.services.GetImage;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
+import java.awt.image.BufferedImage;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Dimension;
+import java.awt.Insets;
 
-public class ImageServiceTest {
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
-    public static void main(String[] args) {
-
+public class GetImage {
+    public JLabel getImage(String recipe_name, int width, int height)
+    {
         ImageService imgService = new ImageService();
-        String recipe_name = "Pizza";
+        recipe_name = "Vegetarian Lentil Curry";
 
-        // Load images for a recipe
+        //Load images for a recipe
         List<BufferedImage> images = imgService.getImage(recipe_name);
-        if (images == null || images.isEmpty()) {
+        if(images == null || images.isEmpty()) 
+        {
             System.out.println("No images found.");
-            return;
+            return new JLabel("Recipe Image");
         }
 
-        // JFrame main window
+        //JFrame main window
         JFrame bg = new JFrame("Main Window");
         bg.setSize(600, 800);
         bg.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         bg.setLayout(new GridBagLayout());
 
-        // Get scaled image with blurred background (NOT displayImage)
+        //Get scaled image with blurred background (NOT displayImage)
         ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), 500, 350);
         
         JLabel imageLabel = new JLabel(scaledIcon);
@@ -42,5 +45,7 @@ public class ImageServiceTest {
         
         bg.add(imageLabel, gbc);
         bg.setVisible(true);
+
+        return imageLabel;
     }
 }
