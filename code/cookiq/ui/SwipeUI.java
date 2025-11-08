@@ -110,7 +110,7 @@ public class SwipeUI extends JPanel {
 
         // Cuisine, Cook Timme, Cost
         infoLabel = new JLabel(
-            recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost(),
+            recipe.getCuisine() + " | " + recipe.getCookTime() + " min | $" + recipe.getCost(),
             SwingConstants.CENTER
         );
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -298,11 +298,11 @@ public class SwipeUI extends JPanel {
             Recipe recipe = recipes.get(currentIndex);
 
             // Update Image
-            img_service.displayRecipeImagePreview(recipeCard, recipe);
+            
 
             // Update labels
             titleLabel.setText(recipe.getName());
-            infoLabel.setText(recipe.getCuisine() + " | " + recipe.getCookTime() + " | " + recipe.getCost());
+            infoLabel.setText(recipe.getCuisine() + " | " + recipe.getCookTime() + " min | $" + recipe.getCost());
             tagsLabel.setText(recipe.getDietaryCategory() + " • " + recipe.getHealthGoals());
 
             // Remove old listeners from viewRecipeBtn
