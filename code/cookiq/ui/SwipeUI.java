@@ -298,7 +298,14 @@ public class SwipeUI extends JPanel {
             Recipe recipe = recipes.get(currentIndex);
 
             // Update Image
-            
+            Component[] components = recipeCard.getComponents(); // Remove old preview and load new one
+            if (components.length > 0 && components[0] instanceof JLabel) {
+                recipeCard.remove(components[0]);
+            }
+
+            img_service.displayRecipeImagePreview(recipeCard, recipe);
+            recipeCard.revalidate();
+            recipeCard.repaint();
 
             // Update labels
             titleLabel.setText(recipe.getName());
