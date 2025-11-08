@@ -1,7 +1,6 @@
 package cookiq.TestCode;
 
 import cookiq.services.ImageService;
-import cookiq.services.GetImage;
 
 import javax.swing.*;
 import java.awt.*;
