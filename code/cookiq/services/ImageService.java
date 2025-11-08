@@ -15,14 +15,14 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
-import java.awt.Image;
+import java.awt.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject; 
 
-public class ImageService {
+public class ImageService 
+{
     /**
      * API_KEY --> Api key
      * CX --> Search Engine ID
@@ -34,7 +34,7 @@ public class ImageService {
     int img_index = 0;
 
     /**
-     * Method to get 5 (or more) images based on passed in recipe name
+     * Method to get 1 (or more) images based on passed in recipe name
      * Buffered --> Means editable image
      */
     public List<BufferedImage> getImage(String recipe_name)
@@ -45,11 +45,11 @@ public class ImageService {
             String encoded_query = URLEncoder.encode(query, "UTF-8"); //Allows the query to be URL search friendly
 
             /**
-             * Finds returns 5 images urls for the queried recipe name
+             * Findn and return 1 (or more) image urls for the queried recipe name
              * If you want to change the number returned, change the value at the end of the https
              */
             String url_str = String.format(
-                "https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&searchType=image&num=5",
+                "https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&searchType=image&num=1",
                 API_KEY, CX, encoded_query
             );
 
@@ -71,7 +71,7 @@ public class ImageService {
             JSONObject json = new JSONObject(response.toString());
             JSONArray items = json.getJSONArray("items"); //Returned json of 5 urls
 
-            for (int i = 0; i < items.length(); i++) 
+            for(int i = 0; i < items.length(); i++) 
             {
                 JSONObject item = items.getJSONObject(i);
                 String image_url = item.getString("link"); //Get the url link from the JSONObject
@@ -100,22 +100,197 @@ public class ImageService {
 
     public JLabel displayImage(List<BufferedImage> image_list, String RECIPE_NAME, int WIDTH, int HEIGHT)
     {
-        if (image_list == null || image_list.isEmpty()) return null;
+        if(image_list == null || image_list.isEmpty()) 
+        {
+            return null;
+        }
 
         BufferedImage img = image_list.get(img_index++);
-        if (img_index >= image_list.size()) img_index = 0; // loop back
+        if(img_index >= image_list.size())
+        {
+            img_index = 0; //Loop to first image
+        } 
 
-        Image imgScaled = img.getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
-        JLabel label = new JLabel(new ImageIcon(imgScaled));
+        //Scale down but maintain aspect ratio
+        int scaleWidth = WIDTH;
+        int scaleHeight = HEIGHT;
 
-        // Create JFrame to show image
+        double imageAspectRatio = (double) img.getWidth() / img.getHeight();
+        double targetAspectRatio = (double) WIDTH / HEIGHT;
+
+        if(imageAspectRatio > targetAspectRatio)
+        {
+            //Wider image
+            scaleHeight = (int)(WIDTH / imageAspectRatio);
+        }
+        else
+        {
+            //Taller image
+            scaleWidth = (int)(HEIGHT * imageAspectRatio);
+        }
+
+        Image scaled_img = img.getScaledInstance(scaleWidth, scaleHeight, Image.SCALE_SMOOTH);
+        ImageIcon icon = new ImageIcon(scaled_img); 
+        JLabel label = new JLabel(icon);
+
+        //Create JFrame to show image
         JFrame frame = new JFrame(RECIPE_NAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(null);
+
+        //Center image if it doesn't fill the space
+        int x = (WIDTH - scaleWidth) / 2;
+        int y = (HEIGHT - scaleHeight) / 2;
+
+        label.setBounds(0, 0, scaleWidth, scaleHeight);
         frame.add(label);
-        frame.pack();
+        frame.setSize(WIDTH + 16, HEIGHT + 39); //Window boarder
+        frame.setResizable(false);
         frame.setVisible(true);
 
         return label;
+    }
+
+    private BufferedImage blurImage(BufferedImage img, int blurRadius) 
+    {
+        //Downscale image for faster blur
+        int downscaleFactor = 3;
+        int smallWidth = Math.max(1, img.getWidth() / downscaleFactor);
+        int smallHeight = Math.max(1, img.getHeight() / downscaleFactor);
+        
+        //Create a smaller version of the og image
+        BufferedImage small = new BufferedImage(smallWidth, smallHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = small.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.drawImage(img, 0, 0, smallWidth, smallHeight, null); //Draw the downscaled ver.
+        g2d.dispose();
+        
+        //Apply Gaussian-like blur 3 times
+        BufferedImage blurred = small;
+        for(int i = 0; i < 3; i++) 
+        {
+            blurred = applyGaussianBlur(blurred, blurRadius);
+        }
+        
+        //Scale back to original size
+        BufferedImage result = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = result.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.drawImage(blurred, 0, 0, img.getWidth(), img.getHeight(), null);
+        g.dispose(); //Free
+        
+        return result;
+    }
+
+    private BufferedImage applyGaussianBlur(BufferedImage src, int radius) 
+    {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
+        //Get 1D array of all pixels from og img
+        int[] srcPixels = new int[width * height];
+        int[] destPixels = new int[width * height];
+        src.getRGB(0, 0, width, height, srcPixels, 0, width);
+        
+        //Horizontal pass - blurring along the X-axis
+        for(int y = 0; y < height; y++) 
+        {
+            for(int x = 0; x < width; x++) 
+            {
+                int r = 0, g = 0, b = 0, count = 0;
+        
+                for(int i = -radius; i <= radius; i++) 
+                {
+                    int px = Math.min(Math.max(x + i, 0), width - 1);
+                    int pixel = srcPixels[y * width + px];
+                    
+                    r += (pixel >> 16) & 0xFF;
+                    g += (pixel >> 8) & 0xFF;
+                    b += pixel & 0xFF;
+                    count++;
+                }
+                
+                destPixels[y * width + x] = 0xFF000000 | 
+                    ((r / count) << 16) | 
+                    ((g / count) << 8) | 
+                    (b / count);
+            }
+        }
+        
+        //Vertical pass - blurring along the Y-axis
+        int[] tempPixels = new int[width * height];
+
+        for(int x = 0; x < width; x++) 
+        {
+            for(int y = 0; y < height; y++) 
+            {
+                int r = 0, g = 0, b = 0, count = 0;
+                
+                for(int i = -radius; i <= radius; i++) 
+                {
+                    int py = Math.min(Math.max(y + i, 0), height - 1);
+                    int pixel = destPixels[py * width + x];
+                    
+                    r += (pixel >> 16) & 0xFF;
+                    g += (pixel >> 8) & 0xFF;
+                    b += pixel & 0xFF;
+                    count++;
+                }
+                
+                tempPixels[y * width + x] = 0xFF000000 | 
+                    ((r / count) << 16) | 
+                    ((g / count) << 8) | 
+                    (b / count);
+            }
+        }
+        
+        dest.setRGB(0, 0, width, height, tempPixels, 0, width);
+        return dest;
+    }
+
+    public ImageIcon getScaledImage(BufferedImage img, int WIDTH, int HEIGHT) 
+    {
+        if(img == null) 
+        {
+            return null;
+        }
+        
+        //Create blurred background
+        BufferedImage blurred = blurImage(img, 15);
+        BufferedImage background = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = background.createGraphics();
+        
+        //Draw scaled blurred image to fill background
+        g2d.drawImage(blurred, 0, 0, WIDTH, HEIGHT, null);
+        
+        //Calculate scaled dimensions while maintaining aspect ratio
+        int scaledWidth = WIDTH;
+        int scaledHeight = HEIGHT;
+        
+        double imageAspectRatio = (double) img.getWidth() / img.getHeight();
+        double targetAspectRatio = (double) WIDTH / HEIGHT;
+        
+        if(imageAspectRatio > targetAspectRatio) 
+        {
+            //Image is wider
+            scaledHeight = (int)(WIDTH / imageAspectRatio);
+        } 
+        else 
+        {
+            //Image is taller
+            scaledWidth = (int)(HEIGHT * imageAspectRatio);
+        }
+        
+        //Scale original image (unblurred)
+        Image scaledImage = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+        
+        //Center and draw scaled image on top of blurred background
+        int x = (WIDTH - scaledWidth) / 2;
+        int y = (HEIGHT - scaledHeight) / 2;
+        g2d.drawImage(scaledImage, x, y, null);
+        g2d.dispose();
+        
+        return new ImageIcon(background);
     }
 }
