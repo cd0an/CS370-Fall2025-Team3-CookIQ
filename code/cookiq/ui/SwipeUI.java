@@ -38,7 +38,7 @@ import cookiq.services.UserService;
 import cookiq.services.UserSession;
 
 public class SwipeUI extends JPanel {
-    private JLabel titleLabel, infoLabel,tagsLabel;
+    private JLabel recipeImageLabel, titleLabel, infoLabel,tagsLabel;
     private JButton viewRecipeBtn, likeBtn, dislikeBtn;
     private JPanel recipeCard;
     private List<Recipe> recipes;
@@ -99,7 +99,9 @@ public class SwipeUI extends JPanel {
         recipeCard.setBorder(BorderFactory.createEmptyBorder(40, 30, 30, 30));
 
         // Preview Image
-        img_service.displayRecipeImagePreview(recipeCard, recipe);
+        recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
+        recipeCard.add(recipeImageLabel);
+        recipeCard.add(Box.createVerticalStrut(15));
 
         // Recipe Title 
         titleLabel = new JLabel(recipe.getName(), SwingConstants.CENTER);
@@ -297,13 +299,11 @@ public class SwipeUI extends JPanel {
         if (currentIndex >= recipes.size()) return;
             Recipe recipe = recipes.get(currentIndex);
 
-            // Update Image
-            Component[] components = recipeCard.getComponents(); // Remove old preview and load new one
-            if (components.length > 0 && components[0] instanceof JLabel) {
-                recipeCard.remove(components[0]);
-            }
+            recipeCard.remove(recipeImageLabel);
 
-            img_service.displayRecipeImagePreview(recipeCard, recipe);
+            recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
+            recipeCard.add(recipeImageLabel, 0);
+
             recipeCard.revalidate();
             recipeCard.repaint();
 
