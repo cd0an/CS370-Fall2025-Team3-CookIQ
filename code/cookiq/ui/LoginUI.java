@@ -62,24 +62,26 @@ public class LoginUI extends JPanel {
         usernameField = createLabeledField(card, "Username", "Enter your username");
         passwordField = createLabeledPasswordField(card, "Password", "Enter your password");
 
-        // Buttons
+        // Buttons 
         JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         loginPanel.setBackground(Color.WHITE);
 
         JButton loginBtn = createRoundedButton("Login", new Color(90, 130, 100));
         loginBtn.addActionListener(e -> handleLogin());
+
         JButton guestBtn = createRoundedButton("Continue as Guest", new Color(150, 150, 150));
         guestBtn.addActionListener(e -> handleGuestLogin());
+
         loginPanel.add(loginBtn);
         loginPanel.add(guestBtn);
 
         card.add(Box.createVerticalStrut(25));
         card.add(loginPanel);
 
-        // Sign‑up link
+        //Sign-up Link 
         JLabel signUpLabel = new JLabel("<html><u>Don't have an account? Sign up here.</u></html>");
         signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        signUpLabel.setForeground(new Color(60,50,40));
+        signUpLabel.setForeground(new Color(60, 50, 40));
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         signUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         signUpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -96,13 +98,15 @@ public class LoginUI extends JPanel {
         card.add(signUpLabel);
         card.add(Box.createVerticalStrut(8));
 
-        // Status
+        // === Status Label ===
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(statusLabel);
     }
 
+    // ==========================================================
+    // HANDLE LOGIN 
     private void handleLogin() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
@@ -112,56 +116,59 @@ public class LoginUI extends JPanel {
             return;
         }
 
+        // Validate credentials through MongoDB
         if (!userService.loginUser(username, password)) {
             setStatus("Invalid username or password.", false);
             return;
         }
 
-        // Create User object and populate data correctly
+        // Build User object
         User currentUser = new User(username, "");
 
-        // Populate liked recipes
-        for (String recipe : userService.getLikedRecipes(username)) {
+        // Load liked/disliked recipes + preferences
+        for (String recipe : userService.getLikedRecipes(username))
             currentUser.addLikedRecipe(recipe);
-        }
-
-        // Populate disliked recipes
-        for (String recipe : userService.getDislikedRecipes(username)) {
+        for (String recipe : userService.getDislikedRecipes(username))
             currentUser.addDislikedRecipe(recipe);
-        }
-
-        // Populate preferences
         currentUser.getPreferences().copyPrefs(userService.getUserPreferences(username));
 
-        // Set the session
-        UserSession.getInstance().login(currentUser);
+        // Set & persist session
+        UserSession session = UserSession.getInstance();
+        session.login(currentUser); // this automatically saves to session.json
+
+        setStatus("Login successful! Redirecting...", true);
 
         // Close login window and open main frame
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
-        if (frame != null) frame.dispose();
+        if (frame != null)
+            frame.dispose();
         MainFrame.closeCurrentFrame();
         new MainFrame(currentUser).setVisible(true);
     }
 
+    // ==========================================================
+    // HANDLE GUEST LOGIN 
     private void handleGuestLogin() {
         UserSession.getInstance().loginAsGuest();
         JOptionPane.showMessageDialog(LoginUI.this,
                 "Guest mode activated!\nYou can browse recipes but data won't be saved.",
                 "Guest Mode", JOptionPane.INFORMATION_MESSAGE);
-                
+
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
-        if (frame != null) frame.dispose();
+        if (frame != null)
+            frame.dispose();
 
         MainFrame.closeCurrentFrame();
         new MainFrame(UserSession.getInstance().getCurrentUser()).setVisible(true);
     }
 
+    // ==========================================================
+    // HELPERS 
     private void setStatus(String msg, boolean success) {
         statusLabel.setText(msg);
-        statusLabel.setForeground(success ? new Color(50,120,70) : new Color(160,40,40));
+        statusLabel.setForeground(success ? new Color(50, 120, 70) : new Color(160, 40, 40));
     }
 
-    // === Helpers ===
     private JPanel createCardPanel(int width, int height) {
         JPanel card = new JPanel();
         card.setBackground(Color.WHITE);
@@ -176,7 +183,7 @@ public class LoginUI extends JPanel {
     private JLabel createTitle(String text) {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setFont(new Font("SansSerif", Font.BOLD, 28));
-        label.setForeground(new Color(60,50,40));
+        label.setForeground(new Color(60, 50, 40));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
@@ -184,7 +191,7 @@ public class LoginUI extends JPanel {
     private JLabel createSubtitle(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        label.setForeground(new Color(120,120,120));
+        label.setForeground(new Color(120, 120, 120));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
@@ -192,7 +199,7 @@ public class LoginUI extends JPanel {
     private JTextField createLabeledField(JPanel parent, String labelText, String placeholder) {
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
-        label.setForeground(new Color(60,50,40));
+        label.setForeground(new Color(60, 50, 40));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         parent.add(label);
         parent.add(Box.createVerticalStrut(5));
@@ -205,7 +212,7 @@ public class LoginUI extends JPanel {
     private JPasswordField createLabeledPasswordField(JPanel parent, String labelText, String placeholder) {
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
-        label.setForeground(new Color(60,50,40));
+        label.setForeground(new Color(60, 50, 40));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         parent.add(label);
         parent.add(Box.createVerticalStrut(5));
@@ -223,16 +230,20 @@ public class LoginUI extends JPanel {
                 if (getText().isEmpty() && !isFocusOwner()) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setColor(new Color(180,180,180));
-                    g2.drawString(placeholder, getInsets().left, (getHeight()+getFontMetrics(getFont()).getAscent()-getFontMetrics(getFont()).getDescent())/2);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.drawString(placeholder, getInsets().left,
+                            (getHeight() + getFontMetrics(getFont()).getAscent()
+                                    - getFontMetrics(getFont()).getDescent()) / 2);
                     g2.dispose();
                 }
             }
         };
         field.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        field.setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(200,200,200),1,true), new EmptyBorder(10,12,10,12)));
-        field.setPreferredSize(new Dimension(280,40));
-        field.setMaximumSize(new Dimension(280,40));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
         field.setAlignmentX(Component.CENTER_ALIGNMENT);
         return field;
     }
@@ -242,19 +253,23 @@ public class LoginUI extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (getPassword().length==0 && !isFocusOwner()) {
+                if (getPassword().length == 0 && !isFocusOwner()) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setColor(new Color(180,180,180));
-                    g2.drawString(placeholder, getInsets().left, (getHeight()+getFontMetrics(getFont()).getAscent()-getFontMetrics(getFont()).getDescent())/2);
+                    g2.setColor(new Color(180, 180, 180));
+                    g2.drawString(placeholder, getInsets().left,
+                            (getHeight() + getFontMetrics(getFont()).getAscent()
+                                    - getFontMetrics(getFont()).getDescent()) / 2);
                     g2.dispose();
                 }
             }
         };
         field.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        field.setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(200,200,200),1,true), new EmptyBorder(10,12,10,12)));
-        field.setPreferredSize(new Dimension(280,40));
-        field.setMaximumSize(new Dimension(280,40));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(10, 12, 10, 12)));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setMaximumSize(new Dimension(280, 40));
         field.setAlignmentX(Component.CENTER_ALIGNMENT);
         return field;
     }
@@ -266,27 +281,27 @@ public class LoginUI extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getBackground());
-                g2.fillRoundRect(0,0,getWidth(),getHeight(),20,20);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 g2.dispose();
                 super.paintComponent(g);
             }
         };
-        button.setFont(new Font("SansSerif", Font.BOLD,13));
+        button.setFont(new Font("SansSerif", Font.BOLD, 13));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(new EmptyBorder(10,18,10,18));
+        button.setBorder(new EmptyBorder(10, 18, 10, 18));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setContentAreaFilled(false);
         button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt){ button.setBackground(color.darker()); }
-            public void mouseExited(java.awt.event.MouseEvent evt){ button.setBackground(color); }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(color.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(color);
+            }
         });
         return button;
     }
 }
-
-
-
-
-
