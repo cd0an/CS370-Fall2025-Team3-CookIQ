@@ -26,12 +26,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 import cookiq.models.User;
+import cookiq.services.FeedbackService;
 import cookiq.services.ImageService;
 import cookiq.services.RecommendationService;
 import cookiq.services.UserService;
@@ -47,11 +49,13 @@ public class SwipeUI extends JPanel {
     private MainFrame mainFrame; // Reference to parent frame 
     private RecommendationService recommendationService;
     private ImageService img_service = new ImageService();
+    private FeedbackService feedbackService;
      
     // Constructor 
-    public SwipeUI(MainFrame frame, RecommendationService service) {
+    public SwipeUI(MainFrame frame, RecommendationService service, FeedbackService feedbackService) {
         this.mainFrame = frame;
         this.recommendationService = service;
+        this.feedbackService = feedbackService;
         
         setLayout(new BorderLayout());
         setBackground(new Color(0xF2, 0xEF, 0xEB)); // #f2efeb
@@ -299,6 +303,9 @@ public class SwipeUI extends JPanel {
         if (currentIndex >= recipes.size()) return;
             Recipe recipe = recipes.get(currentIndex);
 
+            // Mark recipe as seen 
+            feedbackService.markRecipeAsSeen(recipe);
+
             recipeCard.remove(recipeImageLabel);
 
             recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
@@ -388,7 +395,32 @@ public class SwipeUI extends JPanel {
         });
 
         // When user clicks the 'New Suggestions' button, it calls the RecommendationService to retrieve new recipes 
-        newSuggestions.addActionListener(e -> System.out.println("Fetch new suggestions"));
+        newSuggestions.addActionListener(e -> {
+            FeedbackService feedbackService = mainFrame.getFeedbackService();
+            // Use FeedbackService to get new suggestions
+            List<Recipe> newRecipes = feedbackService.getNewSuggestions(userPreferences);
+
+            if (newRecipes.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "No new recipes available based on your preferences!",
+                    "No New Suggestions",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                // Mark all the new recipes as seen immediately 
+                for (Recipe recipe : newRecipes) {
+                    feedbackService.markRecipeAsSeen(recipe);
+                }
+
+                this.recipes = newRecipes;
+                currentIndex = 0;
+                removeAll();
+                revalidate();
+                repaint();
+                initSwipeUI();
+            }
+        });
 
         // When user clicks the 'Reset Preferences' button, it navigates to the Preferences UI 
         resetPrefs.addActionListener(e -> {

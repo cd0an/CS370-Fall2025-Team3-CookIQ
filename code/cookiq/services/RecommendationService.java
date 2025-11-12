@@ -11,6 +11,7 @@
 package cookiq.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cookiq.db.RecipeRepository;
@@ -78,9 +79,14 @@ public class RecommendationService {
         // Step 2: Use RecipeRanker to score and rank the remaining recipes
         recipeRanker.setRecipeDatabase(mandatoryFiltered);
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
+
+        // Step 3: Limit to top 3 results
+        Collections.shuffle(rankedRecommendations);
+        int limit = Math.min(3, rankedRecommendations.size());
+        List<Recipe> topRecommendations = rankedRecommendations.subList(0, limit);
         
         System.out.println("Returning " + rankedRecommendations.size() + " ranked recommendations");
-        return rankedRecommendations;
+        return topRecommendations;
     }
     
     /**
@@ -112,20 +118,12 @@ public class RecommendationService {
         // If user has NO dietary restrictions selected, allow all recipes
         boolean hasDietaryPreference = prefs.isVegetarian() || prefs.isKeto() || prefs.isGlutenFree();
         
-        if (!hasDietaryPreference) {
-            return true; // No dietary restrictions specified by user
-        }
+        if (!hasDietaryPreference) return true; // No dietary restrictions specified by user
         
         // User HAS dietary restrictions - recipe MUST match at least one
-        if (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) {
-            return true;
-        }
-        if (prefs.isKeto() && dietaryCategory.contains("keto")) {
-            return true;
-        }
-        if (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free")) {
-            return true;
-        }
+        if (prefs.isVegetarian() && dietaryCategory.contains("vegetarian")) return true;
+        if (prefs.isKeto() && dietaryCategory.contains("keto")) return true;
+        if (prefs.isGlutenFree() && dietaryCategory.contains("gluten-free")) return true;
         
         return false;
     }
@@ -140,20 +138,12 @@ public class RecommendationService {
         // If user has NO health goals selected, allow all recipes
         boolean hasHealthPreference = prefs.isLowCalorie() || prefs.isHighCalorie() || prefs.isHighProtein();
         
-        if (!hasHealthPreference) {
-            return true; // No health goals specified by user
-        }
+        if (!hasHealthPreference) return true; // No health goals specified by user
         
         // User HAS health goals - recipe MUST match at least one
-        if (prefs.isLowCalorie() && recipeHealth.contains("low-calorie")) {
-            return true;
-        }
-        if (prefs.isHighCalorie() && recipeHealth.contains("high-calorie")) {
-            return true;
-        }
-        if (prefs.isHighProtein() && recipeHealth.contains("high-protein")) {
-            return true;
-        }
+        if (prefs.isLowCalorie() && recipeHealth.contains("low-calorie")) return true;
+        if (prefs.isHighCalorie() && recipeHealth.contains("high-calorie")) return true;
+        if (prefs.isHighProtein() && recipeHealth.contains("high-protein")) return true;
         
         return false;
     }
