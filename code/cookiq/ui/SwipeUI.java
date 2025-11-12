@@ -309,7 +309,6 @@ public class SwipeUI extends JPanel {
             if (recipeImageLabel != null) {
                 recipeCard.remove(recipeImageLabel);
             }
-
             recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
             recipeCard.add(recipeImageLabel, 0);
 
