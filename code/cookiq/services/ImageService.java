@@ -421,13 +421,14 @@ public class ImageService
             imageLabel.setPreferredSize(new Dimension(420, 250));
             imageLabel.setMaximumSize(new Dimension(420, 250));
         } else {
-            ImageIcon scaledIcon = getScaledImage(images.get(0), 420, 250);
+            BufferedImage img = images.get(0);
+            ImageIcon scaledIcon = getScaledImage(img, 420, 250);
             imageLabel = new JLabel(scaledIcon);
-            imageLabel.setPreferredSize(new Dimension(420, 250));
-            imageLabel.setMaximumSize(new Dimension(420, 250));
         }
-
+        imageLabel.setPreferredSize(new Dimension(420, 250));
+        imageLabel.setMaximumSize(new Dimension(420, 250));
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
         return imageLabel;
     }
 }

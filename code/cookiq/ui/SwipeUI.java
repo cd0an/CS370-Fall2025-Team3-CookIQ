@@ -306,7 +306,9 @@ public class SwipeUI extends JPanel {
             // Mark recipe as seen 
             feedbackService.markRecipeAsSeen(recipe);
 
-            recipeCard.remove(recipeImageLabel);
+            if (recipeImageLabel != null) {
+                recipeCard.remove(recipeImageLabel);
+            }
 
             recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
             recipeCard.add(recipeImageLabel, 0);
