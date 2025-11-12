@@ -80,7 +80,10 @@ public class RecommendationService {
         recipeRanker.setRecipeDatabase(mandatoryFiltered);
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
 
-        // Step 3: Limit to top 3 results
+        // Step 3: Remove recipes already liked by the user
+        
+
+        // Step 4: Limit to top 3 results
         Collections.shuffle(rankedRecommendations);
         int limit = Math.min(3, rankedRecommendations.size());
         List<Recipe> topRecommendations = rankedRecommendations.subList(0, limit);
