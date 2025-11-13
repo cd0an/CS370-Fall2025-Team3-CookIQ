@@ -15,6 +15,7 @@ import java.util.Set;
 
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.models.User;
 
 public class FeedbackService {
     private Set<String> seenRecipeIds;
@@ -39,19 +40,27 @@ public class FeedbackService {
     /**
      * Record user feedback for a recipe
      */
-    public void recordFeedback(Recipe recipe, boolean liked) {
+    public void recordFeedback(User user, Recipe recipe, boolean liked) {
         if (recipe != null && recipe.getId() != null) {
+
             String recipeId = recipe.getId();
             recipeFeedback.put(recipeId, liked ? 1 : -1);
             markRecipeAsSeen(recipe);
+
+            // Update the User object
+            if (liked) {
+                user.addLikedRecipe(recipeId);
+            } else {
+                user.addDislikedRecipe(recipeId);
+            }
         }
     }
     
     /**
      * Get new suggestions excluding already seen recipes
      */
-    public List<Recipe> getNewSuggestions(Preferences preferences) {
-        List<Recipe> allRecommendations = recommendationService.getRecommendations(preferences);
+    public List<Recipe> getNewSuggestions(Preferences preferences, User user) {
+        List<Recipe> allRecommendations = recommendationService.getRecommendations(preferences, user);
         List<Recipe> newSuggestions = new ArrayList<>();
         
         // Collect unseen recipes
@@ -70,8 +79,8 @@ public class FeedbackService {
      * Get recommendations based on feedback (ML-like feedback loop)
      * Prefers recipes similar to liked ones and avoids disliked patterns
      */
-    public List<Recipe> getFeedbackBasedRecommendations(Preferences preferences) {
-        List<Recipe> baseRecommendations = getNewSuggestions(preferences);
+    public List<Recipe> getFeedbackBasedRecommendations(Preferences preferences, User user) {
+        List<Recipe> baseRecommendations = getNewSuggestions(preferences, user);
         
         // Simple feedback-based reordering
         // In a real system, this would use ML to learn user preferences

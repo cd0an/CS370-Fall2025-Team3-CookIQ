@@ -80,7 +80,8 @@ public class SwipeUI extends JPanel {
             showSetPreferencesUI();
         } else {
             // Fetch recommended recipes as Recipe objects
-            recipes = recommendationService.getRecommendations(userPreferences);
+            User currentUser = UserSession.getInstance().getCurrentUser();
+            recipes = recommendationService.getRecommendations(userPreferences, currentUser);
 
             if (recipes.isEmpty()) {
                 System.out.println("No recipes match the user preferences");
@@ -406,8 +407,10 @@ public class SwipeUI extends JPanel {
         // When user clicks the 'New Suggestions' button, it calls the RecommendationService to retrieve new recipes 
         newSuggestions.addActionListener(e -> {
             FeedbackService feedbackService = mainFrame.getFeedbackService();
+            User currentUser = UserSession.getInstance().getCurrentUser();
+            
             // Use FeedbackService to get new suggestions
-            List<Recipe> newRecipes = feedbackService.getNewSuggestions(userPreferences);
+            List<Recipe> newRecipes = feedbackService.getNewSuggestions(userPreferences, currentUser);
 
             if (newRecipes.isEmpty()) {
                 JOptionPane.showMessageDialog(

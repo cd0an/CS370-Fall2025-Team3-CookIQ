@@ -17,6 +17,7 @@ import java.util.List;
 import cookiq.db.RecipeRepository;
 import cookiq.models.Preferences;
 import cookiq.models.Recipe;
+import cookiq.models.User;
 import cookiq.utils.RecipeRanker;
 
 /**
@@ -65,7 +66,7 @@ public class RecommendationService {
      * Get recommendations with mandatory dietary and health goal filtering
      * then ranked by other preferences
      */
-    public List<Recipe> getRecommendations(Preferences preferences) {
+    public List<Recipe> getRecommendations(Preferences preferences, User user) {
         List<Recipe> matches = new ArrayList<>();
         
         // Step 1: Mandatory filtering for dietary restrictions and health goals
@@ -81,7 +82,12 @@ public class RecommendationService {
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
 
         // Step 3: Remove recipes already liked by the user
-        
+        if (user != null) {
+            List<String> likedRecipeIds = user.getLikedRecipes();
+            List<String> dislikedRecipeIds = user.getDislikedRecipes();
+            rankedRecommendations.removeIf(recipe -> likedRecipeIds.contains(recipe.getId())
+                                                    || dislikedRecipeIds.contains(recipe.getId()));
+        }
 
         // Step 4: Limit to top 3 results
         Collections.shuffle(rankedRecommendations);
