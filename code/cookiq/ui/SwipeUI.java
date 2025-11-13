@@ -19,11 +19,13 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -306,14 +308,16 @@ public class SwipeUI extends JPanel {
             // Mark recipe as seen 
             feedbackService.markRecipeAsSeen(recipe);
 
-            if (recipeImageLabel != null) {
-                recipeCard.remove(recipeImageLabel);
+            // update the image instead of removing/adding
+            List<BufferedImage> images = img_service.getImage(recipe.getName());
+            if (images != null && !images.isEmpty()) {
+                recipeImageLabel.setIcon(new ImageIcon(images.get(0)));
+                recipeImageLabel.setText(null); // clear "Recipe Image" text
+            } else {
+                recipeImageLabel.setIcon(null);
+                recipeImageLabel.setText("Recipe Image");
             }
-            recipeImageLabel = img_service.displayRecipeImagePreview(recipe);
-            recipeCard.add(recipeImageLabel, 0);
 
-            recipeCard.revalidate();
-            recipeCard.repaint();
 
             // Update labels
             titleLabel.setText(recipe.getName());
@@ -327,6 +331,9 @@ public class SwipeUI extends JPanel {
 
             // Add a new listener for the current recipe
             viewRecipeBtn.addActionListener(e -> mainFrame.showRecipeDetailsUI(recipe));
+
+            recipeCard.revalidate();
+            recipeCard.repaint();
     }
 
 

@@ -53,8 +53,8 @@ public class ImageService
      * Method to get 1 (or more) images based on passed in recipe name
      * Buffered --> Means editable image
      */
-    public List<BufferedImage> getImage(String recipe_name)
-    {
+    public List<BufferedImage> getImage(String recipe_name) {
+        image_list.clear();
         try
         {
             String query = recipe_name;
