@@ -81,13 +81,13 @@ public class RecommendationService {
         recipeRanker.setRecipeDatabase(mandatoryFiltered);
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
 
-        // Step 3: Remove recipes already liked by the user
-        if (user != null) {
-            List<String> likedRecipeIds = user.getLikedRecipes();
-            List<String> dislikedRecipeIds = user.getDislikedRecipes();
-            rankedRecommendations.removeIf(recipe -> likedRecipeIds.contains(recipe.getId())
-                                                    || dislikedRecipeIds.contains(recipe.getId()));
-        }
+        // // Step 3: Remove recipes already liked by the user
+        // if (user != null) {
+        //     List<String> likedRecipeIds = user.getLikedRecipes();
+        //     List<String> dislikedRecipeIds = user.getDislikedRecipes();
+        //     rankedRecommendations.removeIf(recipe -> likedRecipeIds.contains(recipe.getId())
+        //                                             || dislikedRecipeIds.contains(recipe.getId()));
+        // }
 
         // Step 4: Limit to top 3 results
         Collections.shuffle(rankedRecommendations);

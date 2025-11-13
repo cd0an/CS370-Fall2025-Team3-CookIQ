@@ -320,7 +320,6 @@ public class SwipeUI extends JPanel {
                 recipeImageLabel.setText("Recipe Image");
             }
 
-
             // Update labels
             titleLabel.setText(recipe.getName());
             infoLabel.setText(recipe.getCuisine() + " | " + recipe.getCookTime() + " min | $" + recipe.getCost());

@@ -1,4 +1,4 @@
 {
-  "guestMode": false,
-  "username": "meow"
+  "guestMode": true,
+  "username": null
 }
