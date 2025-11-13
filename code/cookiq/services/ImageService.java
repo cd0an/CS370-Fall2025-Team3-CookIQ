@@ -54,9 +54,9 @@ public class ImageService
      * Buffered --> Means editable image
      */
     public List<BufferedImage> getImage(String recipe_name) {
-        image_list.clear();
-        try
-        {
+        image_list.clear(); // Clear old images 
+
+        try {
             String query = recipe_name;
             String encoded_query = URLEncoder.encode(query, "UTF-8"); //Allows the query to be URL search friendly
 
@@ -99,31 +99,25 @@ public class ImageService
         /**
          * Error catching
          */
-        catch(MalformedURLException e) 
-        {
+        catch(MalformedURLException e) {
             e.printStackTrace(); //Invalid URL format
         } 
-        catch(IOException e) 
-        {
+        catch(IOException e) {
             e.printStackTrace(); //Connection/stream errors
         } 
-        catch(JSONException e) 
-        {
+        catch(JSONException e) {
             e.printStackTrace(); //JSON parsing errors
         }
         return image_list;
     }
 
-    public JLabel displayImage(List<BufferedImage> image_list, String RECIPE_NAME, int WIDTH, int HEIGHT)
-    {
-        if(image_list == null || image_list.isEmpty()) 
-        {
+    public JLabel displayImage(List<BufferedImage> image_list, String RECIPE_NAME, int WIDTH, int HEIGHT) {
+        if (image_list == null || image_list.isEmpty()) {
             return null;
         }
 
         BufferedImage img = image_list.get(img_index++);
-        if(img_index >= image_list.size())
-        {
+        if(img_index >= image_list.size()){
             img_index = 0; //Loop to first image
         } 
 
@@ -134,8 +128,7 @@ public class ImageService
         double imageAspectRatio = (double) img.getWidth() / img.getHeight();
         double targetAspectRatio = (double) WIDTH / HEIGHT;
 
-        if(imageAspectRatio > targetAspectRatio)
-        {
+        if(imageAspectRatio > targetAspectRatio){
             //Wider image
             scaleHeight = (int)(WIDTH / imageAspectRatio);
         }
@@ -167,8 +160,7 @@ public class ImageService
         return label;
     }
 
-    private BufferedImage blurImage(BufferedImage img, int blurRadius) 
-    {
+    private BufferedImage blurImage(BufferedImage img, int blurRadius) {
         //Downscale image for faster blur
         int downscaleFactor = 3;
         int smallWidth = Math.max(1, img.getWidth() / downscaleFactor);
@@ -183,8 +175,7 @@ public class ImageService
         
         //Apply Gaussian-like blur 3 times
         BufferedImage blurred = small;
-        for(int i = 0; i < 3; i++) 
-        {
+        for(int i = 0; i < 3; i++) {
             blurred = applyGaussianBlur(blurred, blurRadius);
         }
         
@@ -198,8 +189,7 @@ public class ImageService
         return result;
     }
 
-    private BufferedImage applyGaussianBlur(BufferedImage src, int radius) 
-    {
+    private BufferedImage applyGaussianBlur(BufferedImage src, int radius) {
         int width = src.getWidth();
         int height = src.getHeight();
         BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -210,14 +200,11 @@ public class ImageService
         src.getRGB(0, 0, width, height, srcPixels, 0, width);
         
         //Horizontal pass - blurring along the X-axis
-        for(int y = 0; y < height; y++) 
-        {
-            for(int x = 0; x < width; x++) 
-            {
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
                 int r = 0, g = 0, b = 0, count = 0;
         
-                for(int i = -radius; i <= radius; i++) 
-                {
+                for(int i = -radius; i <= radius; i++) {
                     int px = Math.min(Math.max(x + i, 0), width - 1);
                     int pixel = srcPixels[y * width + px];
                     
@@ -237,14 +224,11 @@ public class ImageService
         //Vertical pass - blurring along the Y-axis
         int[] tempPixels = new int[width * height];
 
-        for(int x = 0; x < width; x++) 
-        {
-            for(int y = 0; y < height; y++) 
-            {
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
                 int r = 0, g = 0, b = 0, count = 0;
                 
-                for(int i = -radius; i <= radius; i++) 
-                {
+                for(int i = -radius; i <= radius; i++) {
                     int py = Math.min(Math.max(y + i, 0), height - 1);
                     int pixel = destPixels[py * width + x];
                     
@@ -265,10 +249,8 @@ public class ImageService
         return dest;
     }
 
-    public ImageIcon getScaledImage(BufferedImage img, int WIDTH, int HEIGHT) 
-    {
-        if(img == null) 
-        {
+    public ImageIcon getScaledImage(BufferedImage img, int WIDTH, int HEIGHT) {
+        if(img == null) {
             return null;
         }
         
@@ -287,8 +269,7 @@ public class ImageService
         double imageAspectRatio = (double) img.getWidth() / img.getHeight();
         double targetAspectRatio = (double) WIDTH / HEIGHT;
         
-        if(imageAspectRatio > targetAspectRatio) 
-        {
+        if(imageAspectRatio > targetAspectRatio) {
             //Image is wider
             scaledHeight = (int)(WIDTH / imageAspectRatio);
         } 
@@ -310,14 +291,12 @@ public class ImageService
         return new ImageIcon(background);
     }
 
-    public void displayRecipeImageFR(JPanel leftPanel, String recipeName, int width, int height) 
-    {
+    public void displayRecipeImageFR(JPanel leftPanel, String recipeName, int width, int height) {
         ImageService imgService = new ImageService();
         
         //Load images for a recipe
         List<BufferedImage> images = imgService.getImage(recipeName);
-        if(images == null || images.isEmpty()) 
-        {
+        if(images == null || images.isEmpty()) {
             System.out.println("No images found.");
             //Fallback to placeholder
             JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
@@ -344,8 +323,7 @@ public class ImageService
         leftPanel.add(Box.createVerticalStrut(20));
     }
 
-    public void displayRecipeImageLiked(JPanel card, String recipeName) 
-    {
+    public void displayRecipeImageLiked(JPanel card, String recipeName) {
         ImageService imgService = new ImageService();
         
         // Load images for a recipe
@@ -376,38 +354,6 @@ public class ImageService
         card.add(imageLabel);
         card.add(Box.createVerticalStrut(15));
     }
-
-    // public void displayRecipeImagePreview(JPanel card, Recipe recipe) {
-    //     ImageService imgService = new ImageService();
-        
-    //     // Load images for a recipe
-    //     List<BufferedImage> images = imgService.getImage(recipe.getName());
-    //     if (images == null || images.isEmpty()) {
-    //         System.out.println("No images found.");
-    //         // Fallback to placeholder
-    //         JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
-    //         imageLabel.setOpaque(true);
-    //         imageLabel.setBackground(Color.LIGHT_GRAY);
-    //         imageLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-    //         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    //         imageLabel.setPreferredSize(new Dimension(420, 250));
-    //         imageLabel.setMaximumSize(new Dimension(420, 250));
-    //         card.add(imageLabel);
-    //         card.add(Box.createVerticalStrut(15));
-    //         return;
-    //     }
-        
-    //     // Get scaled image with blurred background
-    //     ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), 420, 250);
-        
-    //     JLabel imageLabel = new JLabel(scaledIcon);
-    //     imageLabel.setPreferredSize(new Dimension(420, 250));
-    //     imageLabel.setMaximumSize(new Dimension(420, 250));
-    //     imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-    //     card.add(imageLabel);
-    //     card.add(Box.createVerticalStrut(15));
-    // }
 
     public JLabel displayRecipeImagePreview(Recipe recipe) {
         List<BufferedImage> images = getImage(recipe.getName());
