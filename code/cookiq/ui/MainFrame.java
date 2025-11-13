@@ -220,7 +220,15 @@ public class MainFrame extends JFrame {
                     UserSession.getInstance().logout();
                     currentUser = null;
 
-                    System.exit(0);
+                    // Close the main frame
+                    MainFrame.closeCurrentFrame();
+
+                    // Redirect back to login window 
+                    JFrame loginFrame = new JFrame("Login");
+                    loginFrame.setContentPane(new LoginUI());
+                    loginFrame.pack();
+                    loginFrame.setLocationRelativeTo(null);
+                    loginFrame.setVisible(true);
                 }
             }
         }
