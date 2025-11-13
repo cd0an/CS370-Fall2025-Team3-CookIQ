@@ -308,10 +308,11 @@ public class SwipeUI extends JPanel {
             // Mark recipe as seen 
             feedbackService.markRecipeAsSeen(recipe);
 
-            // update the image instead of removing/adding
             List<BufferedImage> images = img_service.getImage(recipe.getName());
             if (images != null && !images.isEmpty()) {
-                recipeImageLabel.setIcon(new ImageIcon(images.get(0)));
+                BufferedImage img = images.get(0);
+                ImageIcon scaledIcon = img_service.getScaledImage(img, 420, 250);
+                recipeImageLabel.setIcon(scaledIcon);
                 recipeImageLabel.setText(null); // clear "Recipe Image" text
             } else {
                 recipeImageLabel.setIcon(null);
