@@ -233,9 +233,4 @@ public class MainFrame extends JFrame {
             }
         }
     } 
-
-    // Main method 
-    public static void main(String[] args) {
-        new MainFrame(UserSession.getInstance().getCurrentUser());
-    }
 }
