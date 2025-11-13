@@ -116,9 +116,9 @@ public class PreferencesUI extends JPanel {
         ));
 
         // Checkboxes 
-        lowCalCB = new JCheckBox("Low-calorie"); 
-        highCalCB = new JCheckBox("High-calorie"); 
-        highProteinCB = new JCheckBox("High-protein"); 
+        lowCalCB = new JCheckBox("Low-Calorie"); 
+        highCalCB = new JCheckBox("High-Calorie"); 
+        highProteinCB = new JCheckBox("High-Protein"); 
         JCheckBox[] healthBoxes = {lowCalCB, highCalCB, highProteinCB};
         for (JCheckBox box : healthBoxes) {
             box.setFont(optionFont);
