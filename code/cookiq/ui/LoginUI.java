@@ -52,7 +52,7 @@ public class LoginUI extends JPanel {
         JPanel card = createCardPanel(420, 400);
         add(card);
 
-        JLabel title = createTitle("Sign In");
+        JLabel title = createTitle("Sign-In");
         JLabel subtitle = createSubtitle("Welcome to CookIQ! Please enter your details.");
         card.add(title);
         card.add(Box.createVerticalStrut(8));
@@ -75,15 +75,15 @@ public class LoginUI extends JPanel {
         loginPanel.add(loginBtn);
         loginPanel.add(guestBtn);
 
-        card.add(Box.createVerticalStrut(25));
+        card.add(Box.createVerticalStrut(18));
         card.add(loginPanel);
 
-        //Sign-up Link 
-        JLabel signUpLabel = new JLabel("<html><u>Don't have an account? Sign up here.</u></html>");
+        // Sign-up Link 
+        JLabel signUpLabel = new JLabel("<html><u>No account yet? Register here.</u></html>");
         signUpLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        signUpLabel.setForeground(new Color(60, 50, 40));
+        signUpLabel.setForeground(new Color(0x47, 0x3C, 0x38)); // #473c38
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        signUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         signUpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(LoginUI.this);
@@ -94,8 +94,14 @@ public class LoginUI extends JPanel {
             }
         });
 
-        card.add(Box.createVerticalStrut(15));
-        card.add(signUpLabel);
+        // Wrap label in a panel to enforce centering
+        JPanel linkWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        linkWrapper.setBackground(Color.WHITE);
+        linkWrapper.add(signUpLabel);
+
+
+        card.add(Box.createVerticalStrut(20));
+        card.add(linkWrapper);
         card.add(Box.createVerticalStrut(8));
 
         // === Status Label ===
@@ -197,28 +203,55 @@ public class LoginUI extends JPanel {
     }
 
     private JTextField createLabeledField(JPanel parent, String labelText, String placeholder) {
+        // Wrapper panel for each field
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setBackground(Color.WHITE);
+
+        // Add some horizontal offset to the wrapper
+        wrapper.setBorder(new EmptyBorder(0, 20, 0, 0)); // 20px from the left
+
+        // Label, left-aligned inside wrapper
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
         label.setForeground(new Color(60, 50, 40));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        parent.add(label);
-        parent.add(Box.createVerticalStrut(5));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(5));
+
+        // Field, keep size same
         JTextField field = createStyledField(placeholder);
-        parent.add(field);
-        parent.add(Box.createVerticalStrut(15));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(field);
+        wrapper.add(Box.createVerticalStrut(15));
+
+        // Center the wrapper panel in the card
+        wrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        parent.add(wrapper);
         return field;
     }
 
     private JPasswordField createLabeledPasswordField(JPanel parent, String labelText, String placeholder) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setBackground(Color.WHITE);
+        wrapper.setBorder(new EmptyBorder(0, 20, 0, 0)); // same offset as username
+        wrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
         label.setForeground(new Color(60, 50, 40));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        parent.add(label);
-        parent.add(Box.createVerticalStrut(5));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(5));
+
         JPasswordField field = createStyledPasswordField(placeholder);
-        parent.add(field);
-        parent.add(Box.createVerticalStrut(15));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(field);
+        wrapper.add(Box.createVerticalStrut(15));
+
+        parent.add(wrapper);
         return field;
     }
 

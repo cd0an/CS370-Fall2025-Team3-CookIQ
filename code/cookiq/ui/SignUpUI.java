@@ -64,15 +64,14 @@ public class SignUpUI extends JPanel {
         signUpBtn.addActionListener(e -> handleSignUp());
         buttonPanel.add(signUpBtn);
 
-        card.add(Box.createVerticalStrut(25));
+        card.add(Box.createVerticalStrut(10));
         card.add(buttonPanel);
 
         // Back to Login Link
         JLabel loginLabel = new JLabel("<html><u>Already have an account? Login here.</u></html>");
         loginLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        loginLabel.setForeground(new Color(60,50,40));
+        loginLabel.setForeground(new Color(0x47, 0x3C, 0x38));
         loginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SignUpUI.this);
@@ -83,9 +82,16 @@ public class SignUpUI extends JPanel {
             }
         });
 
-        card.add(Box.createVerticalStrut(15));
-        card.add(loginLabel);
+        // Wrap label in a panel to enforce centering
+        JPanel linkWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        linkWrapper.setBackground(Color.WHITE);
+        linkWrapper.add(loginLabel);
+
+
         card.add(Box.createVerticalStrut(8));
+        card.add(linkWrapper);
+        card.add(Box.createVerticalStrut(5));
+
 
         // Status Label
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
@@ -158,28 +164,59 @@ public class SignUpUI extends JPanel {
     }
 
     private JTextField createLabeledField(JPanel parent, String labelText, String placeholder) {
+        // Wrapper panel to keep everything centered
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setBackground(Color.WHITE);
+
+        // Add some horizontal offset to the wrapper
+        wrapper.setBorder(new EmptyBorder(0, 20, 0, 0));
+
+        // Label, left-aligned inside wrapper
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
         label.setForeground(new Color(60,50,40));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        parent.add(label);
-        parent.add(Box.createVerticalStrut(5));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(5));
+
+        // Field
         JTextField field = createStyledField(placeholder);
-        parent.add(field);
-        parent.add(Box.createVerticalStrut(15));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(field);
+        wrapper.add(Box.createVerticalStrut(15));
+
+        // Center the wrapper panel in the card
+        wrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        parent.add(wrapper);
         return field;
     }
 
     private JPasswordField createLabeledPasswordField(JPanel parent, String labelText, String placeholder) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setBackground(Color.WHITE);
+        wrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add some horizontal offset to the wrapper
+        wrapper.setBorder(new EmptyBorder(0, 20, 0, 0));
+
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 13));
         label.setForeground(new Color(60,50,40));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        parent.add(label);
-        parent.add(Box.createVerticalStrut(5));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(5));
+
         JPasswordField field = createStyledPasswordField(placeholder);
-        parent.add(field);
-        parent.add(Box.createVerticalStrut(15));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrapper.add(field);
+        wrapper.add(Box.createVerticalStrut(15));
+
+        wrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        parent.add(wrapper);
         return field;
     }
 
