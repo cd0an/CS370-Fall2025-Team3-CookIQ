@@ -84,7 +84,6 @@ public class RecommendationService {
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
 
         // Step 3: Remove recipes already liked by the user
- 
 
         // Step 4: Limit to top 3 results
         Collections.shuffle(rankedRecommendations);

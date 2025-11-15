@@ -33,8 +33,10 @@ public class RecipeRanker {
         }
         
         // Sort recipes by score in descending order (best matches first)
-        scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed());
+        scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed()
+                      .thenComparing(sc -> sc.getRecipe().getName()));
         
+        // Extract sorted recipes 
         List<Recipe> recommendations = new ArrayList<>();
         for (ScoredRecipe scored : scoredRecipes) {
             recommendations.add(scored.getRecipe());
@@ -52,14 +54,13 @@ public class RecipeRanker {
         
         // Cuisine preferences - high priority
         String cuisine = recipe.getCuisine() != null ? recipe.getCuisine().trim().toLowerCase() : "";
-
         if (prefs.isItalian() && cuisine.contains("italian")) score += 30;
-        if (prefs.isMexican() && cuisine.contains(".*mexican.*")) score += 30;
+        if (prefs.isMexican() && cuisine.contains("mexican")) score += 30;
         if (prefs.isAsian() && cuisine.contains("asian")) score += 30;
         if (prefs.isAmerican() && cuisine.contains("american")) score += 30;
         if (prefs.isMediterranean() && cuisine.contains("mediterranean")) score += 30;
 
-        // Ingredients - high priority 
+        // Ingredients matching - high priority 
         if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
             String ingredient = prefs.getAvailableIngredients().get(0);
             List<String> recipeIngredients = recipe.getNER(); 
@@ -73,7 +74,7 @@ public class RecipeRanker {
             }
         }
         
-        // Cooking time - medium priority (up to 10 points)
+        // Cooking time - medium priority 
         if (prefs.getMaxCookTime() > 0) {
             if (recipe.getCookTime() <= prefs.getMaxCookTime()) {
                 score += 10;
@@ -85,7 +86,7 @@ public class RecipeRanker {
             }
         }
         
-        // Budget - rmedium priority (up to 10 points)
+        // Budget - rmedium priority 
         if (prefs.getMaxBudget() > 0) {
             if (recipe.getCost() <= prefs.getMaxBudget()) {
                 score += 10;
