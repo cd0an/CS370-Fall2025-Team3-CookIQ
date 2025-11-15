@@ -315,17 +315,16 @@ public class PreferencesUI extends JPanel {
                 new ArrayList<>()
             );
 
-            // Copy preferences into the current user
-            curr_user.getPreferences().copyPrefs(selectedPrefs);
-
             // Update available ingredients
             curr_user.getPreferences().getAvailableIngredients().clear();
-            String text = ingredientField.getText();
+            String text = ingredientField.getText().trim().toLowerCase();
             if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
-                for (String ing : text.split(",")) {
-                    curr_user.getPreferences().addAvailableIngredient(ing.trim());
-                }
+                selectedPrefs.setKeyword(text);           
+                selectedPrefs.getAvailableIngredients().add(text);
             }
+
+            // Copy preferences into the current user
+            curr_user.getPreferences().copyPrefs(selectedPrefs);
 
             // Save preferences to DB only if not guest
             if (!curr_user.getUsername().equals("Guest")) {

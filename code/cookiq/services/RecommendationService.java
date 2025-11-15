@@ -68,6 +68,8 @@ public class RecommendationService {
      */
     public List<Recipe> getRecommendations(Preferences preferences, User user) {
         List<Recipe> matches = new ArrayList<>();
+
+        if (allRecipes == null || allRecipes.isEmpty()) return matches;
         
         // Step 1: Mandatory filtering for dietary restrictions and health goals
         List<Recipe> mandatoryFiltered = filterByMandatoryPreferences(preferences);
@@ -102,13 +104,15 @@ public class RecommendationService {
         
         for (Recipe recipe : allRecipes) {
             if (matchesDietaryRestrictions(recipe, preferences) && 
-                matchesHealthGoals(recipe, preferences)) {
+                matchesHealthGoals(recipe, preferences) && 
+                matchesKeyword(recipe, preferences.getKeyword())) {
                 filtered.add(recipe);
             }
         }
         
         System.out.println("After mandatory filtering: " + filtered.size() + " recipes (from " + 
                           allRecipes.size() + " total)");
+                          
         return filtered;
     }
     
@@ -148,6 +152,29 @@ public class RecommendationService {
         if (prefs.isLowCalorie() && recipeHealth.contains("low-calorie")) return true;
         if (prefs.isHighCalorie() && recipeHealth.contains("high-calorie")) return true;
         if (prefs.isHighProtein() && recipeHealth.contains("high-protein")) return true;
+        
+        return false;
+    }
+
+    // Returns true if the recipe's name or ingredients contain the keyword
+    private boolean matchesKeyword(Recipe recipe, String keyword) {
+        if (keyword == null || keyword.isEmpty()) return true;
+
+        String lowerKeyword = keyword.toLowerCase();
+
+        // Check name
+        if (recipe.getName() != null && recipe.getName().toLowerCase().contains(lowerKeyword)) {
+            return true;
+        }
+
+        // Check ingredients 
+        if (recipe.getIngredients() != null) {
+            for (String ingredient : recipe.getIngredients()) {
+                if (ingredient.toLowerCase().contains(lowerKeyword)) {
+                    return true;
+                }
+            }
+        }
         
         return false;
     }

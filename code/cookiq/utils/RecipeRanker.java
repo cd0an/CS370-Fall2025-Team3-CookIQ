@@ -51,37 +51,41 @@ public class RecipeRanker {
         int score = 0;
         
         // Cuisine preferences - high priority
-        String cuisine = recipe.getCuisine().toLowerCase();
+        String cuisine = recipe.getCuisine() != null ? recipe.getCuisine().trim().toLowerCase() : "";
+
+        if (prefs.isItalian() && cuisine.contains("italian")) score += 30;
+        if (prefs.isMexican() && cuisine.contains(".*mexican.*")) score += 30;
+        if (prefs.isAsian() && cuisine.contains("asian")) score += 30;
+        if (prefs.isAmerican() && cuisine.contains("american")) score += 30;
+        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) score += 30;
+
+        // Ingredients - high priority 
+        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
+            String ingredient = prefs.getAvailableIngredients().get(0);
+            List<String> recipeIngredients = recipe.getNER(); 
+            if (recipeIngredients != null) {
+                for (String ing : recipeIngredients) {
+                    if (ing.toLowerCase().contains(ingredient)) {
+                        score += 30;
+                        break;
+                    }
+                }
+            }
+        }
         
-        if (prefs.isItalian() && cuisine.contains("italian")) {
-            score += 20;
-        }
-        if (prefs.isMexican() && cuisine.contains("mexican")) {
-            score += 20;
-        }
-        if (prefs.isAsian() && cuisine.contains("asian")) {
-            score += 20;
-        }
-        if (prefs.isAmerican() && cuisine.contains("american")) {
-            score += 20;
-        }
-        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) {
-            score += 20;
-        }
-        
-        // Cooking time - recipes within time limit get full points
+        // Cooking time - medium priority (up to 10 points)
         if (prefs.getMaxCookTime() > 0) {
             if (recipe.getCookTime() <= prefs.getMaxCookTime()) {
-                score += 15;
+                score += 10;
             } else {
                 // Gradual penalty for exceeding time limit
                 int timeOver = recipe.getCookTime() - prefs.getMaxCookTime();
-                int timePenalty = Math.min(timeOver / 5, 15);
+                int timePenalty = Math.min(timeOver / 5, 5);
                 score -= timePenalty;
             }
         }
         
-        // Budget - recipes within budget get full points
+        // Budget - rmedium priority (up to 10 points)
         if (prefs.getMaxBudget() > 0) {
             if (recipe.getCost() <= prefs.getMaxBudget()) {
                 score += 10;
@@ -91,12 +95,6 @@ public class RecipeRanker {
                 int costPenalty = Math.min((int)(costOver / 2), 10);
                 score -= costPenalty;
             }
-        }
-        
-        // Ingredient matching - bonus for using available ingredients
-        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
-            int ingredientMatches = countIngredientMatches(recipe, prefs.getAvailableIngredients());
-            score += ingredientMatches * 3;
         }
         
         return Math.max(score, 0);
