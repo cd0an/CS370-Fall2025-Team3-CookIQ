@@ -33,8 +33,7 @@ public class RecipeRanker {
         }
         
         // Sort recipes by score in descending order (best matches first)
-        scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed()
-                      .thenComparing(sc -> sc.getRecipe().getName()));
+        scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed());
         
         // Extract sorted recipes 
         List<Recipe> recommendations = new ArrayList<>();
@@ -54,25 +53,12 @@ public class RecipeRanker {
         
         // Cuisine preferences - high priority
         String cuisine = recipe.getCuisine() != null ? recipe.getCuisine().trim().toLowerCase() : "";
-        if (prefs.isItalian() && cuisine.contains("italian")) score += 30;
-        if (prefs.isMexican() && cuisine.contains("mexican")) score += 30;
-        if (prefs.isAsian() && cuisine.contains("asian")) score += 30;
-        if (prefs.isAmerican() && cuisine.contains("american")) score += 30;
-        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) score += 30;
 
-        // Ingredients matching - high priority 
-        if (prefs.getAvailableIngredients() != null && !prefs.getAvailableIngredients().isEmpty()) {
-            String ingredient = prefs.getAvailableIngredients().get(0);
-            List<String> recipeIngredients = recipe.getNER(); 
-            if (recipeIngredients != null) {
-                for (String ing : recipeIngredients) {
-                    if (ing.toLowerCase().contains(ingredient)) {
-                        score += 30;
-                        break;
-                    }
-                }
-            }
-        }
+        if (prefs.isItalian() && cuisine.contains("italian")) score += 50;
+        if (prefs.isMexican() && cuisine.contains("mexican")) score += 50;
+        if (prefs.isAsian() && cuisine.contains("asian")) score += 50;
+        if (prefs.isAmerican() && cuisine.contains("american")) score += 50;
+        if (prefs.isMediterranean() && cuisine.contains("mediterranean")) score += 50;
         
         // Cooking time - medium priority 
         if (prefs.getMaxCookTime() > 0) {
@@ -99,25 +85,6 @@ public class RecipeRanker {
         }
         
         return Math.max(score, 0);
-    }
-    
-    private int countIngredientMatches(Recipe recipe, List<String> availableIngredients) {
-        int matches = 0;
-        List<String> recipeIngredients = recipe.getNER();
-        
-        if (recipeIngredients != null) {
-            for (String ingredient : recipeIngredients) {
-                String cleanIngredient = ingredient.toLowerCase().trim();
-                for (String available : availableIngredients) {
-                    if (available != null && cleanIngredient.contains(available.toLowerCase().trim())) {
-                        matches++;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        return matches;
     }
     
     private static class ScoredRecipe {

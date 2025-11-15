@@ -38,6 +38,7 @@ import javax.swing.border.TitledBorder;
 import cookiq.models.Preferences;
 import cookiq.models.User;
 import cookiq.services.UserService;
+import cookiq.services.UserSession;
 
 public class PreferencesUI extends JPanel {
     private MainFrame mainFrame; 
@@ -290,6 +291,12 @@ public class PreferencesUI extends JPanel {
         generateBtn.addActionListener(e -> {
             User curr_user = mainFrame.getCurrentUser();
 
+            if (curr_user.getPreferences() == null) {
+                curr_user.setPreferences(new Preferences());
+            }
+
+            Preferences prefs = curr_user.getPreferences();
+
             boolean anyDiet = vegetarianCB.isSelected() || ketoCB.isSelected() || glutenCB.isSelected();
             boolean anyHealth = lowCalCB.isSelected() || highCalCB.isSelected() || highProteinCB.isSelected();
             boolean anyCuisine = italianCB.isSelected() || mexicanCB.isSelected() || asianCB.isSelected()
@@ -315,20 +322,25 @@ public class PreferencesUI extends JPanel {
                 new ArrayList<>()
             );
 
+            // Copy preferences into the current user
+            prefs.copyPrefs(selectedPrefs);
+
             // Update available ingredients
-            curr_user.getPreferences().getAvailableIngredients().clear();
-            String text = ingredientField.getText().trim().toLowerCase();
+            prefs.getAvailableIngredients().clear();
+            String text = ingredientField.getText().trim();
             if (!text.equals("Type here (e.g., eggs)") && !text.isEmpty()) {
-                selectedPrefs.setKeyword(text);           
-                selectedPrefs.getAvailableIngredients().add(text);
+                for (String ing : text.split(",")) {
+                    curr_user.getPreferences().addAvailableIngredient(ing.trim());
+                }
             }
 
-            // Copy preferences into the current user
-            curr_user.getPreferences().copyPrefs(selectedPrefs);
-
             // Save preferences to DB only if not guest
-            if (!curr_user.getUsername().equals("Guest")) {
-                new UserService().saveUserPreferences(curr_user.getUsername(), curr_user.getPreferences());
+            if (curr_user.getUsername().equals("Guest")) {
+                // For Guest, just update the session so preferences are kept in memory
+                UserSession.getInstance().setCurrentUser(curr_user);
+            } else {
+                // For logged-in users, save to database
+                new UserService().saveUserPreferences(curr_user.getUsername(), prefs);
             }
 
             // Switch to SwipeUI

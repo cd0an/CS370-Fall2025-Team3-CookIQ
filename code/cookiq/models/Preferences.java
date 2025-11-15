@@ -33,15 +33,6 @@ public class Preferences {
     //Cooking preferences
     private int maxCookTime; // in minutes
     private double maxBudget; // maximum cost per meal
-
-    // Input available ingredients 
-    private String keyword;
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) { this.keyword = keyword; }
     
     //Available ingredients
     private List<String> availableIngredients;
@@ -85,7 +76,6 @@ public class Preferences {
         this.maxCookTime = other.maxCookTime;
         this.maxBudget = other.maxBudget;
         this.availableIngredients = other.availableIngredients;
-        this.keyword = other.keyword;
     }
     
     //Dietary restrictions setters/getters

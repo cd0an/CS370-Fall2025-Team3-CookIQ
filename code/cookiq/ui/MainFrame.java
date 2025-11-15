@@ -101,10 +101,16 @@ public class MainFrame extends JFrame {
     // ======================== Method to switch to SwipeUI ========================
     public void showSwipeUI() {
         User currUser = getCurrentUser();
+
+        // Ensure Preferences object exists
         if (currUser.getPreferences() == null) {
-            swipeUI.setUserPreferences(currentUser.getPreferences());
+            currUser.setPreferences(new Preferences());
         }
+
+        // Pass the updated Preferences to SwipeUI
         swipeUI.setUserPreferences(currUser.getPreferences());
+
+        // Show the Swipe panel
         cardLayout.show(mainPanel, "Swipe");
     }
 
@@ -149,15 +155,18 @@ public class MainFrame extends JFrame {
 
     public User getCurrentUser() {
         User sessionUser = UserSession.getInstance().getCurrentUser();
+
         if (sessionUser == null) {
             // If no user in session, create a Guest user
             sessionUser = new User("Guest", "");
             sessionUser.setPreferences(new Preferences());
             UserSession.getInstance().setCurrentUser(sessionUser);
             UserSession.getInstance().loginAsGuest();
-        } else if (sessionUser.getPreferences() == null) {
+        } else if (sessionUser.getUsername().equals("Guest") && sessionUser.getPreferences() == null) {
             sessionUser.setPreferences(new Preferences());
+            UserSession.getInstance().setCurrentUser(sessionUser);
         }
+        
         return sessionUser;
     }
 

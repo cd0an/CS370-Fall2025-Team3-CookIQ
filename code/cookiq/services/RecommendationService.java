@@ -83,10 +83,8 @@ public class RecommendationService {
         recipeRanker.setRecipeDatabase(mandatoryFiltered);
         List<Recipe> rankedRecommendations = recipeRanker.getRecommendations(preferences);
 
-        // Step 3: Remove recipes already liked by the user
-
-        // Step 4: Limit to top 3 results
-        Collections.shuffle(rankedRecommendations);
+        // Step 3: Limit to top 3 results
+        Collections.shuffle(rankedRecommendations); 
         int limit = Math.min(3, rankedRecommendations.size());
         List<Recipe> topRecommendations = rankedRecommendations.subList(0, limit);
         
@@ -103,8 +101,8 @@ public class RecommendationService {
         
         for (Recipe recipe : allRecipes) {
             if (matchesDietaryRestrictions(recipe, preferences) && 
-                matchesHealthGoals(recipe, preferences) && 
-                matchesKeyword(recipe, preferences.getKeyword())) {
+                matchesHealthGoals(recipe, preferences) &&
+                matchesAvailableIngredients(recipe, preferences)) {
                 filtered.add(recipe);
             }
         }
@@ -134,7 +132,30 @@ public class RecommendationService {
         
         return false;
     }
-    
+
+        /**
+     * Checks if a recipe contains any of the user's available ingredients.
+     * If the user didn't type ingredients, allow all recipes.
+     */
+    private boolean matchesAvailableIngredients(Recipe recipe, Preferences prefs) {
+        List<String> userIngredients = prefs.getAvailableIngredients();
+        if (userIngredients == null || userIngredients.isEmpty()) return true; // no ingredients = allow all
+
+        List<String> recipeIngredients = recipe.getNER();
+        if (recipeIngredients == null || recipeIngredients.isEmpty()) return false;
+
+        for (String ing : userIngredients) {
+            String lowerIng = ing.toLowerCase().trim();
+            for (String recipeIng : recipeIngredients) {
+                if (recipeIng.toLowerCase().contains(lowerIng)) {
+                    return true; // found a match
+                }
+            }
+        }
+
+        return false; // no match found
+    }
+        
     /**
      * Health goals are MANDATORY - recipe must match user's selections  
      * UPDATED: Uses health_goals field from MongoDB instead of calories
@@ -151,29 +172,6 @@ public class RecommendationService {
         if (prefs.isLowCalorie() && recipeHealth.contains("low-calorie")) return true;
         if (prefs.isHighCalorie() && recipeHealth.contains("high-calorie")) return true;
         if (prefs.isHighProtein() && recipeHealth.contains("high-protein")) return true;
-        
-        return false;
-    }
-
-    // Returns true if the recipe's name or ingredients contain the keyword
-    private boolean matchesKeyword(Recipe recipe, String keyword) {
-        if (keyword == null || keyword.isEmpty()) return true;
-
-        String lowerKeyword = keyword.toLowerCase();
-
-        // Check name
-        if (recipe.getName() != null && recipe.getName().toLowerCase().contains(lowerKeyword)) {
-            return true;
-        }
-
-        // Check ingredients 
-        if (recipe.getIngredients() != null) {
-            for (String ingredient : recipe.getIngredients()) {
-                if (ingredient.toLowerCase().contains(lowerKeyword)) {
-                    return true;
-                }
-            }
-        }
         
         return false;
     }
