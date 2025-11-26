@@ -1,9 +1,8 @@
 package cookiq.db;
 
-import java.io.InputStream;       // Used to read the config file
-import java.util.Properties;      // Used to load key-value pairs from config.properties
+import java.io.InputStream; // Used to read the config file
+import java.util.Properties; // Used to load key-value pairs from config.properties
 
-// MongoDB imports
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -53,7 +52,7 @@ public class MongoDBConnection {
         }
     }
 
-    // Method only returns the database URI (for debugging or testing)
+    // Method only returns the database URI (This is here for debugging & testing)
     private static String loadConnectionString() {
         try (InputStream input = MongoDBConnection.class
                 .getClassLoader()
