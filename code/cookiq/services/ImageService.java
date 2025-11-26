@@ -49,68 +49,6 @@ public class ImageService
     List<BufferedImage> image_list = new ArrayList<>();
     int img_index = 0;
 
-    /**
-     * Method to get 1 (or more) images based on passed in recipe name
-     * Buffered --> Means editable image
-     */
-    // public List<BufferedImage> getImage(String recipe_name) {
-    //     image_list.clear(); // Clear old images 
-
-    //     try {
-    //         String query = recipe_name;
-    //         String encoded_query = URLEncoder.encode(query, "UTF-8"); //Allows the query to be URL search friendly
-
-    //         /**
-    //          * Findn and return 1 (or more) image urls for the queried recipe name
-    //          * If you want to change the number returned, change the value at the end of the https
-    //          */
-    //         String url_str = String.format(
-    //             "https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s&searchType=image&num=1",
-    //             API_KEY, CX, encoded_query
-    //         );
-
-    //         URL url = new URL(url_str);
-    //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    //         conn.setRequestMethod("GET"); //The Https URL connection
-
-    //         //Read response
-    //         StringBuilder response = new StringBuilder();
-    //         try(BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) 
-    //         {
-    //             String line;                
-    //             while((line = in.readLine()) != null) 
-    //             {
-    //                 response.append(line); //if line isn't null we append it to create the final url
-    //             }
-    //         }
-
-    //         JSONObject json = new JSONObject(response.toString());
-    //         JSONArray items = json.getJSONArray("items"); //Returned json of 5 urls
-
-    //         for(int i = 0; i < items.length(); i++) 
-    //         {
-    //             JSONObject item = items.getJSONObject(i);
-    //             String image_url = item.getString("link"); //Get the url link from the JSONObject
-    //             BufferedImage img = ImageIO.read(new URL(image_url));
-    //             image_list.add(img);
-    //         }
-    //     }
-
-    //     /**
-    //      * Error catching
-    //      */
-    //     catch(MalformedURLException e) {
-    //         e.printStackTrace(); //Invalid URL format
-    //     } 
-    //     catch(IOException e) {
-    //         e.printStackTrace(); //Connection/stream errors
-    //     } 
-    //     catch(JSONException e) {
-    //         e.printStackTrace(); //JSON parsing errors
-    //     }
-    //     return image_list;
-    // }
-
     public List<BufferedImage> getImage(String recipe_name) {
         image_list.clear(); // Clear old images 
 
