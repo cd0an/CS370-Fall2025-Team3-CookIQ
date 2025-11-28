@@ -9,11 +9,6 @@ Attendees: All team members
 - Zhuo will research and prepar recipe dataset from Kaggle 
 - Mitchell will draft class design 
 - Miguel will begin login system design 
-**Progress Updates:**
-- CookIQ.java and Canva prototype UI design created 
-- Kaggle dataset in progress 
-- Recipe.java, User.java, and Preference.java class created
-
 ---------------------------------------------------------------------------------
 Scrum Meeting: 09/28/2025
 Attendees: All team members
@@ -23,12 +18,6 @@ Attendees: All team members
 - Zhuo will set up MongoDB 
 - Mitchell will begin implementing filtering logic 
 - Miguel will implement User class
-**Progress Updates:**
-- PreferencesUI.java finished 
-- MongoDBConnection.java finished 
-- Basic filtering logic started
-- User.java class implemented 
-
 ---------------------------------------------------------------------------------
 Scrum Meeting: 10/05/2025
 Attendees: All team members
