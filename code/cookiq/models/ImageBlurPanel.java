@@ -1,20 +1,31 @@
-package cookiq.models;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import javax.swing.*;
-import java.util.List;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
-
 /**
+ * ImageBlurPanel.java
+ * 
  * This class is used to allow the queried image to be its original size
  * yet still fill the frame of the JFrame/JLabel on where it's called.
+ * 
  */
+
+
+package cookiq.models;
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+
 public class ImageBlurPanel extends JPanel {
 
+    // The main image to display 
     private BufferedImage image;
 
+    // Constructor
     public ImageBlurPanel(BufferedImage image) {
         this.image = image;
     }
@@ -27,7 +38,7 @@ public class ImageBlurPanel extends JPanel {
         int panelWidth = getWidth();
         int panelHeight = getHeight();
 
-        // --- Step 1: Create blurred background ---
+        // Step 1: Create blurred background 
         BufferedImage blurred = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D bg = blurred.createGraphics();
         // Stretch image to fill panel for background
@@ -43,13 +54,13 @@ public class ImageBlurPanel extends JPanel {
         // Draw blurred background
         g2.drawImage(blurred, 0, 0, null);
 
-        // --- Step 2: Draw the image at natural size, centered ---
+        // Step 2: Draw the image at natural size, centered 
         int x = (panelWidth - image.getWidth()) / 2;
         int y = (panelHeight - image.getHeight()) / 2;
         g2.drawImage(image, x, y, null);
     }
 
-    // --- Utility method to display multiple images ---
+    // Utility method to display multiple images 
     public static void displayImages(List<BufferedImage> images) {
         for (BufferedImage img : images) {
             JFrame frame = new JFrame("Image with Blurred Edges");
@@ -58,9 +69,9 @@ public class ImageBlurPanel extends JPanel {
             ImageBlurPanel panel = new ImageBlurPanel(img);
             frame.add(panel);
 
-            frame.setSize(800, 600); // initial window size
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            frame.setSize(800, 600); // Initial window size
+            frame.setLocationRelativeTo(null); // Center on screen 
+            frame.setVisible(true); // Make window visible
         }
     }
 }

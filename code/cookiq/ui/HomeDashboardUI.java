@@ -1,4 +1,9 @@
-/* Home Dashboard */
+/** 
+ * HomeDashboardUI.java
+ * 
+ * Provides users with options to navigate to their preferences, meal matching, and liked recipes.
+ * 
+ */
 
 package cookiq.ui;
 

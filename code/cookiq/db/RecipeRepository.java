@@ -1,7 +1,9 @@
 /**
  * RecipeRepository.java
  *
- * Reads the loaded recipes from the MongoDB dataset and converts them into Recipe objects.
+ * Handles reading and writing recipes and user preferences in MongoDB.
+ * Converts documents from MongoDB into Recipe objects when needed.
+ * 
  */
 
 package cookiq.db;
@@ -19,28 +21,26 @@ import com.mongodb.client.MongoDatabase;
 
 import cookiq.models.Recipe;
 
-public class RecipeRepository
-{
+public class RecipeRepository {
+    // Get the MongoDB database connection 
     private static final MongoDatabase db = MongoDBConnection.getDatabase();
 
-    //Insertion
-    //1st param --> table name
-    //2nd param --> a row to be stored
-    public static void insertDocument(String collectionName, Document doc)
-    {
+    // Insert a document into a collection
+    // collectionName --> name of the collection
+    // doc --> the document to insert 
+    public static void insertDocument(String collectionName, Document doc) {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         collection.insertOne(doc);
         System.out.println("Inserted document into " + collectionName + ": " + doc.toJson());
     }
 
-    //Find documents in a collection
-    public static FindIterable<Document> findAll(String collectionName)
-    {
+    // Retrieve all documents from a collection 
+    public static FindIterable<Document> findAll(String collectionName) {
         MongoCollection<Document> collection = db.getCollection((collectionName));
         return collection.find();
     }
 
-    //Query based on preferences
+    // Find documents by filters
     public static List<Document> findByFilter(String collectionName, String... filters) {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         Document filterDoc = new Document();
@@ -51,7 +51,7 @@ public class RecipeRepository
                 String key = parts[0];
                 String value = parts[1];
 
-                // If comma-separated, treat as $in
+                // If the value has commas, treat it as a list ($in)
                 if (value.contains(",")) {
                     filterDoc.append(key, new Document("$in", Arrays.asList(value.split(","))));
                 } else {
@@ -110,19 +110,19 @@ public class RecipeRepository
         MongoCollection<Document> recipes = db.getCollection("recipes");
         Document filter = new Document();
 
-        // Example: match on diet type
+        // Match on diet type if provided 
         if (pref.containsKey("diet")) {
             filter.append("diet", Pattern.compile(
                     Pattern.quote(pref.getString("diet")), Pattern.CASE_INSENSITIVE));
         }
 
-        // Example: match on cuisine
+        // Match on cuisine type if provided 
         if (pref.containsKey("cuisine")) {
             filter.append("cuisine", Pattern.compile(
                     Pattern.quote(pref.getString("cuisine")), Pattern.CASE_INSENSITIVE));
         }
 
-        // Example: avoid certain ingredients
+        // Exclude ingredients if provided
         if (pref.containsKey("avoidIngredients")) {
             @SuppressWarnings("unchecked")
             List<String> avoid = (List<String>) pref.get("avoidIngredients");
@@ -137,23 +137,24 @@ public class RecipeRepository
         return results;
     }
     
-public List<Recipe> getAllRecipes() {
-    List<Recipe> recipes = new ArrayList<>();
-    
-    try {
-        MongoCollection<Document> collection = db.getCollection("recipes");
+    // Get all recipes and convert them to Recipe objects 
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
         
-        for (Document doc : collection.find()) {
-            Recipe recipe = Recipe.parseRecipe(doc);
-            recipes.add(recipe);
+        try {
+            MongoCollection<Document> collection = db.getCollection("recipes");
+            
+            for (Document doc : collection.find()) {
+                Recipe recipe = Recipe.parseRecipe(doc);
+                recipes.add(recipe);
+            }
+            
+            System.out.println("Successfully loaded " + recipes.size() + " recipes from MongoDB");
+        } catch (Exception e) {
+            System.err.println("Error fetching recipes from MongoDB: " + e.getMessage());
+            e.printStackTrace();
         }
         
-        System.out.println("Successfully loaded " + recipes.size() + " recipes from MongoDB");
-    } catch (Exception e) {
-        System.err.println("Error fetching recipes from MongoDB: " + e.getMessage());
-        e.printStackTrace();
+        return recipes;
     }
-    
-    return recipes;
-}
 }

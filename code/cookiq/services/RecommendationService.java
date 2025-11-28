@@ -4,7 +4,8 @@
  * Implements logic to rank recipes based on user preferences
  * and provide the best recommendations.
  * 
- * ❗❗❗--> Implement a secondary list for the next closest recipe results where 4/5 preferences match.
+ * Implement a secondary list for the next closest recipe results where 4/5 preferences match.
+ * 
  */
 
 
@@ -20,16 +21,6 @@ import cookiq.models.Recipe;
 import cookiq.models.User;
 import cookiq.utils.RecipeRanker;
 
-/**
- * RecommendationService.java
- *
- * Implements logic to rank recipes based on user preferences
- * and provide the best recommendations.
- * 
- * UPDATED: Now uses real MongoDB data instead of dummy recipes
- * UPDATED: Dietary restrictions and health goals are mandatory filters
- * UPDATED: Uses RecipeRanker for scoring remaining preferences
- */
 public class RecommendationService {
     private List<Recipe> allRecipes; // Now stores real recipes from MongoDB
     private RecipeRepository recipeRepository; // Handles MongoDB connection
@@ -53,19 +44,14 @@ public class RecommendationService {
         return null;
     }
 
-    /**
-     * Load recipes from MongoDB instead of using dummy data
-     */
+    // Load recipes from MongoDB 
     private void loadRecipesFromMongoDB() {
         this.allRecipes = recipeRepository.getAllRecipes();
         this.recipeRanker.setRecipeDatabase(this.allRecipes);
         System.out.println("Loaded " + this.allRecipes.size() + " recipes from MongoDB");
     }
     
-    /**
-     * Get recommendations with mandatory dietary and health goal filtering
-     * then ranked by other preferences
-     */
+    // Get recommendations with mandatory dietary and health goal filtering then ranked by other preferences
     public List<Recipe> getRecommendations(Preferences preferences, User user) {
         List<Recipe> matches = new ArrayList<>();
 
@@ -112,11 +98,7 @@ public class RecommendationService {
         return topRecommendations;
     }
 
-    
-    /**
-     * MANDATORY FILTERING: Recipes MUST match dietary restrictions AND health goals
-     * This replaces the old matchesAllPreferences logic
-     */
+     // MANDATORY FILTERING: Recipes MUST match dietary restrictions, health goals, and available ingredients
     private List<Recipe> filterByMandatoryPreferences(Preferences preferences) {
         List<Recipe> filtered = new ArrayList<>();
         
@@ -134,10 +116,7 @@ public class RecommendationService {
         return filtered;
     }
     
-    /**
-     * Dietary restrictions are MANDATORY - recipe must match user's selections
-     * UPDATED: Uses health_goals field from MongoDB instead of calories
-     */
+    // Dietary restrictions are MANDATORY - recipe must match user's selections
     private boolean matchesDietaryRestrictions(Recipe recipe, Preferences prefs) {
         String dietaryCategory = recipe.getDietaryCategory().toLowerCase();
         
@@ -169,18 +148,15 @@ public class RecommendationService {
             String lowerIng = ing.toLowerCase().trim();
             for (String recipeIng : recipeIngredients) {
                 if (recipeIng.toLowerCase().contains(lowerIng)) {
-                    return true; // found a match
+                    return true; // Found a match
                 }
             }
         }
 
-        return false; // no match found
+        return false; // No match found
     }
         
-    /**
-     * Health goals are MANDATORY - recipe must match user's selections  
-     * UPDATED: Uses health_goals field from MongoDB instead of calories
-     */
+    // Health goals are MANDATORY. Recipes must match user's selections  
     private boolean matchesHealthGoals(Recipe recipe, Preferences prefs) {
         String recipeHealth = recipe.getHealthGoals().toLowerCase();
         
@@ -197,31 +173,23 @@ public class RecommendationService {
         return false;
     }
     
-    /**
-     * Refresh recipes from MongoDB (useful for "request new suggestions")
-     */
+    // Refresh recipes from MongoDB (useful for "request new suggestions")
     public void refreshRecipes() {
         loadRecipesFromMongoDB();
     }
     
-    /**
-     * Set recipe database (kept for compatibility with existing code)
-     */
+    // Set recipe database (kept for compatibility with existing code)
     public void setRecipeDatabase(List<Recipe> recipes) {
         this.allRecipes = new ArrayList<>(recipes);
         this.recipeRanker.setRecipeDatabase(this.allRecipes);
     }
     
-    /**
-     * Get all recipes without filtering (for debugging or admin use)
-     */
+    // Get all recipes without filtering (for debugging or admin use)
     public List<Recipe> getAllRecipes() {
         return new ArrayList<>(allRecipes);
     }
     
-    /**
-     * Get count of total recipes loaded from MongoDB
-     */
+    // Get count of total recipes loaded from MongoDB
     public int getTotalRecipeCount() {
         return allRecipes.size();
     }

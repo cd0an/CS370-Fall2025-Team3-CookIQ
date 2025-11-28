@@ -1,4 +1,9 @@
-/* View All Liked Recipes UI */
+/** 
+ * LikedRecipeUI.java
+ * 
+ * UI component for displaying a user's liked (favorite) recipes in a scrollable manner.
+ * 
+ */
 
 package cookiq.ui;
 

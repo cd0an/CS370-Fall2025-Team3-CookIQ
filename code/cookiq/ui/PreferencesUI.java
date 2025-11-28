@@ -3,6 +3,7 @@
  *
  * Displays questions for users to select dietary restrictions, health goals,
  * preferred cuisines, cooking time, budget, and available ingredients.
+ * 
  */
 
 package cookiq.ui;

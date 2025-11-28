@@ -1,3 +1,8 @@
+/** MongoDBConnection.java 
+ * 
+ * Handles connecting to the MongoDB database.
+*/
+
 package cookiq.db;
 
 import java.io.InputStream; // Used to read the config file
@@ -22,11 +27,11 @@ public class MongoDBConnection {
                         .getClassLoader()
                         .getResourceAsStream("config.properties");
 
-                // Check if file exists
+                // Check if config.properties file exists
                 if (input == null)
                     throw new RuntimeException("config.properties not found in classpath!");
 
-                // Read properties from the file
+                // Load properties from the file
                 prop.load(input);
 
                 // Get the MongoDB URI and database name

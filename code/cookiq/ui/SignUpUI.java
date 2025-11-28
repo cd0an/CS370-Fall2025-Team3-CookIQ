@@ -1,3 +1,12 @@
+/**
+ * SignUpUI.java
+ * 
+ * User registration interface for CookIQ application.
+ * Allows new users to create an account by providing a username and password.
+ * Validates input and interacts with UserService for registration logic.
+ * 
+ */
+
 package cookiq.ui;
 
 import java.awt.Color;
@@ -34,18 +43,21 @@ public class SignUpUI extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPasswordField confirmField;
-    private JLabel statusLabel;
+    private JLabel statusLabel; 
     private final UserService userService;
 
     public SignUpUI() {
-        userService = new UserService();
+        userService = new UserService(); // Initialize UserService
 
+        // Panel setup
         setBackground(new Color(245, 240, 235));
         setLayout(new GridBagLayout());
 
+        // Card panel for registration frame 
         JPanel card = createCardPanel(420, 450);
         add(card);
 
+        // Title and subtitle
         JLabel title = createTitle("Register");
         JLabel subtitle = createSubtitle("Sign up to continue cooking!");
         card.add(title);
@@ -53,6 +65,7 @@ public class SignUpUI extends JPanel {
         card.add(subtitle);
         card.add(Box.createVerticalStrut(25));
 
+        // Input fields 
         usernameField = createLabeledField(card, "Username", "Choose a username");
         passwordField = createLabeledPasswordField(card, "Password", "Enter a password");
         confirmField = createLabeledPasswordField(card, "Confirm Password", "Re-enter your password");
@@ -93,12 +106,14 @@ public class SignUpUI extends JPanel {
         card.add(Box.createVerticalStrut(5));
 
 
-        // Status Label
+        // Status Label for feedback
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(statusLabel);
     }
+
+    // ==================== Handle Sign-Up ====================
 
     private void handleSignUp() {
         String username = usernameField.getText().trim();
@@ -130,12 +145,14 @@ public class SignUpUI extends JPanel {
         new MainFrame(newUser).setVisible(true);
     }
 
+    // ==================== Message Status ====================
+
     private void setStatus(String msg, boolean success) {
         statusLabel.setText(msg);
         statusLabel.setForeground(success ? new Color(50,120,70) : new Color(160,40,40));
     }
 
-    // === Helpers ===
+    // ==================== Component Helpers ====================
     private JPanel createCardPanel(int width, int height) {
         JPanel card = new JPanel();
         card.setBackground(Color.WHITE);

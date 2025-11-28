@@ -3,7 +3,8 @@
  *
  * Handles the login screen for CookIQ.
  * Collects username and password and passes them to UserService.
- * ChatGPT was used to help provide suggestions and implementations 
+ * ChatGPT was used here to help provide suggestions and implementations.
+ * 
  */
 
 package cookiq.ui;
@@ -40,19 +41,23 @@ import cookiq.services.UserService;
 import cookiq.services.UserSession;
 
 public class LoginUI extends JPanel {
-    private JTextField usernameField;
+    private JTextField usernameField; 
     private JPasswordField passwordField;
     private JLabel statusLabel;
     private final UserService userService;
 
     public LoginUI() {
-        userService = new UserService();
+        userService = new UserService(); // Initialize UserService
+
+        // Panel setup
         setBackground(new Color(245, 240, 235));
         setLayout(new GridBagLayout());
 
+        // Card panel for login form 
         JPanel card = createCardPanel(420, 400);
         add(card);
 
+        // Title and subtitle 
         JLabel title = createTitle("Sign-In");
         JLabel subtitle = createSubtitle("Welcome to CookIQ! Please enter your details.");
         card.add(title);
@@ -60,10 +65,11 @@ public class LoginUI extends JPanel {
         card.add(subtitle);
         card.add(Box.createVerticalStrut(25));
 
+        // Input fields for username and password 
         usernameField = createLabeledField(card, "Username", "Enter your username");
         passwordField = createLabeledPasswordField(card, "Password", "Enter your password");
 
-        // Buttons 
+        // Buttons panel 
         JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         loginPanel.setBackground(Color.WHITE);
 
@@ -105,15 +111,15 @@ public class LoginUI extends JPanel {
         card.add(linkWrapper);
         card.add(Box.createVerticalStrut(8));
 
-        // === Status Label ===
+        // Status label for feedback
         statusLabel = new JLabel(" ", SwingConstants.CENTER);
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(statusLabel);
     }
 
-    // ==========================================================
-    // HANDLE LOGIN 
+    // ==================== Handle Login ====================
+
     private void handleLogin() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
@@ -129,7 +135,7 @@ public class LoginUI extends JPanel {
             return;
         }
 
-        // Build User object
+        // Load full user data
         User currentUser = new User(username, "");
 
         // Load liked/disliked recipes + preferences
@@ -139,9 +145,9 @@ public class LoginUI extends JPanel {
             currentUser.addDislikedRecipe(recipe);
         currentUser.getPreferences().copyPrefs(userService.getUserPreferences(username));
 
-        // Set & persist session
+        // Start session and persist 
         UserSession session = UserSession.getInstance();
-        session.login(currentUser); // this automatically saves to session.json
+        session.login(currentUser); // This automatically saves to session.json
 
         setStatus("Login successful! Redirecting...", true);
 
@@ -153,8 +159,8 @@ public class LoginUI extends JPanel {
         new MainFrame(currentUser).setVisible(true);
     }
 
-    // ==========================================================
-    // HANDLE GUEST LOGIN 
+    // ==================== Handle Guest Login ====================
+
     private void handleGuestLogin() {
         UserSession.getInstance().loginAsGuest();
         JOptionPane.showMessageDialog(LoginUI.this,
@@ -169,13 +175,15 @@ public class LoginUI extends JPanel {
         new MainFrame(UserSession.getInstance().getCurrentUser()).setVisible(true);
     }
 
-    // ==========================================================
-    // HELPERS 
+    // ==================== Message Status ====================
+
     private void setStatus(String msg, boolean success) {
         statusLabel.setText(msg);
         statusLabel.setForeground(success ? new Color(50, 120, 70) : new Color(160, 40, 40));
     }
 
+    // ==================== Component Helpers ====================
+    
     private JPanel createCardPanel(int width, int height) {
         JPanel card = new JPanel();
         card.setBackground(Color.WHITE);

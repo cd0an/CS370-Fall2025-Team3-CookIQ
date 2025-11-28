@@ -1,4 +1,9 @@
-/* Navbar: Home, Prefereneces, View Liked Recipes, Meal Match, Log In or Out */
+/**
+ * NavbarPanel.java
+ * 
+ * Navbar: Home, Prefereneces, View Liked Recipes, Meal Match, Login/out 
+ * 
+ */
 
 package cookiq.ui;
 
@@ -68,6 +73,7 @@ public class NavbarPanel extends JPanel {
         }
     }
 
+    // Update login button text based on user session status
     public void updateLoginStatus() {
         boolean isGuest = UserSession.getInstance().isGuest();
 

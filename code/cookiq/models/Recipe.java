@@ -1,8 +1,9 @@
 /**
  * Recipe.java
  *
- * Represents a recipe with its title, cuisine, cost, cooking time,
- * ingredients, instructions, and nutrition facts.
+ * Represents a recipe with its ID, title, cuisine, cost, cooking time,
+ * ingredients, instructions, and nutritional facts.
+ * 
  */
 
 package cookiq.models;
@@ -13,20 +14,21 @@ import java.util.List;
 import org.bson.Document;
 
 public class Recipe {
-    private String id;
-    private String name;
-    private List<String> ingredients;
-    private List<String> directions;
-    private List<String> NER; //Raw ingredients
-    private String dietaryCategory;
-    private String healthGoals; // ONLY using healthGoals - no calories
-    private String cuisine;
-    private int cookTime;
-    private double cost;
+    private String id; // MongoDB document ID 
+    private String name; // Recipe title 
+    private List<String> ingredients; // Ingredients used in the recipe 
+    private List<String> directions; // Cooking instructions
+    private List<String> NER; // Raw ingredients extracted via NER
+    private String dietaryCategory; // Dietary restriction cateogy 
+    private String healthGoals; // Health goals 
+    private String cuisine; // Cuisine type
+    private int cookTime; // Maximum cook time in minutes
+    private double cost; // Average cost per meal
     
+    // Deafault constructor
     public Recipe() {};
 
-    // REMOVED calories completely - only using healthGoals
+    // Full constructor with MongoDB ID
     public Recipe(String id, String name, String cuisine, String dietaryCategory, 
     int cookTime, double cost, String healthGoals, List<String> ingredients,
     List<String> directions, List<String> NER) {
@@ -42,6 +44,7 @@ public class Recipe {
         this.healthGoals = healthGoals;
     }
 
+    // Contructor without MongoDB ID (for new recipes not yet in MongoDB)
     public Recipe(String name, String cuisine, String dietaryCategory, 
     int cookTime, double cost, String healthGoals, List<String> ingredients,
     List<String> directions, List<String> NER) {
@@ -77,15 +80,14 @@ public class Recipe {
     public String getName() { return name; }
     public String getCuisine() { return cuisine; }
     public String getDietaryCategory() { return dietaryCategory; }
-    public String getHealthGoals() { return healthGoals; } // This is what RecommendationService uses
+    public String getHealthGoals() { return healthGoals; } 
     public int getCookTime() { return cookTime; }
     public double getCost() { return cost; }
     public List<String> getIngredients() {return ingredients;}
     public List<String> getDirections() {return directions;}
     public List<String> getNER() {return NER;}
 
-    // NO getCalories() method - we don't have calories data
-
+    // Static method to parse a Recipe from a MongoDB Document
     public static Recipe parseRecipe(Document doc) {
         // Extract and sanitize fields
         String id = doc.getObjectId("_id").toHexString();
@@ -97,7 +99,7 @@ public class Recipe {
         List<String> directions = (List<String>) doc.get("directions");
         List<String> NER = (List<String>) doc.get("NER");
 
-        // Parse cook time (e.g., "> 30 min" → 30)
+        // Parse cook time from string (e.g., "> 30 min" → 30)
         int cookTime = 0;
         String timeString = doc.getString("max_cook_time");
         if (timeString != null) {
@@ -107,7 +109,7 @@ public class Recipe {
             }
         }
 
-        // Parse cost (e.g., "$10 - $20" → average 15.0)
+        // Parse cost from string (e.g., "$10 - $20" → average 15.0)
         double cost = 0.0;
         String costString = doc.getString("budget_per_meal");
         if (costString != null) {
@@ -119,13 +121,13 @@ public class Recipe {
             }
         }
 
-        // Create and return Recipe object - NO calories, only healthGoals
+        // Create and return Recipe object 
         return new Recipe(id, name, cuisine, dietaryCategory, cookTime, cost, healthGoals, ingredients, directions, NER);
     }
 
-    // Helper to parse array strings like "[a, b, c]"
+    // Helper function to parse array strings like "[a, b, c]" into List<String>
     private static List<String> parseArray(String arrayString) {
-        arrayString = arrayString.replaceAll("^\\[|]$", "");
+        arrayString = arrayString.replaceAll("^\\[|]$", ""); // Remove brackets
         String[] items = arrayString.split(", (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
         List<String> list = new ArrayList<>();
         for (String item : items) {

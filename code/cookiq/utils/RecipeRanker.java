@@ -3,6 +3,7 @@
  *
  * Contains helper methods to score and rank recipes based on
  * how well they match user preferences.
+ * 
  */
 
 package cookiq.utils;
@@ -15,19 +16,18 @@ import cookiq.models.Preferences;
 import cookiq.models.Recipe;
 
 public class RecipeRanker {
-    private List<Recipe> recipeDatabase;
+    private List<Recipe> recipeDatabase; // The list of recipes that can be recommended 
     
+    // Constructor initializes with an empty recipe database
     public RecipeRanker() {
         this.recipeDatabase = new ArrayList<>();
     }
     
-    /**
-     * Get recipe recommendations sorted by match score
-     * NOTE: Dietary restrictions and health goals are already filtered as mandatory
-     */
+    // Get recipe recommendations sorted by match score
     public List<Recipe> getRecommendations(Preferences preferences) {
         List<ScoredRecipe> scoredRecipes = new ArrayList<>();
         
+        // Calculate scores for each recipe based on preferences
         for (Recipe recipe : recipeDatabase) {
             int score = calculateMatchScore(recipe, preferences);
             scoredRecipes.add(new ScoredRecipe(recipe, score));
@@ -36,7 +36,7 @@ public class RecipeRanker {
         // Sort recipes by score in descending order (best matches first)
         scoredRecipes.sort(Comparator.comparing(ScoredRecipe::getScore).reversed());
         
-        // Extract sorted recipes 
+        // Extract sorted recipes into a plain list to return 
         List<Recipe> recommendations = new ArrayList<>();
         for (ScoredRecipe scored : scoredRecipes) {
             recommendations.add(scored.getRecipe());
@@ -46,8 +46,8 @@ public class RecipeRanker {
     }
     
     /**
-     * Calculate score based on non-mandatory preferences
-     * Dietary restrictions, health goals, and available ingredients are already handled as mandatory filters
+     * Calculate score based on non-mandatory preferences.
+     * Dietary restrictions, health goals, and available ingredients are already handled as mandatory filters. 
      */
     private int calculateMatchScore(Recipe recipe, Preferences prefs) {
         int score = 0;
@@ -85,9 +85,10 @@ public class RecipeRanker {
             }
         }
         
-        return Math.max(score, 0);
+        return Math.max(score, 0); // Ensure score is not negative
     }
     
+    // Helper class to hold a recipe and its match score 
     private static class ScoredRecipe {
         private Recipe recipe;
         private int score;
@@ -101,6 +102,7 @@ public class RecipeRanker {
         public int getScore() { return score; }
     }
     
+    // Method to set the recipe database (for testing or initialization)
     public void setRecipeDatabase(List<Recipe> recipes) {
         this.recipeDatabase = new ArrayList<>(recipes);
     }

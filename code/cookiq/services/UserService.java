@@ -1,8 +1,12 @@
 /**
+ * UserService.java
+ * 
  * UserService handles all account operations:
- * - Register new users
- * - Login existing users
- * - Save/load users from a file
+ * - Register and login users
+ * - Save/load user preferences
+ * - Manage liked/disliked recipes
+ * - Fetch full user objects with preferences 
+ * 
  */
 
 package cookiq.services;
@@ -21,17 +25,24 @@ import cookiq.utils.PasswordUtils;
 import cookiq.utils.PreferencesUtils;
 
 public class UserService {
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; // Call the UserRepository for DB operations
 
+    // Singleton pattern
     public UserService() {
         userRepository = new UserRepository();
     }
 
     // ==================== User Registration/Login ====================
+
+    // Register a new user with username and password 
     public boolean registerUser(String username, String password) {
         return userRepository.registerUser(username, password);
     }
 
+    /** 
+     * Attempt to login an existing user. 
+     * Compares hashed password with stored hash using secure comparison. 
+    */
     public boolean loginUser(String username, String password) {
         if (username == null || password == null) return false;
         username = username.trim().toLowerCase();
@@ -54,11 +65,16 @@ public class UserService {
     }
 
     // ==================== Full User Fetch ====================
+
+    /** 
+     * Get a full User object by username 
+     * Loads liked/disliked recipes and preferences.
+     */
     public User getUserByUsername(String username) {
         Document userDoc = userRepository.getUser(username);
         if (userDoc == null) return null;
 
-        User user = new User(username, ""); // password not needed
+        User user = new User(username, ""); // Password not needed for new users 
 
         List<String> liked = userDoc.getList("likedRecipes", String.class);
         if (liked != null) user.getLikedRecipes().addAll(liked);
@@ -80,6 +96,8 @@ public class UserService {
     }
 
     // ==================== Liked Recipes ====================
+
+    // Add a recipe to user's liked list
     public boolean addLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -96,6 +114,7 @@ public class UserService {
         return false;
     }
 
+    // Get names of all recipes liked by the user 
     public List<String> getLikedRecipes(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new ArrayList<>();
@@ -103,6 +122,7 @@ public class UserService {
         return likedRecipes != null ? likedRecipes : new ArrayList<>();
     }
 
+    // Remove a recipe from a user's liked list 
     public boolean removeLikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -118,6 +138,7 @@ public class UserService {
         return false;
     }
 
+    // Get full Recipe objects for all liked recipes 
     public List<Recipe> getLikedRecipesFull(String username) {
         List<String> likedNames = getLikedRecipes(username);
         List<Recipe> likedRecipes = new ArrayList<>();
@@ -131,6 +152,8 @@ public class UserService {
     }
 
     // ==================== Disliked Recipes ====================
+
+    // Add a recipe to user's disliked list
     public boolean addDislikedRecipe(String username, String recipeName) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -147,6 +170,7 @@ public class UserService {
         return false;
     }
 
+    // Get names of all recipes disliked by the user
     public List<String> getDislikedRecipes(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new ArrayList<>();
@@ -155,6 +179,8 @@ public class UserService {
     }
 
     // ==================== User Preferences ====================
+
+    // Save a user's preferences to the database
     public boolean saveUserPreferences(String username, Preferences prefs) {
         Document user = userRepository.getUser(username);
         if (user == null) return false;
@@ -166,6 +192,7 @@ public class UserService {
         return true;
     }
 
+    // Retrieve a user's preferences from the database
     public Preferences getUserPreferences(String username) {
         Document user = userRepository.getUser(username);
         if (user == null) return new Preferences();
@@ -180,6 +207,8 @@ public class UserService {
     }
 
     // ==================== Utility ====================
+
+    // Print a user's preferences to console for debugging
     public void printPreferences(Preferences prefs) {
         System.out.println("Vegetarian:" + prefs.isVegetarian());
         System.out.println("Keto:" + prefs.isKeto());

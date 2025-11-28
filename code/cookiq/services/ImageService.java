@@ -1,3 +1,11 @@
+/**
+ * ImageService.java
+ * 
+ * Service to fetch and display images for recipes using Google Custom Search API.
+ * Falls back to local images if API fails or rate limit is hit.
+ * 
+ */
+
 package cookiq.services;
 
 import java.awt.Color;
@@ -31,24 +39,15 @@ import org.json.JSONObject;
 
 import cookiq.models.Recipe; 
 
-public class ImageService 
-{
-    /**
-     * API_KEY --> Api key
-     * AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w
-     * AIzaSyAf3Pj9kGdiCx5wtnM0Q0xpS6hVZPAGinw
-     * TEST: AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA
-     * 
-     * CX --> Search Engine ID
-     * 83632e2b5a7c14e72
-     * d71afe979ffb143fd     * 
-     */
+public class ImageService {
+    // Google API credentials 
     private static final String API_KEY = "AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA";
     private static final String CX = "d71afe979ffb143fd";
 
-    List<BufferedImage> image_list = new ArrayList<>();
-    int img_index = 0;
+    List<BufferedImage> image_list = new ArrayList<>(); // Stores fetched images
+    int img_index = 0; // Current image index for display
 
+    // Fetch images from Google Custom Search API
     public List<BufferedImage> getImage(String recipe_name) {
         image_list.clear(); // Clear old images 
 
@@ -87,15 +86,13 @@ public class ImageService
             System.out.println("Google API failed or rate limit hit: " + e.getMessage());
         }
 
-        // --- Local fallback using recipe_name ---
+        // Local fallback if no images fetched
         if (image_list.isEmpty()) {
             System.out.println("Using local fallback images...");
             String folderPath = "Recipe_Images"; // folder in your VS Code project
             File folder = new File(folderPath);
             if(folder.exists()) {
                 String recipeFileName = recipe_name.toLowerCase().replaceAll("\\s+", "_") + ".jpg"; 
-                // Example: "Chocolate Cake" -> "chocolate_cake.jpg"
-
                 File localImage = new File(folder, recipeFileName);
                 if(localImage.exists()) {
                     try {
@@ -113,7 +110,7 @@ public class ImageService
         return image_list;
     }
 
-
+    // Display a single image in a JFrame
     public JLabel displayImage(List<BufferedImage> image_list, String RECIPE_NAME, int WIDTH, int HEIGHT) {
         if (image_list == null || image_list.isEmpty()) {
             return null;
@@ -121,10 +118,10 @@ public class ImageService
 
         BufferedImage img = image_list.get(img_index++);
         if(img_index >= image_list.size()){
-            img_index = 0; //Loop to first image
+            img_index = 0; // Loop to first image
         } 
 
-        //Scale down but maintain aspect ratio
+        // Scale down but maintain aspect ratio
         int scaleWidth = WIDTH;
         int scaleHeight = HEIGHT;
 
@@ -132,12 +129,12 @@ public class ImageService
         double targetAspectRatio = (double) WIDTH / HEIGHT;
 
         if(imageAspectRatio > targetAspectRatio){
-            //Wider image
+            // Wider image
             scaleHeight = (int)(WIDTH / imageAspectRatio);
         }
         else
         {
-            //Taller image
+            // Taller image
             scaleWidth = (int)(HEIGHT * imageAspectRatio);
         }
 
@@ -145,44 +142,47 @@ public class ImageService
         ImageIcon icon = new ImageIcon(scaled_img); 
         JLabel label = new JLabel(icon);
 
-        //Create JFrame to show image
+        // Create JFrame to show image
         JFrame frame = new JFrame(RECIPE_NAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
 
-        //Center image if it doesn't fill the space
+        // Center image if it doesn't fill the space
         int x = (WIDTH - scaleWidth) / 2;
         int y = (HEIGHT - scaleHeight) / 2;
 
         label.setBounds(0, 0, scaleWidth, scaleHeight);
         frame.add(label);
-        frame.setSize(WIDTH + 16, HEIGHT + 39); //Window boarder
+        frame.setSize(WIDTH + 16, HEIGHT + 39); // Window boarder
         frame.setResizable(false);
         frame.setVisible(true);
 
         return label;
     }
 
+    // ========== Image Processing  ==========
+
+    // Apply blur to image
     private BufferedImage blurImage(BufferedImage img, int blurRadius) {
-        //Downscale image for faster blur
+        // Downscale image for faster blur
         int downscaleFactor = 3;
         int smallWidth = Math.max(1, img.getWidth() / downscaleFactor);
         int smallHeight = Math.max(1, img.getHeight() / downscaleFactor);
         
-        //Create a smaller version of the og image
+        // Create a smaller version of the og image
         BufferedImage small = new BufferedImage(smallWidth, smallHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = small.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2d.drawImage(img, 0, 0, smallWidth, smallHeight, null); //Draw the downscaled ver.
         g2d.dispose();
         
-        //Apply Gaussian-like blur 3 times
+        // Apply Gaussian-like blur 3 times
         BufferedImage blurred = small;
         for(int i = 0; i < 3; i++) {
             blurred = applyGaussianBlur(blurred, blurRadius);
         }
         
-        //Scale back to original size
+        // Scale back to original size
         BufferedImage result = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = result.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -192,17 +192,18 @@ public class ImageService
         return result;
     }
 
+    // Horizontal and vertical Gaussian-like blur
     private BufferedImage applyGaussianBlur(BufferedImage src, int radius) {
         int width = src.getWidth();
         int height = src.getHeight();
         BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
-        //Get 1D array of all pixels from og img
+        // Get 1D array of all pixels from og img
         int[] srcPixels = new int[width * height];
         int[] destPixels = new int[width * height];
         src.getRGB(0, 0, width, height, srcPixels, 0, width);
         
-        //Horizontal pass - blurring along the X-axis
+        // Horizontal pass - blurring along the X-axis
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
                 int r = 0, g = 0, b = 0, count = 0;
@@ -224,7 +225,7 @@ public class ImageService
             }
         }
         
-        //Vertical pass - blurring along the Y-axis
+        // Vertical pass - blurring along the Y-axis
         int[] tempPixels = new int[width * height];
 
         for(int x = 0; x < width; x++) {
@@ -252,20 +253,21 @@ public class ImageService
         return dest;
     }
 
+    // Get scaled image with blurred background
     public ImageIcon getScaledImage(BufferedImage img, int WIDTH, int HEIGHT) {
         if(img == null) {
             return null;
         }
         
-        //Create blurred background
+        // Create blurred background
         BufferedImage blurred = blurImage(img, 15);
         BufferedImage background = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = background.createGraphics();
         
-        //Draw scaled blurred image to fill background
+        // Draw scaled blurred image to fill background
         g2d.drawImage(blurred, 0, 0, WIDTH, HEIGHT, null);
         
-        //Calculate scaled dimensions while maintaining aspect ratio
+        // Calculate scaled dimensions while maintaining aspect ratio
         int scaledWidth = WIDTH;
         int scaledHeight = HEIGHT;
         
@@ -273,19 +275,19 @@ public class ImageService
         double targetAspectRatio = (double) WIDTH / HEIGHT;
         
         if(imageAspectRatio > targetAspectRatio) {
-            //Image is wider
+            // Image is wider
             scaledHeight = (int)(WIDTH / imageAspectRatio);
         } 
         else 
         {
-            //Image is taller
+            // Image is taller
             scaledWidth = (int)(HEIGHT * imageAspectRatio);
         }
         
-        //Scale original image (unblurred)
+        // Scale original image (unblurred)
         Image scaledImage = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
         
-        //Center and draw scaled image on top of blurred background
+        // Center and draw scaled image on top of blurred background
         int x = (WIDTH - scaledWidth) / 2;
         int y = (HEIGHT - scaledHeight) / 2;
         g2d.drawImage(scaledImage, x, y, null);
@@ -294,14 +296,15 @@ public class ImageService
         return new ImageIcon(background);
     }
 
+    // Display a recipe image in a panel for full recipe view 
     public void displayRecipeImageFR(JPanel leftPanel, String recipeName, int width, int height) {
         ImageService imgService = new ImageService();
         
-        //Load images for a recipe
+        // Load images for a recipe
         List<BufferedImage> images = imgService.getImage(recipeName);
         if(images == null || images.isEmpty()) {
             System.out.println("No images found.");
-            //Fallback to placeholder
+            // Fallback to placeholder
             JLabel imageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
             imageLabel.setOpaque(true);
             imageLabel.setBackground(Color.LIGHT_GRAY);
@@ -314,7 +317,7 @@ public class ImageService
             return;
         }
         
-        //Get scaled image with blurred background
+        // Get scaled image with blurred background
         ImageIcon scaledIcon = imgService.getScaledImage(images.get(0), width, height);
         
         JLabel imageLabel = new JLabel(scaledIcon);
@@ -326,6 +329,7 @@ public class ImageService
         leftPanel.add(Box.createVerticalStrut(20));
     }
 
+    // Display a recipe image in a liked-recipe card 
     public void displayRecipeImageLiked(JPanel card, String recipeName) {
         ImageService imgService = new ImageService();
         
@@ -358,6 +362,7 @@ public class ImageService
         card.add(Box.createVerticalStrut(15));
     }
 
+    // Display recipe preview image 
     public JLabel displayRecipeImagePreview(Recipe recipe) {
         List<BufferedImage> images = getImage(recipe.getName());
         JLabel imageLabel;

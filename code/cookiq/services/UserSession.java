@@ -1,30 +1,41 @@
 /**
+ * UserSession.java
+ * 
  * Manages the current session (logged-in user or guest).
  * Singleton pattern ensures one global session across the app.
+ * 
  */
 
 package cookiq.services;
 
-import cookiq.models.User;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+
 import org.json.JSONObject;
-import java.io.*;
+
+import cookiq.models.User;
 
 public class UserSession {
-    private static UserSession instance;
-    private User currentUser;
-    private boolean guestMode;
-    private static final String SESSION_FILE = "session.json";
+    private static UserSession instance; // Singleton instance
+    private User currentUser; // Currently logged-in user
+    private boolean guestMode; // True if in guest mode
+    private static final String SESSION_FILE = "session.json"; // Session persistence file
 
-    private UserSession() {
-    }
+    // Private constructor for Singleton
+    private UserSession() {}
 
+    // Get the singleton instance of UserSession
     public static synchronized UserSession getInstance() {
         if (instance == null)
             instance = new UserSession();
         return instance;
     }
 
-    /** Log in a registered user */
+    // ==================== User Registration/Login ====================
+
+    // Log in a registered user 
     public void login(User user) {
         this.currentUser = user;
         this.guestMode = false;
@@ -32,7 +43,7 @@ public class UserSession {
         System.out.println("Session started for: " + user.getUsername());
     }
 
-    /** Start guest session */
+    // Start a guest session (no user account)
     public void loginAsGuest() {
         this.currentUser = null;
         this.guestMode = true;
@@ -40,7 +51,7 @@ public class UserSession {
         System.out.println("Guest session started.");
     }
 
-    /** Log out completely */
+    // Log out completely and clear session 
     public void logout() {
         System.out.println("Session ended for: " + getUsernameOrGuest());
         this.currentUser = null;
@@ -48,30 +59,37 @@ public class UserSession {
         clearSavedSession();
     }
 
+    // ==================== Session State ====================
+
+    // Check if a registered user is logged in 
     public boolean isLoggedIn() {
         return currentUser != null && !guestMode;
     }
 
+    // Check if the current session is a guest session 
     public boolean isGuest() {
         return guestMode;
     }
 
+    // Get the current user object (null if guest)
     public User getCurrentUser() {
         return currentUser;
     }
 
+    // Set the current user manually 
     public void setCurrentUser(User user) {
         this.currentUser = user;
         this.guestMode = user == null || "Guest".equals(user.getUsername());
     }
 
+    // Return username if logged in, or "Guest" if in guest mode
     public String getUsernameOrGuest() {
         return isLoggedIn() ? currentUser.getUsername() : "Guest";
     }
 
-    // === Session Persistence ===
+    // ==================== Session Persistence ====================
 
-    /** Save session to session.json */
+    // Save the current session to session.json
     public void saveSession() {
         try (FileWriter writer = new FileWriter(SESSION_FILE)) {
             JSONObject json = new JSONObject();
@@ -89,7 +107,7 @@ public class UserSession {
         }
     }
 
-    /** Load session from session.json */
+    // Load session from session.json
     public void loadSession() {
         File f = new File(SESSION_FILE);
         if (!f.exists())
@@ -118,7 +136,7 @@ public class UserSession {
         }
     }
 
-    /** Delete session.json */
+    // Delete the saved session file
     public void clearSavedSession() {
         new File(SESSION_FILE).delete();
     }

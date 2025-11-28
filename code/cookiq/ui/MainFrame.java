@@ -1,4 +1,9 @@
-/* Sets up the window, keeps the navbar at the top, and displays the main content panel */
+/**
+ * MainFrame.java
+ * 
+ * Sets up the window, keeps the navbar at the top, and displays the main content panel 
+ * 
+ */
 
 package cookiq.ui;
 

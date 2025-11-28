@@ -179,7 +179,7 @@ public class RecipeDetailsUI extends JPanel {
         instructionsPanel.removeAll();
         instructionsPanel.add(createTextAreaPanel("Instructions", recipe.getDirections(), 150));
 
-         splitPane.setRightComponent(splitPane.getRightComponent()); // force layout refresh
+         splitPane.setRightComponent(splitPane.getRightComponent()); // Force layout refresh
 
         revalidate();
         repaint();
