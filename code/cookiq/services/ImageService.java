@@ -40,6 +40,9 @@ import org.json.JSONObject;
 import cookiq.models.Recipe; 
 
 public class ImageService {
+    //API Key 1: AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA
+    //API Key 2: AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w
+    
     // Google API credentials 
     private static final String API_KEY = "AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA";
     private static final String CX = "d71afe979ffb143fd";
