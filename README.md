@@ -1,0 +1,69 @@
+CookIQ – Personalized Meal Recommendation App
+
+CookIQ is a Java-based desktop application that provides personalized meal recommendations based on user preferences, dietary restrictions, and recipe feedback. The system allows both guest users and registered users to explore recipes, like or dislike suggestions, and receive improved recommendations over time.
+
+Features
+
+User registration and login
+
+Save and load user preferences
+
+Personalized recipe recommendations
+
+Like/Dislike swipe-style interface
+
+View previously liked recipes
+
+Request new recipe suggestions
+
+Google API integration for recipe images
+
+MongoDB integration for storing user data and preferences
+
+Technologies Used
+
+Java Swing – User interface
+
+MongoDB – Stores user accounts, preferences, and liked recipes
+
+Google Custom Search API – Fetches recipe images
+
+Maven – Dependency management and project structure
+
+GitHub – Version control and team collaboration
+
+How to Run CookIQ
+
+Download or Clone the Repository
+
+https://github.com/cd0an/CS370-Fall2025-Team3-CookIQ.git
+
+
+Set Up Google API Credentials
+
+Obtain a Google API Key and Custom Search Engine ID.
+
+Insert them in the ImageService.java file where indicated.
+
+Launch the Application
+
+Open the project in your IDE (IntelliJ, VS Code, Eclipse, etc.)
+
+Navigate to:
+
+cookiq/CookIQ.java
+
+
+Click Run.
+
+The app will start, connect to MongoDB, and load recipe images automatically.
+
+Team Members
+
+Cindy Doan – UI Design, Integration
+
+Zhuo Liu – MongoDB & Data Management
+
+Mitchell – Recommendation Engine & Ranking Logic
+
+Miguel – Login System & Authentication
