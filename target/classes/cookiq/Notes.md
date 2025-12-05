@@ -11,3 +11,4 @@
 **Remember:**
 - Guest users will see duplicate liked recipes when resuggesting for more recipes (temporary session not implemented-no time)
 - Logged-in users should not be resuggested recipes they already liked and disliked across sessions 
+- Google API calls limits to 100 images per day
