@@ -22,7 +22,7 @@ Technologies Used
 
 How to Run CookIQ
 1) Download or Clone the Repository: https://github.com/cd0an/CS370-Fall2025-Team3-CookIQ.git
-2) Obtain a Google API Key and Custom Search Engine ID.
+2) Obtain a Google API Key and Custom Search Engine ID. Use API key 1: AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w or API key 2: AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA
 3) Insert them in the ImageService.java file where indicated.
 4) Launch the Application: Open the project in your IDE (IntelliJ, VS Code, Eclipse, etc.)
 5) Navigate to: cookiq/CookIQ.java
