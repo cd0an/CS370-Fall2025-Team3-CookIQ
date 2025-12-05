@@ -16,7 +16,7 @@
 
 ---
 
-## Scrum Meeting – 09/28/2025
+## Scrum Meeting – 09/30/2025
 **Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
@@ -72,7 +72,7 @@
 
 ---
 
-## Scrum Meeting – 10/26/2025
+## Scrum Meeting – 10/28/2025
 **Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
