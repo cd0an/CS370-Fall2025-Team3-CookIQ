@@ -3,7 +3,7 @@
 ---
 
 ## Scrum Meeting – 09/21/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -17,7 +17,7 @@
 ---
 
 ## Scrum Meeting – 09/28/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -31,7 +31,7 @@
 ---
 
 ## Scrum Meeting – 10/05/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -45,7 +45,7 @@
 ---
 
 ## Scrum Meeting – 10/12/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -59,7 +59,7 @@
 ---
 
 ## Scrum Meeting – 10/19/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -73,7 +73,7 @@
 ---
 
 ## Scrum Meeting – 10/26/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -87,7 +87,7 @@
 ---
 
 ## Scrum Meeting – 11/02/2025
-**Attendees:** All team members
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
@@ -113,10 +113,12 @@
 ---
 
 ## Scrum Meeting – 12/03/2025
-**Attendees:** Cindy, Zhuo, Mitchell, Miguel 
+**Attendees:** Cindy, Zhuo, Mitchell, Miguel
 
 ---
 
 **Minutes:**
 - Debugging and testing features for DEMO
-- Practice presentation 
+- Practice presentation
+
+---
