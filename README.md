@@ -29,7 +29,7 @@ How to Run CookIQ
 6) Click Run. The app will automatically start, connect to MongoDB, and load recipe images. 
 
 Team Members
-* Cindy Doan – UI Design, Integration
-* Zhuo Liu – MongoDB & Data Management
+* Cindy – UI Design, Integration
+* Zhuo – MongoDB & Data Management
 * Mitchell – Recommendation Engine & Ranking Logic
 * Miguel – Login System & Authentication
