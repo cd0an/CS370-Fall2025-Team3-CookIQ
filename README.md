@@ -22,10 +22,12 @@ Technologies Used
 
 How to Run CookIQ
 1) Download or Clone the Repository: https://github.com/cd0an/CS370-Fall2025-Team3-CookIQ.git
-2) Obtain a Google API Key and Custom Search Engine ID. Use one of the following API keys: AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w or AIzaSyCVMTrJh4g2aRVmaystoHoPsSbJkJsMWDA
-4) Insert one of the keys in the ImageService.java file where indicated, if not already
-5) Navigate to CookIQ.java in your IDE and click “Run” to launch the application.
-6) The app will automatically start, connect to MongoDB, and load recipe images. 
+2) Navigate to the ImageService.java file.
+3) Verify you have a Google API Key. If yes, continue to step 6. Otherwise, continue to step 4.
+4) Copy the following API Key: AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w
+5) Paste the API key in the ImageService.java where indicated. 
+6) Navigate to CookIQ.java in your IDE and click “Run” to launch the application.
+7) The app will automatically start, connect to MongoDB, and load recipe images. 
 
 Team Members
 * Cindy – UI Design, Integration
