@@ -26,7 +26,7 @@ How to Run CookIQ
 3) Install Java. CookIQ requires Java 17 or higher.
 4) Install Maven for Java.
 5) Locate the ImageService.java file under the Services folder.
-6) Verify you have a Google API Key. If you already have one, skip to Step 9. Otherwise, continue. 
+6) Verify you have a Google API Key. If you already have one, skip to Step 8. Otherwise, continue. 
 7) Copy the following API Key: AIzaSyCHa3fu4NsDuWU8WejIpNnFfHQm9_11p2w and paste it in the ImageService.java where indicated. 
 9) Navigate to CookIQ.java in your IDE and click “Run” to launch the application.
 10) If running from the IDE does not work, do the following steps: (a) Open a terminal in the project folder. (b) Compile the project: mvn clean compile (c) Run the application: mvn exec:java -Dexec.mainClass="cookiq.CookIQ"
